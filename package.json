@@ -1,0 +1,39 @@
+{
+  "name": "metaform-gym",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c cyan,green \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "npm run dev --workspace @metaform/web",
+    "dev:api": "npm run dev --workspace @metaform/api",
+    "build": "npm run build --workspace @metaform/shared-types && npm run build --workspace @metaform/api && npm run build --workspace @metaform/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prisma:generate": "npm run prisma:generate --workspace @metaform/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace @metaform/api",
+    "prisma:studio": "npm run prisma:studio --workspace @metaform/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "concurrently": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-react-hooks": "latest",
+    "eslint-plugin-react-refresh": "latest",
+    "globals": "latest",
+    "prettier": "latest",
+    "prettier-plugin-tailwindcss": "latest",
+    "typescript-eslint": "latest"
+  },
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10.0.0"
+  }
+}
