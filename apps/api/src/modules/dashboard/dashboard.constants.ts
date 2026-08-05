@@ -1,0 +1,5 @@
+export const BODY_WEIGHT_RANGE_DAYS = 90
+export const STRENGTH_ITEM_LIMIT = 5
+export const STRENGTH_POINT_LIMIT = 12
+export const STABLE_WEIGHT_TOLERANCE_KG = 0.1
+export const DASHBOARD_DECIMAL_PLACES = 2
