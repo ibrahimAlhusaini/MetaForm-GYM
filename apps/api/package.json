@@ -11,6 +11,7 @@
     "test": "vitest run --config vitest.config.ts",
     "test:auth": "vitest run --config vitest.config.ts tests/auth.integration.test.ts",
     "test:dashboard": "vitest run --config vitest.config.ts tests/dashboard.analytics.test.ts tests/dashboard.overview.integration.test.ts tests/dashboard.strength.integration.test.ts",
+    "test:weight-tracker": "vitest run --config vitest.config.ts tests/weight-tracker.crud.integration.test.ts tests/weight-tracker.history.integration.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"

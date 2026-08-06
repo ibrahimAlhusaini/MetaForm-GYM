@@ -1,0 +1,14 @@
+export const PAGINATION_DEFAULT_LIMIT = 20
+export const PAGINATION_MAX_LIMIT = 100
+export const HISTORY_CHART_POINT_LIMIT = 30
+export const MAX_LOGS_PER_SESSION = 50
+export const MAX_SETS_PER_LOG = 100
+export const MACHINE_NAME_MAX_LENGTH = 120
+export const DESCRIPTION_MAX_LENGTH = 2_000
+export const NOTES_MAX_LENGTH = 2_000
+export const IMAGE_URL_MAX_LENGTH = 2_048
+export const MAX_WEIGHT_KG = 99_999.99
+export const MAX_DISTANCE_METERS = 99_999_999.99
+export const MAX_REPS = 100_000
+export const MAX_DURATION_SECONDS = 10_000_000
+export const RESOURCE_NOT_FOUND_MESSAGE = 'Resource not found'

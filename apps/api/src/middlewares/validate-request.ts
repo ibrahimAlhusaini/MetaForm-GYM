@@ -16,3 +16,27 @@ export const validateBody = (schema: ZodType): RequestHandler => {
     next()
   }
 }
+
+const createValidator = (
+  schema: ZodType,
+  source: 'params' | 'query',
+  target: 'validatedParams' | 'validatedQuery',
+): RequestHandler => {
+  return (request, _response, next) => {
+    const result = schema.safeParse(request[source])
+
+    if (!result.success) {
+      next(new AppError(400, 'Invalid request data'))
+      return
+    }
+
+    ;(request as AppRequest)[target] = result.data
+    next()
+  }
+}
+
+export const validateParams = (schema: ZodType): RequestHandler =>
+  createValidator(schema, 'params', 'validatedParams')
+
+export const validateQuery = (schema: ZodType): RequestHandler =>
+  createValidator(schema, 'query', 'validatedQuery')
