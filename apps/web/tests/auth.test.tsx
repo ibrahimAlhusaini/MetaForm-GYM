@@ -18,6 +18,8 @@ import {
   registerRequest,
 } from '../src/services/auth.service.js'
 import { authResponse, user } from './fixtures/auth.fixture.js'
+import { populatedDashboardData } from './fixtures/dashboard.fixture.js'
+import { fetchDashboardSummary } from '../src/features/dashboard/services/dashboard.service.js'
 
 vi.mock('../src/services/auth.service.js', () => ({
   fetchCurrentUserRequest: vi.fn(),
@@ -25,6 +27,10 @@ vi.mock('../src/services/auth.service.js', () => ({
   logoutRequest: vi.fn(),
   refreshSessionRequest: vi.fn(),
   registerRequest: vi.fn(),
+}))
+
+vi.mock('../src/features/dashboard/services/dashboard.service.js', () => ({
+  fetchDashboardSummary: vi.fn(),
 }))
 
 const renderAt = (path: string) =>
@@ -43,6 +49,10 @@ beforeEach(() => {
   vi.mocked(registerRequest).mockResolvedValue(authResponse)
   vi.mocked(logoutRequest).mockResolvedValue(undefined)
   vi.mocked(refreshSessionRequest).mockResolvedValue('restored-access-token')
+  vi.mocked(fetchDashboardSummary).mockResolvedValue({
+    ...populatedDashboardData,
+    user: { firstName: 'Meta Member' },
+  })
 })
 
 afterEach(() => {
@@ -168,7 +178,7 @@ describe('routing and session lifecycle', () => {
     expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
   })
 
-  it('redirects an authenticated user away from a guest route', () => {
+  it('redirects an authenticated user away from a guest route', async () => {
     useAuthStore.setState({
       isInitializing: false,
       isAuthenticated: true,
@@ -176,7 +186,7 @@ describe('routing and session lifecycle', () => {
     })
     renderAt('/login')
     expect(
-      screen.getByRole('heading', { name: 'Welcome back, Meta Member' }),
+      await screen.findByRole('heading', { name: 'Welcome back, Meta Member' }),
     ).toBeVisible()
   })
 

@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { AppLayout } from '../layouts/AppLayout.js'
+import { DashboardPage } from '../features/dashboard/DashboardPage.js'
 import { appRouteSegments } from '../config/navigation.config.js'
 import { AppNotFoundPage } from '../pages/AppNotFoundPage.js'
 import { FeaturePlaceholderPage } from '../pages/FeaturePlaceholderPage.js'
-import { HomePlaceholderPage } from '../pages/HomePlaceholderPage.js'
 import { LoginPage } from '../pages/LoginPage.js'
 import { NotFoundPage } from '../pages/NotFoundPage.js'
 import { RegisterPage } from '../pages/RegisterPage.js'
@@ -26,7 +26,7 @@ export function AppRoutes() {
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<AppLayout />}>
-          <Route index element={<HomePlaceholderPage />} />
+          <Route index element={<DashboardPage />} />
           <Route
             path={appRouteSegments.weights}
             element={<FeaturePlaceholderPage navigationId="weights" />}

@@ -9,6 +9,8 @@ import {
   useAuthStore,
 } from '../src/store/auth.store.js'
 import { user } from './fixtures/auth.fixture.js'
+import { populatedDashboardData } from './fixtures/dashboard.fixture.js'
+import { fetchDashboardSummary } from '../src/features/dashboard/services/dashboard.service.js'
 
 vi.mock('../src/services/auth.service.js', () => ({
   fetchCurrentUserRequest: vi.fn(),
@@ -16,6 +18,10 @@ vi.mock('../src/services/auth.service.js', () => ({
   logoutRequest: vi.fn(),
   refreshSessionRequest: vi.fn(),
   registerRequest: vi.fn(),
+}))
+
+vi.mock('../src/features/dashboard/services/dashboard.service.js', () => ({
+  fetchDashboardSummary: vi.fn(),
 }))
 
 const renderAt = (path: string, authenticated = true) => {
@@ -37,6 +43,10 @@ beforeEach(() => {
   resetAuthStoreForTests()
   vi.clearAllMocks()
   vi.mocked(logoutRequest).mockResolvedValue(undefined)
+  vi.mocked(fetchDashboardSummary).mockResolvedValue({
+    ...populatedDashboardData,
+    user: { firstName: 'Meta Member' },
+  })
 })
 
 describe('authenticated application shell', () => {

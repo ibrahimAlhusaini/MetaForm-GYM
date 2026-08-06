@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "latest",
+    "@metaform/shared-types": "^0.1.0",
     "axios": "latest",
     "lucide-react": "^1.28.0",
     "react": "^19.2.8",
