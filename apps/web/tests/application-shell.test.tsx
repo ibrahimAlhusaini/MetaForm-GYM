@@ -11,6 +11,10 @@ import {
 import { user } from './fixtures/auth.fixture.js'
 import { populatedDashboardData } from './fixtures/dashboard.fixture.js'
 import { fetchDashboardSummary } from '../src/features/dashboard/services/dashboard.service.js'
+import {
+  fetchMachines,
+  fetchSessions,
+} from '../src/features/weight-tracker/services/weight-tracker.service.js'
 
 vi.mock('../src/services/auth.service.js', () => ({
   fetchCurrentUserRequest: vi.fn(),
@@ -23,6 +27,13 @@ vi.mock('../src/services/auth.service.js', () => ({
 vi.mock('../src/features/dashboard/services/dashboard.service.js', () => ({
   fetchDashboardSummary: vi.fn(),
 }))
+vi.mock(
+  '../src/features/weight-tracker/services/weight-tracker.service.js',
+  () => ({
+    fetchMachines: vi.fn(),
+    fetchSessions: vi.fn(),
+  }),
+)
 
 const renderAt = (path: string, authenticated = true) => {
   useAuthStore.setState({
@@ -47,6 +58,16 @@ beforeEach(() => {
     ...populatedDashboardData,
     user: { firstName: 'Meta Member' },
   })
+  const pagination = {
+    page: 1,
+    limit: 20,
+    totalItems: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  }
+  vi.mocked(fetchMachines).mockResolvedValue({ items: [], pagination })
+  vi.mocked(fetchSessions).mockResolvedValue({ items: [], pagination })
 })
 
 describe('authenticated application shell', () => {
@@ -171,15 +192,13 @@ describe('authenticated application shell', () => {
     )
   })
 
-  it('contains placeholders without introducing product controls', () => {
+  it('renders the Weight Tracker workflow instead of its placeholder', async () => {
     renderAt('/app/weights')
-
-    expect(screen.getByText('Coming in next stage')).toBeVisible()
     expect(
-      screen.queryByRole('button', { name: /add|record|calculate|start/i }),
-    ).not.toBeInTheDocument()
-    expect(document.querySelector('form')).not.toBeInTheDocument()
-    expect(document.querySelector('canvas')).not.toBeInTheDocument()
+      await screen.findByRole('heading', { name: 'Weight Tracker' }),
+    ).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Start workout' })).toBeVisible()
+    expect(screen.queryByText('Coming in next stage')).not.toBeInTheDocument()
   })
 
   it('renders an unknown authenticated route inside the shell', () => {

@@ -53,7 +53,8 @@ export const appNavigationItems: readonly AppNavigationItem[] = [
     path: appPaths.weights,
     label: 'Weight Tracker',
     pageTitle: 'Weight Tracker',
-    description: 'Body measurement history and progress trends will live here.',
+    description:
+      'Build workouts, manage machines, and review strength history.',
     icon: Scale,
   },
   {
@@ -113,5 +114,8 @@ export const getNavigationItem = (id: AppNavigationId): AppNavigationItem => {
 }
 
 export const getPageTitle = (pathname: string): string =>
-  appNavigationItems.find((item) => item.path === pathname)?.pageTitle ??
-  'Page not found'
+  appNavigationItems.find(
+    (item) =>
+      item.path === pathname ||
+      (item.path !== appPaths.home && pathname.startsWith(`${item.path}/`)),
+  )?.pageTitle ?? 'Page not found'

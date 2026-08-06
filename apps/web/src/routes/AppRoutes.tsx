@@ -1,6 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { AppLayout } from '../layouts/AppLayout.js'
 import { DashboardPage } from '../features/dashboard/DashboardPage.js'
+import { MachineFormPage } from '../features/weight-tracker/pages/MachineFormPage.js'
+import { MachinesPage } from '../features/weight-tracker/pages/MachinesPage.js'
+import { SessionBuilderPage } from '../features/weight-tracker/pages/SessionBuilderPage.js'
+import { SessionDetailPage } from '../features/weight-tracker/pages/SessionDetailPage.js'
+import { SessionsPage } from '../features/weight-tracker/pages/SessionsPage.js'
+import { SourceHistoryPage } from '../features/weight-tracker/pages/SourceHistoryPage.js'
+import { WeightTrackerPage } from '../features/weight-tracker/pages/WeightTrackerPage.js'
 import { appRouteSegments } from '../config/navigation.config.js'
 import { AppNotFoundPage } from '../pages/AppNotFoundPage.js'
 import { FeaturePlaceholderPage } from '../pages/FeaturePlaceholderPage.js'
@@ -27,10 +34,19 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
-          <Route
-            path={appRouteSegments.weights}
-            element={<FeaturePlaceholderPage navigationId="weights" />}
-          />
+          <Route path={appRouteSegments.weights}>
+            <Route index element={<WeightTrackerPage />} />
+            <Route path="machines" element={<MachinesPage />} />
+            <Route path="machines/new" element={<MachineFormPage />} />
+            <Route path="machines/:machineId" element={<MachineFormPage />} />
+            <Route path="sessions" element={<SessionsPage />} />
+            <Route path="sessions/new" element={<SessionBuilderPage />} />
+            <Route path="sessions/:sessionId" element={<SessionDetailPage />} />
+            <Route
+              path="history/:sourceType/:sourceId"
+              element={<SourceHistoryPage />}
+            />
+          </Route>
           <Route
             path={appRouteSegments.exercises}
             element={<FeaturePlaceholderPage navigationId="exercises" />}

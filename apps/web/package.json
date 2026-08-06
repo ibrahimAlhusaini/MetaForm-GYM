@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
+    "test:weight-tracker": "vitest run tests/weight-tracker.machines.test.tsx tests/weight-tracker.sessions.test.tsx tests/weight-tracker.history.test.tsx",
     "test:watch": "vitest",
     "preview": "vite preview"
   },
