@@ -128,9 +128,20 @@ Run notebooks from this directory after editable installation:
 jupyter lab notebooks
 ```
 
-The four notebooks cover data overview, body weight, strength progression, and
-nutrition/training relationships. They use matplotlib, tolerate empty/small data,
-and make descriptive—not causal or predictive—claims.
+The first four notebooks cover data overview, body weight, strength progression,
+and nutrition/training relationships. Notebook 05 adds the isolated Body Weight
+Prediction V1 temporal evaluation. All use matplotlib and tolerate empty/small
+data. Synthetic evaluation is labeled as pipeline validation, never real-world
+accuracy.
+
+## Body Weight Prediction V1
+
+The evaluation-only V1 predicts an observed body-weight measurement near seven
+days ahead (±2 days) after at least five prior measurements. It compares Last
+Value and Recent Trend baselines with an interpretable Linear Regression pipeline
+using expanding origins and strict target-availability cutoffs. It does not
+persist or serve a model. Full design and interpretation rules are documented in
+[`docs/body-weight-prediction-v1/README.md`](../docs/body-weight-prediction-v1/README.md).
 
 ## Verification
 
@@ -149,10 +160,8 @@ dumps, and report output are ignored.
 
 ## Future model stage
 
-The next stage should define one narrowly scoped prediction question, minimum
-history requirements, temporal baselines, per-user versus pooled evaluation,
-metrics, and calibration/error slices. It should then train baseline models using
-the existing preparation and chronological evaluation boundaries. Production
-serving, scheduled retraining, model registry infrastructure, and application UI
-changes remain later concerns.
-
+The next recommended stage, after representative real history is available, is
+Body Weight Model Robustness and Calibration: repeated temporal cutoffs, cadence
+and history-length error slices, prediction intervals, and comparison with a
+regularized linear alternative. Production serving, strength modeling, scheduled
+retraining, model registries, and application changes remain later concerns.
