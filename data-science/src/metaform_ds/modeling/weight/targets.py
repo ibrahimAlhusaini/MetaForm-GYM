@@ -31,6 +31,8 @@ EXAMPLE_COLUMNS = [
     "prediction_date",
     "target_date",
     "target_offset_days",
+    "prior_measurement_count",
+    "recent_measurement_cadence_days",
     *MODEL_FEATURE_COLUMNS,
     "actual_weight_kg",
     "baseline_last_value_kg",
@@ -95,7 +97,16 @@ def _feature_values(
         days=config.measurement_frequency_days
     )
     recent_count = int(history["measured_at"].ge(frequency_start).sum())
+    recent_dates = pd.to_datetime(
+        history["measured_at"].tail(config.trend_window), utc=True
+    )
+    recent_intervals = recent_dates.diff().dt.total_seconds().div(86_400).dropna()
+    recent_cadence = (
+        float(recent_intervals.median()) if not recent_intervals.empty else np.nan
+    )
     return {
+        "prior_measurement_count": len(history) - 1,
+        "recent_measurement_cadence_days": recent_cadence,
         "current_weight_kg": current_weight,
         "previous_weight_kg": previous_weight,
         "days_since_first_measurement": (

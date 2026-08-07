@@ -47,6 +47,8 @@ def _per_user_metrics(predictions: pd.DataFrame) -> pd.DataFrame:
         "Recent Trend Baseline": "baseline_trend_kg",
         "Linear Regression": "predicted_weight_kg",
     }
+    if "ridge_predicted_weight_kg" in predictions:
+        mappings["Ridge Regression"] = "ridge_predicted_weight_kg"
     rows: list[dict[str, object]] = []
     for anonymous_user_id, user_rows in predictions.groupby(
         "anonymous_user_id", sort=True

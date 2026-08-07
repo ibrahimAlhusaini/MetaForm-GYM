@@ -134,6 +134,12 @@ Prediction V1 temporal evaluation. All use matplotlib and tolerate empty/small
 data. Synthetic evaluation is labeled as pipeline validation, never real-world
 accuracy.
 
+Notebook 06 adds Body Weight Model Robustness and Calibration: fixed-alpha Ridge,
+fold/period/cutoff stability, past-only cadence and history segments, causal
+empirical intervals, abstention metadata, error analysis, and fixed sensitivity
+comparisons. See
+[`docs/body-weight-model-robustness/README.md`](../docs/body-weight-model-robustness/README.md).
+
 ## Body Weight Prediction V1
 
 The evaluation-only V1 predicts an observed body-weight measurement near seven
@@ -160,8 +166,8 @@ dumps, and report output are ignored.
 
 ## Future model stage
 
-The next recommended stage, after representative real history is available, is
-Body Weight Model Robustness and Calibration: repeated temporal cutoffs, cadence
-and history-length error slices, prediction intervals, and comparison with a
-regularized linear alternative. Production serving, strength modeling, scheduled
-retraining, model registries, and application changes remain later concerns.
+The next recommended stage is Real-data Evidence Accumulation and Evaluation
+Protocol: configure the read-only analytics role, collect adequate longitudinal
+history, pre-register evidence thresholds, and rerun the frozen robustness suite.
+Production serving, strength modeling, scheduled retraining, model registries,
+and application changes remain later concerns.

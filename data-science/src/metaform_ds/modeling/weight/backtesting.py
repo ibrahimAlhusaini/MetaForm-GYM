@@ -9,6 +9,7 @@ import pandas as pd
 from metaform_ds.modeling.weight.config import WeightModelConfig
 from metaform_ds.modeling.weight.pipeline import (
     build_weight_regression_pipeline,
+    build_weight_ridge_pipeline,
     model_input,
 )
 
@@ -18,8 +19,12 @@ PREDICTION_COLUMNS = [
     "target_date",
     "actual_weight_kg",
     "predicted_weight_kg",
+    "ridge_predicted_weight_kg",
     "baseline_last_value_kg",
     "baseline_trend_kg",
+    "prior_measurement_count",
+    "recent_measurement_cadence_days",
+    "days_since_previous_measurement",
     "fold_id",
     "training_row_count",
     "training_max_prediction_date",
@@ -65,9 +70,13 @@ def expanding_window_backtest(
             continue
         fold_number += 1
         pipeline = build_weight_regression_pipeline()
+        ridge_pipeline = build_weight_ridge_pipeline(config.ridge_alpha)
         training_features = model_input(training)
         validation_features = model_input(validation)
         pipeline.fit(training_features, training["actual_weight_kg"].astype(float))
+        ridge_pipeline.fit(
+            training_features, training["actual_weight_kg"].astype(float)
+        )
         output = validation.loc[
             :,
             [
@@ -77,9 +86,15 @@ def expanding_window_backtest(
                 "actual_weight_kg",
                 "baseline_last_value_kg",
                 "baseline_trend_kg",
+                "prior_measurement_count",
+                "recent_measurement_cadence_days",
+                "days_since_previous_measurement",
             ],
         ].copy()
         output["predicted_weight_kg"] = pipeline.predict(validation_features)
+        output["ridge_predicted_weight_kg"] = ridge_pipeline.predict(
+            validation_features
+        )
         output["fold_id"] = f"fold_{fold_number:03d}"
         output["training_row_count"] = len(training)
         output["training_max_prediction_date"] = training["prediction_date"].max()

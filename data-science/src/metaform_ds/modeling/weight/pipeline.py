@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
@@ -29,8 +29,7 @@ def model_input(frame: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def build_weight_regression_pipeline() -> Pipeline:
-    """Create numeric/categorical preprocessing followed by LinearRegression."""
+def _preprocessing() -> ColumnTransformer:
     numeric = Pipeline([("imputer", SimpleImputer(strategy="median"))])
     categorical = Pipeline(
         [
@@ -41,13 +40,26 @@ def build_weight_regression_pipeline() -> Pipeline:
             ),
         ]
     )
-    preprocessing = ColumnTransformer(
+    return ColumnTransformer(
         [
             ("numeric", numeric, NUMERIC_FEATURE_COLUMNS),
             ("categorical", categorical, CATEGORICAL_FEATURE_COLUMNS),
         ],
         remainder="drop",
     )
+
+
+def build_weight_regression_pipeline() -> Pipeline:
+    """Create the V1 Linear Regression pipeline."""
     return Pipeline(
-        [("preprocessing", preprocessing), ("regression", LinearRegression())]
+        [("preprocessing", _preprocessing()), ("regression", LinearRegression())]
+    )
+
+
+def build_weight_ridge_pipeline(alpha: float = 1.0) -> Pipeline:
+    """Create an otherwise identical pipeline with fixed-strength Ridge."""
+    if alpha <= 0:
+        raise ValueError("Ridge alpha must be positive")
+    return Pipeline(
+        [("preprocessing", _preprocessing()), ("regression", Ridge(alpha=alpha))]
     )

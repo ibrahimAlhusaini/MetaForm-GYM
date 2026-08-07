@@ -8,6 +8,13 @@ from math import sqrt
 import numpy as np
 import pandas as pd
 
+MODEL_PREDICTION_COLUMNS = {
+    "Last Value Baseline": "baseline_last_value_kg",
+    "Recent Trend Baseline": "baseline_trend_kg",
+    "Linear Regression": "predicted_weight_kg",
+    "Ridge Regression": "ridge_predicted_weight_kg",
+}
+
 
 @dataclass(frozen=True, slots=True)
 class RegressionMetrics:
@@ -39,13 +46,10 @@ def metric_comparison(predictions: pd.DataFrame) -> pd.DataFrame:
     columns = ["model", "mae_kg", "rmse_kg", "r2", "prediction_count"]
     if predictions.empty:
         return pd.DataFrame(columns=columns)
-    mapping = {
-        "Last Value Baseline": "baseline_last_value_kg",
-        "Recent Trend Baseline": "baseline_trend_kg",
-        "Linear Regression": "predicted_weight_kg",
-    }
     rows: list[dict[str, object]] = []
-    for name, prediction_column in mapping.items():
+    for name, prediction_column in MODEL_PREDICTION_COLUMNS.items():
+        if prediction_column not in predictions:
+            continue
         metrics = regression_metrics(
             predictions["actual_weight_kg"], predictions[prediction_column]
         )
