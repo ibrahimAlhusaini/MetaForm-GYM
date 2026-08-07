@@ -12,6 +12,7 @@
     "test:exercise-library": "vitest run tests/exercise-library.test.tsx tests/exercise-detail.test.tsx tests/weight-tracker.sessions.test.tsx",
     "test:nutrition": "vitest run tests/nutrition.test.tsx tests/application-shell.test.tsx",
     "test:profile": "vitest run tests/profile.test.tsx tests/application-shell.test.tsx tests/internationalization.test.tsx",
+    "test:ai-coach": "vitest run tests/ai-coach.test.tsx tests/ai-coach-session.test.tsx tests/application-shell.test.tsx tests/internationalization.test.tsx",
     "test:watch": "vitest",
     "preview": "vite preview"
   },

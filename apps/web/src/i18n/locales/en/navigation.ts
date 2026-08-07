@@ -20,7 +20,7 @@ export const navigation = {
       label: 'AI Coach',
       title: 'AI Coach',
       description:
-        'Coaching conversations and recommendations are intentionally postponed.',
+        'Guided, evidence-based fitness reviews and recommendations.',
     },
     calories: {
       label: 'Calories',

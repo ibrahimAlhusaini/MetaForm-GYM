@@ -40,6 +40,11 @@ import {
   fetchProfileSummary,
 } from '../src/features/profile/services/profile.service.js'
 import {
+  fetchAiCoachCapabilities,
+  fetchAiCoachSessions,
+} from '../src/features/ai-coach/services/ai-coach.service.js'
+import { aiCoachCapabilities } from './fixtures/ai-coach.fixture.js'
+import {
   completeProfile,
   profileCompleteness,
   profileSummary,
@@ -74,6 +79,12 @@ vi.mock('../src/features/profile/services/profile.service.js', () => ({
   fetchProfileCompleteness: vi.fn(),
   fetchProfileSummary: vi.fn(),
   updateProfile: vi.fn(),
+}))
+vi.mock('../src/features/ai-coach/services/ai-coach.service.js', () => ({
+  createAiCoachSession: vi.fn(),
+  fetchAiCoachCapabilities: vi.fn(),
+  fetchAiCoachSession: vi.fn(),
+  fetchAiCoachSessions: vi.fn(),
 }))
 vi.mock(
   '../src/features/exercise-library/services/exercise-library.service.js',
@@ -134,6 +145,11 @@ beforeEach(() => {
   vi.mocked(fetchProfile).mockResolvedValue(completeProfile)
   vi.mocked(fetchProfileCompleteness).mockResolvedValue(profileCompleteness)
   vi.mocked(fetchProfileSummary).mockResolvedValue(profileSummary)
+  vi.mocked(fetchAiCoachCapabilities).mockResolvedValue(aiCoachCapabilities)
+  vi.mocked(fetchAiCoachSessions).mockResolvedValue({
+    items: [],
+    pagination: { ...pagination, limit: 10 },
+  })
 })
 
 describe('authenticated application shell', () => {
@@ -248,6 +264,14 @@ describe('authenticated application shell', () => {
     expect(screen.queryByLabelText('Desktop sidebar')).not.toBeInTheDocument()
   })
 
+  it('redirects unauthenticated AI Coach access to login', () => {
+    renderAt('/app/ai-coach', false)
+    expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+    expect(
+      screen.queryByText('What would you like help with?'),
+    ).not.toBeInTheDocument()
+  })
+
   it('provides a structural skip link to the main content', () => {
     renderAt('/app')
 
@@ -276,6 +300,17 @@ describe('authenticated application shell', () => {
     ).toBeVisible()
     expect(screen.getByLabelText('Full name')).toHaveValue('Meta Member')
     expect(screen.queryByText('Coming in next stage')).not.toBeInTheDocument()
+  })
+
+  it('renders the guided AI Coach workflow instead of its placeholder', async () => {
+    renderAt('/app/ai-coach')
+    expect(
+      await screen.findByRole('heading', { name: 'AI Coach' }),
+    ).toBeVisible()
+    expect(
+      screen.getByRole('heading', { name: 'What would you like help with?' }),
+    ).toBeVisible()
+    expect(screen.queryByText('Planned feature')).not.toBeInTheDocument()
   })
 
   it('renders an unknown authenticated route inside the shell', () => {

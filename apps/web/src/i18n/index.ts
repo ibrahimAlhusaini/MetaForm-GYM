@@ -9,6 +9,7 @@ import { nutrition as enNutrition } from './locales/en/nutrition.js'
 import { weightTracker as enWeightTracker } from './locales/en/weightTracker.js'
 import { workoutPlans as enWorkoutPlans } from './locales/en/workoutPlans.js'
 import { profile as enProfile } from './locales/en/profile.js'
+import { aiCoach as enAiCoach } from './locales/en/aiCoach.js'
 import { auth as arAuth } from './locales/ar/auth.js'
 import { common as arCommon } from './locales/ar/common.js'
 import { dashboard as arDashboard } from './locales/ar/dashboard.js'
@@ -18,6 +19,7 @@ import { nutrition as arNutrition } from './locales/ar/nutrition.js'
 import { weightTracker as arWeightTracker } from './locales/ar/weightTracker.js'
 import { workoutPlans as arWorkoutPlans } from './locales/ar/workoutPlans.js'
 import { profile as arProfile } from './locales/ar/profile.js'
+import { aiCoach as arAiCoach } from './locales/ar/aiCoach.js'
 import { isAppLanguage, languageDirection, type AppLanguage } from './locale.js'
 
 export const LANGUAGE_STORAGE_KEY = 'metaform-language'
@@ -33,6 +35,7 @@ export const translationResources = {
     nutrition: enNutrition,
     workoutPlans: enWorkoutPlans,
     profile: enProfile,
+    aiCoach: enAiCoach,
   },
   ar: {
     common: arCommon,
@@ -44,6 +47,7 @@ export const translationResources = {
     nutrition: arNutrition,
     workoutPlans: arWorkoutPlans,
     profile: arProfile,
+    aiCoach: arAiCoach,
   },
 }
 

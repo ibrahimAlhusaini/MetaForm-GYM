@@ -10,6 +10,7 @@ export const translationNamespaces = [
   'nutrition',
   'workoutPlans',
   'profile',
+  'aiCoach',
 ] as const
 
 export type TranslationNamespace = (typeof translationNamespaces)[number]

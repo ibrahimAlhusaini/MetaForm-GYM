@@ -18,7 +18,7 @@ export const navigation = {
     aiCoach: {
       label: 'المدرب الذكي',
       title: 'المدرب الذكي',
-      description: 'محادثات التدريب والتوصيات مؤجلة في هذه المرحلة.',
+      description: 'مراجعات وتوصيات لياقة موجهة ومدعومة بالأدلة.',
     },
     calories: {
       label: 'السعرات',
