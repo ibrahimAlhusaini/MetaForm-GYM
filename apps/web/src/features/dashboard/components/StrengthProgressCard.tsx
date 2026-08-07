@@ -1,6 +1,7 @@
 import { ImageOff } from 'lucide-react'
 import { Line, LineChart, ResponsiveContainer, Tooltip } from 'recharts'
 import type { StrengthProgressItem } from '@metaform/shared-types'
+import { useTranslation } from 'react-i18next'
 import {
   formatCount,
   formatMuscleGroup,
@@ -15,19 +16,22 @@ interface StrengthProgressCardProps {
 }
 
 export function StrengthProgressCard({ item }: StrengthProgressCardProps) {
+  const { t } = useTranslation(['dashboard', 'common'])
   return (
     <article className="overflow-hidden rounded-2xl border border-white/8 bg-[#111315]">
       <div className="flex gap-4 border-b border-white/7 p-5">
         {item.imageUrl ? (
           <img
             src={item.imageUrl}
-            alt={`${item.name} equipment`}
+            alt={t('dashboard:strength.imageAlt', { name: item.name })}
             className="size-14 shrink-0 rounded-xl border border-white/8 object-cover"
           />
         ) : (
           <span
             role="img"
-            aria-label={`${item.name} image unavailable`}
+            aria-label={t('dashboard:strength.imageUnavailable', {
+              name: item.name,
+            })}
             className="grid size-14 shrink-0 place-items-center rounded-xl border border-white/8 bg-white/[0.025] text-zinc-600"
           >
             <ImageOff className="size-5" aria-hidden="true" />
@@ -49,27 +53,35 @@ export function StrengthProgressCard({ item }: StrengthProgressCardProps) {
       <div className="p-5">
         <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="text-xs text-zinc-500">Personal record</dt>
+            <dt className="text-xs text-zinc-500">
+              {t('dashboard:strength.personalRecord')}
+            </dt>
             <dd className="mt-1 font-semibold text-zinc-100">
               {formatWeight(item.personalRecordKg)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-zinc-500">Latest load</dt>
+            <dt className="text-xs text-zinc-500">
+              {t('dashboard:strength.latestLoad')}
+            </dt>
             <dd className="mt-1 font-semibold text-zinc-100">
               {formatWeight(item.latestWeightKg)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-zinc-500">Previous load</dt>
+            <dt className="text-xs text-zinc-500">
+              {t('dashboard:strength.previousLoad')}
+            </dt>
             <dd className="mt-1 text-zinc-300">
               {item.previousWeightKg === null
-                ? 'Not available'
+                ? t('common:states.unavailable')
                 : formatWeight(item.previousWeightKg)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-zinc-500">Qualifying history</dt>
+            <dt className="text-xs text-zinc-500">
+              {t('dashboard:strength.qualifyingHistory')}
+            </dt>
             <dd className="mt-1 text-zinc-300">
               {formatCount(item.totalSessions, 'sessions')}
             </dd>
@@ -85,12 +97,14 @@ export function StrengthProgressCard({ item }: StrengthProgressCardProps) {
         </div>
 
         <p className="mt-4 text-xs leading-5 text-zinc-500">
-          {formatCount(item.points.length, 'points', 'representative session')}.
-          Latest load {formatWeight(item.latestWeightKg)}.
+          {t('dashboard:strength.summary', {
+            points: formatCount(item.points.length, 'representativePoints'),
+            weight: formatWeight(item.latestWeightKg),
+          })}
         </p>
         <div
           role="img"
-          aria-label={`${item.name} load progression chart. Values are summarized in text above.`}
+          aria-label={t('dashboard:strength.chartLabel', { name: item.name })}
           className="mt-3 h-28 min-w-0"
         >
           <ResponsiveContainer width="100%" height="100%">

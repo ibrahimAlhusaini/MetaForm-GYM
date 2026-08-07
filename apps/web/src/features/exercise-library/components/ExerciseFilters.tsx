@@ -1,5 +1,6 @@
 import type { ExerciseFilterOptions } from '@metaform/shared-types'
 import { RotateCcw, Search } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { ExerciseFilterState } from '../types/exercise-library.types.js'
 import {
   difficultyLabel,
@@ -8,7 +9,7 @@ import {
   primaryMuscleLabel,
   subgroupLabel,
 } from '../utils/exercise-formatters.js'
-import { sortOptions } from '../constants/exercise-library.constants.js'
+import { exerciseSortOptions } from '../constants/exercise-library.constants.js'
 
 const selectClass =
   'mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3 outline-none focus:border-lime-300 focus:ring-2 focus:ring-lime-300/15'
@@ -30,12 +31,13 @@ export function ExerciseFilters({
   onFilterChange: (field: keyof ExerciseFilterState, value: string) => void
   onClear: () => void
 }) {
+  const { t } = useTranslation(['exerciseLibrary', 'common'])
   const subgroupOptions = filters.primaryMuscle
     ? options.muscleSubgroupsByPrimaryMuscle[filters.primaryMuscle]
     : []
   return (
     <section
-      aria-label="Exercise filters"
+      aria-label={t('exerciseLibrary:filters.label')}
       className="rounded-2xl border border-white/10 bg-[#111315] p-4 sm:p-5"
     >
       <form
@@ -47,10 +49,10 @@ export function ExerciseFilters({
         className="flex flex-col gap-3 sm:flex-row"
       >
         <label className="flex-1 text-sm font-medium">
-          Search exercises
+          {t('exerciseLibrary:filters.searchLabel')}
           <span className="mt-2 flex rounded-xl border border-white/10 bg-[#151719] focus-within:border-lime-300 focus-within:ring-2 focus-within:ring-lime-300/15">
             <Search
-              className="ml-3 size-5 self-center text-zinc-500"
+              className="ms-3 size-5 self-center text-zinc-500"
               aria-hidden="true"
             />
             <input
@@ -58,7 +60,7 @@ export function ExerciseFilters({
               onChange={(event) => {
                 onSearchInputChange(event.target.value)
               }}
-              placeholder="Search by name or description"
+              placeholder={t('exerciseLibrary:filters.searchPlaceholder')}
               className="min-h-11 w-full bg-transparent px-3 outline-none placeholder:text-zinc-600"
             />
           </span>
@@ -67,18 +69,18 @@ export function ExerciseFilters({
           type="submit"
           className="min-h-11 self-end rounded-xl bg-lime-300 px-5 font-semibold text-zinc-950"
         >
-          Search
+          {t('common:actions.search')}
         </button>
       </form>
       <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <FilterSelect
-          label="Primary muscle"
+          label={t('exerciseLibrary:filters.primaryMuscle')}
           value={filters.primaryMuscle ?? ''}
           onChange={(value) => {
             onFilterChange('primaryMuscle', value)
           }}
         >
-          <option value="">All muscles</option>
+          <option value="">{t('exerciseLibrary:filters.allMuscles')}</option>
           {options.primaryMuscles.map((value) => (
             <option key={value} value={value}>
               {primaryMuscleLabel(value)}
@@ -86,7 +88,7 @@ export function ExerciseFilters({
           ))}
         </FilterSelect>
         <FilterSelect
-          label="Muscle subgroup"
+          label={t('exerciseLibrary:filters.subgroup')}
           value={filters.muscleSubgroup ?? ''}
           disabled={!filters.primaryMuscle}
           onChange={(value) => {
@@ -94,7 +96,9 @@ export function ExerciseFilters({
           }}
         >
           <option value="">
-            {filters.primaryMuscle ? 'All subgroups' : 'Choose muscle first'}
+            {filters.primaryMuscle
+              ? t('exerciseLibrary:filters.allSubgroups')
+              : t('exerciseLibrary:filters.chooseMuscle')}
           </option>
           {subgroupOptions.map((value) => (
             <option key={value} value={value}>
@@ -103,13 +107,13 @@ export function ExerciseFilters({
           ))}
         </FilterSelect>
         <FilterSelect
-          label="Equipment"
+          label={t('exerciseLibrary:filters.equipment')}
           value={filters.equipmentType ?? ''}
           onChange={(value) => {
             onFilterChange('equipmentType', value)
           }}
         >
-          <option value="">All equipment</option>
+          <option value="">{t('exerciseLibrary:filters.allEquipment')}</option>
           {options.equipmentTypes.map((value) => (
             <option key={value} value={value}>
               {equipmentLabel(value)}
@@ -117,13 +121,13 @@ export function ExerciseFilters({
           ))}
         </FilterSelect>
         <FilterSelect
-          label="Difficulty"
+          label={t('exerciseLibrary:filters.difficulty')}
           value={filters.difficultyLevel ?? ''}
           onChange={(value) => {
             onFilterChange('difficultyLevel', value)
           }}
         >
-          <option value="">All levels</option>
+          <option value="">{t('exerciseLibrary:filters.allLevels')}</option>
           {options.difficultyLevels.map((value) => (
             <option key={value} value={value}>
               {difficultyLabel(value)}
@@ -131,13 +135,13 @@ export function ExerciseFilters({
           ))}
         </FilterSelect>
         <FilterSelect
-          label="Movement"
+          label={t('exerciseLibrary:filters.movement')}
           value={filters.movementType ?? ''}
           onChange={(value) => {
             onFilterChange('movementType', value)
           }}
         >
-          <option value="">All movements</option>
+          <option value="">{t('exerciseLibrary:filters.allMovements')}</option>
           {options.movementTypes.map((value) => (
             <option key={value} value={value}>
               {movementLabel(value)}
@@ -145,15 +149,15 @@ export function ExerciseFilters({
           ))}
         </FilterSelect>
         <FilterSelect
-          label="Sort by"
+          label={t('exerciseLibrary:filters.sort')}
           value={filters.sort}
           onChange={(value) => {
             onFilterChange('sort', value)
           }}
         >
-          {sortOptions.map(({ value, label }) => (
+          {exerciseSortOptions.map(({ value, labelKey }) => (
             <option key={value} value={value}>
-              {label}
+              {t(`exerciseLibrary:${labelKey}`)}
             </option>
           ))}
         </FilterSelect>
@@ -163,7 +167,8 @@ export function ExerciseFilters({
         onClick={onClear}
         className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-zinc-300 outline-none focus-visible:ring-2 focus-visible:ring-lime-300"
       >
-        <RotateCcw className="size-4" aria-hidden="true" /> Clear filters
+        <RotateCcw className="size-4" aria-hidden="true" />{' '}
+        {t('common:actions.clearFilters')}
       </button>
     </section>
   )

@@ -1,27 +1,29 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { AuthLayout } from '../components/auth/AuthLayout.js'
 import { FormField } from '../components/auth/FormField.js'
 import { PasswordField } from '../components/auth/PasswordField.js'
 import { useAuthStore } from '../store/auth.store.js'
 import {
-  registrationFormSchema,
+  createRegistrationFormSchema,
   type RegistrationFormValues,
 } from '../validation/auth.schemas.js'
 
-const passwordRequirements = [
-  '10 or more characters',
-  'Uppercase and lowercase letters',
-  'At least one number',
-  'At least one special character',
-]
+const passwordRequirementIndexes = [0, 1, 2, 3] as const
 
 export function RegisterPage() {
+  const { t } = useTranslation('auth')
   const navigate = useNavigate()
   const registerAccount = useAuthStore((state) => state.register)
   const isSubmitting = useAuthStore((state) => state.isSubmitting)
   const authError = useAuthStore((state) => state.error)
+  const registrationFormSchema = useMemo(
+    () => createRegistrationFormSchema(t),
+    [t],
+  )
   const {
     register,
     handleSubmit,
@@ -43,22 +45,17 @@ export function RegisterPage() {
       email: values.email.trim().toLowerCase(),
       password: values.password,
     })
-
-    if (succeeded) {
-      void navigate('/app', { replace: true })
-    }
+    if (succeeded) void navigate('/app', { replace: true })
   })
 
   return (
     <AuthLayout
-      eyebrow="Create account"
-      title="Start with a stronger baseline"
-      description="Create your secure account. Training features will be introduced in later stages."
+      eyebrow={t('register.eyebrow')}
+      title={t('register.title')}
+      description={t('register.subtitle')}
     >
       <form
-        onSubmit={(event) => {
-          void onSubmit(event)
-        }}
+        onSubmit={(event) => void onSubmit(event)}
         noValidate
         className="space-y-5"
       >
@@ -67,22 +64,21 @@ export function RegisterPage() {
             role="alert"
             className="rounded-xl border border-red-400/25 bg-red-400/8 px-4 py-3 text-sm text-red-200"
           >
-            {authError}
+            {t(`errors.${authError}`)}
           </div>
         ) : null}
-
         <FormField
           id="register-name"
-          label="Full name"
+          label={t('register.name')}
           type="text"
           autoComplete="name"
-          placeholder="Your full name"
+          placeholder={t('register.namePlaceholder')}
           registration={register('fullName')}
           error={errors.fullName?.message}
         />
         <FormField
           id="register-email"
-          label="Email address"
+          label={t('register.email')}
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
@@ -91,55 +87,51 @@ export function RegisterPage() {
         />
         <PasswordField
           id="register-password"
-          label="Password"
+          label={t('register.password')}
           autoComplete="new-password"
-          placeholder="Create a secure password"
+          placeholder={t('register.passwordPlaceholder')}
           registration={register('password')}
           error={errors.password?.message}
         />
-
         <div className="rounded-xl border border-white/8 bg-white/[0.025] px-4 py-3">
           <p className="text-xs font-semibold tracking-wide text-zinc-300 uppercase">
-            Password requirements
+            {t('register.requirementsTitle')}
           </p>
           <ul className="mt-2 grid gap-1.5 text-xs text-zinc-500 sm:grid-cols-2">
-            {passwordRequirements.map((requirement) => (
-              <li key={requirement} className="flex items-center gap-2">
+            {passwordRequirementIndexes.map((index) => (
+              <li key={index} className="flex items-center gap-2">
                 <span
                   className="size-1.5 rounded-full bg-lime-300/80"
                   aria-hidden="true"
                 />
-                {requirement}
+                {t(`register.requirements.${String(index)}`)}
               </li>
             ))}
           </ul>
         </div>
-
         <PasswordField
           id="register-confirm-password"
-          label="Confirm password"
+          label={t('register.confirmPassword')}
           autoComplete="new-password"
-          placeholder="Repeat your password"
+          placeholder={t('register.confirmPlaceholder')}
           registration={register('confirmPassword')}
           error={errors.confirmPassword?.message}
         />
-
         <button
           type="submit"
           disabled={isSubmitting}
           className="mt-2 h-12 w-full rounded-xl bg-lime-300 px-5 font-semibold text-zinc-950 transition hover:bg-lime-200 focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime-300 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? 'Creating account…' : 'Create account'}
+          {isSubmitting ? t('register.submitting') : t('register.submit')}
         </button>
       </form>
-
       <p className="mt-7 text-center text-sm text-zinc-500">
-        Already have an account?{' '}
+        {t('register.hasAccount')}{' '}
         <Link
           to="/login"
           className="font-medium text-lime-300 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime-300"
         >
-          Sign in
+          {t('register.login')}
         </Link>
       </p>
     </AuthLayout>

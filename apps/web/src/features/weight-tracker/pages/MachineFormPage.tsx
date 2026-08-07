@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router'
 import { ConfirmationDialog } from '../components/ConfirmationDialog.js'
 import { MachineForm } from '../components/MachineForm.js'
@@ -22,6 +23,7 @@ import type { MachineFormValues } from '../validation/weight-tracker.schemas.js'
 import { useAsyncResource } from '../hooks/useAsyncResource.js'
 
 export function MachineFormPage() {
+  const { t } = useTranslation('weightTracker')
   const { machineId } = useParams()
   const editing = Boolean(machineId)
   const navigate = useNavigate()
@@ -29,10 +31,7 @@ export function MachineFormPage() {
     () => (machineId ? fetchMachine(machineId) : Promise.resolve(null)),
     [machineId],
   )
-  const resource = useAsyncResource(
-    load,
-    'We could not load this machine. Please try again.',
-  )
+  const resource = useAsyncResource(load, t('errors.machine'))
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirming, setConfirming] = useState(false)
@@ -46,12 +45,7 @@ export function MachineFormPage() {
           : await createMachine(machinePayload(values))
       void navigate(`/app/weights/machines/${machine.id}`, { replace: true })
     } catch (reason) {
-      setError(
-        weightTrackerErrorMessage(
-          reason,
-          'We could not save this machine. Please try again.',
-        ),
-      )
+      setError(weightTrackerErrorMessage(reason, t('errors.saveMachine')))
     } finally {
       setPending(false)
     }
@@ -66,18 +60,15 @@ export function MachineFormPage() {
       setConfirming(false)
       setError(
         isMachineHistoryConflict(reason)
-          ? 'This machine is used in workout history and cannot be deleted. Delete the related workout only if you truly intend to remove that history.'
-          : weightTrackerErrorMessage(
-              reason,
-              'We could not delete this machine.',
-            ),
+          ? t('errors.machineConflict')
+          : weightTrackerErrorMessage(reason, t('errors.deleteMachine')),
       )
     } finally {
       setPending(false)
     }
   }
   if (editing && resource.state.status === 'loading')
-    return <WeightTrackerSkeleton label="Loading machine" />
+    return <WeightTrackerSkeleton label={t('loading.machine')} />
   if (editing && resource.state.status === 'error')
     return (
       <WeightTrackerErrorState
@@ -92,10 +83,10 @@ export function MachineFormPage() {
       <header className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link to="/app/weights/machines" className="text-sm text-lime-300">
-            Back to machines
+            {t('machines.back')}
           </Link>
           <h1 className="mt-3 text-3xl font-semibold">
-            {editing ? 'Edit machine' : 'Add machine'}
+            {editing ? t('machines.editTitle') : t('machines.addTitle')}
           </h1>
         </div>
         {machine ? (
@@ -107,7 +98,7 @@ export function MachineFormPage() {
             className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-red-400/20 px-4 font-semibold text-red-300"
           >
             <Trash2 className="size-4" />
-            Delete machine
+            {t('machines.delete')}
           </button>
         ) : null}
       </header>
@@ -123,16 +114,16 @@ export function MachineFormPage() {
               },
             }
           : {})}
-        submitLabel={editing ? 'Save changes' : 'Create machine'}
+        submitLabel={editing ? t('machines.saveChanges') : t('machines.create')}
         pending={pending}
         errorMessage={error}
         onSubmit={submit}
       />
       <ConfirmationDialog
         open={confirming}
-        title="Delete this machine?"
-        description="This is only allowed when no workout history references the machine."
-        confirmLabel="Delete machine"
+        title={t('machines.deleteTitle')}
+        description={t('machines.deleteDescription')}
+        confirmLabel={t('machines.delete')}
         pending={pending}
         onConfirm={() => void remove()}
         onClose={() => {

@@ -33,8 +33,14 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+html[lang='ar'] {
+  font-family: Tahoma, Arial, ui-sans-serif, system-ui, sans-serif;
 }
 
 button,

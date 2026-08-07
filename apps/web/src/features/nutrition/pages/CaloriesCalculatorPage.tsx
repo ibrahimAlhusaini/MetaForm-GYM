@@ -1,5 +1,6 @@
 import type { NutritionCalculationRequest } from '@metaform/shared-types'
 import { useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { HealthDisclaimer } from '../components/HealthDisclaimer.js'
 import { LatestCalculationCard } from '../components/LatestCalculationCard.js'
 import { NutritionForm } from '../components/NutritionForm.js'
@@ -18,6 +19,7 @@ import type { NutritionDateFilters } from '../types/nutrition.types.js'
 import { dateFiltersToQuery } from '../utils/nutrition-payload.js'
 
 export function CaloriesCalculatorPage() {
+  const { t } = useTranslation('nutrition')
   const [page, setPage] = useState(1)
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [dateQuery, setDateQuery] = useState<{
@@ -50,26 +52,24 @@ export function CaloriesCalculatorPage() {
     <div>
       <header>
         <p className="text-sm font-semibold tracking-[0.18em] text-lime-300 uppercase">
-          Nutrition analytics
+          {t('header.eyebrow')}
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Calories &amp; Macronutrient Calculator
+          {t('header.title')}
         </h1>
         <p className="mt-3 max-w-3xl leading-7 text-zinc-400">
-          Use your profile or temporary overrides to request personalized
-          fitness estimates. All calculations are performed by the nutrition
-          service.
+          {t('header.description')}
         </p>
       </header>
 
       <div className="mt-8 grid items-start gap-6 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-        <section aria-label="Calculator inputs">
+        <section aria-label={t('regions.inputs')}>
           {profile.state.status === 'loading' ? (
-            <NutritionSkeleton label="Loading profile inputs" />
+            <NutritionSkeleton label={t('loading.profile')} />
           ) : null}
           {profile.state.status === 'error' ? (
             <NutritionErrorState
-              title="Profile inputs unavailable"
+              title={t('errors.profileTitle')}
               message={profile.state.errorMessage}
               onRetry={profile.retry}
             />
@@ -86,7 +86,7 @@ export function CaloriesCalculatorPage() {
         <section
           ref={resultRegion}
           tabIndex={-1}
-          aria-label="Nutrition calculation results"
+          aria-label={t('regions.results')}
           aria-live="polite"
           className="scroll-mt-6 outline-none"
         >

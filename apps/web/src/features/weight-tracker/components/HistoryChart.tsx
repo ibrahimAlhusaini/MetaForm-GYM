@@ -8,6 +8,7 @@ import {
   YAxis,
 } from 'recharts'
 import type { HistoryPoint } from '../types/weight-tracker.types.js'
+import { useTranslation } from 'react-i18next'
 import { formatDate, formatKg } from '../utils/formatters.js'
 
 export function HistoryChart({
@@ -17,6 +18,7 @@ export function HistoryChart({
   points: HistoryPoint[]
   sourceName: string
 }) {
+  const { t } = useTranslation('weightTracker')
   const chartData = points
     .filter(
       (point) => point.completedAt && point.representativeWeightKg !== null,
@@ -27,11 +29,19 @@ export function HistoryChart({
     }))
   const summary =
     chartData.length < 2
-      ? `${sourceName} has ${String(chartData.length)} strength point.`
-      : `${sourceName} changed from ${formatKg(chartData[0]?.weightKg ?? null)} to ${formatKg(chartData.at(-1)?.weightKg ?? null)} across ${String(chartData.length)} completed workouts.`
+      ? t('history.singleSummary', {
+          name: sourceName,
+          count: chartData.length,
+        })
+      : t('history.summary', {
+          name: sourceName,
+          from: formatKg(chartData[0]?.weightKg ?? null),
+          to: formatKg(chartData.at(-1)?.weightKg ?? null),
+          count: chartData.length,
+        })
   return (
     <section className="rounded-2xl border border-white/8 bg-[#111315] p-5">
-      <h2 className="text-lg font-semibold">Progress chart</h2>
+      <h2 className="text-lg font-semibold">{t('history.chart')}</h2>
       <p className="mt-2 text-sm text-zinc-400" id="history-chart-summary">
         {summary}
       </p>
@@ -55,7 +65,7 @@ export function HistoryChart({
             <Line
               type="monotone"
               dataKey="weightKg"
-              name="Representative weight"
+              name={t('history.representativeWeight')}
               stroke="#d9f94b"
               strokeWidth={3}
               dot={{ r: 4, fill: '#d9f94b' }}

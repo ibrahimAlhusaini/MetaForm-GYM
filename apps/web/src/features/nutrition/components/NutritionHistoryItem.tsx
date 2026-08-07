@@ -1,4 +1,5 @@
 import type { NutritionHistoryItem as NutritionHistoryRecord } from '@metaform/shared-types'
+import { useTranslation } from 'react-i18next'
 import {
   formatCalories,
   formatDateTime,
@@ -13,6 +14,7 @@ export function NutritionHistoryItem({
 }: {
   item: NutritionHistoryRecord
 }) {
+  const { t } = useTranslation(['nutrition', 'common'])
   const recommended = item.results.recommendedCalories
   return (
     <article className="rounded-xl border border-white/10 bg-black/20 p-4">
@@ -22,40 +24,53 @@ export function NutritionHistoryItem({
           <p className="mt-1 text-sm text-zinc-400">
             {item.inputs
               ? `${formatWeight(item.inputs.weightKg)} · ${formatGoal(item.inputs.goal)}`
-              : 'Historical input context not available'}
+              : t('nutrition:history.legacy')}
           </p>
         </div>
         <span className="text-xs text-zinc-500">
-          Version {item.methodology?.calculationVersion ?? 'not available'}
+          {t('nutrition:history.version', {
+            version:
+              item.methodology?.calculationVersion ??
+              t('nutrition:history.versionUnavailable'),
+          })}
         </span>
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 lg:grid-cols-7">
         <HistoryMetric
-          term="Maintenance"
+          term={t('nutrition:latest.maintenance')}
           value={formatCalories(item.results.maintenanceCalories)}
         />
         <HistoryMetric
-          term="Recommended"
+          term={t('nutrition:latest.recommended')}
           value={
-            recommended === null ? 'Not available' : formatCalories(recommended)
+            recommended === null
+              ? t('common:states.unavailable')
+              : formatCalories(recommended)
           }
         />
         <HistoryMetric
-          term="Protein"
+          term={t('nutrition:results.protein')}
           value={formatGrams(item.results.proteinGrams)}
         />
         <HistoryMetric
-          term="Carbs"
+          term={t('nutrition:results.carbs')}
           value={formatGrams(item.results.carbohydrateGrams)}
         />
-        <HistoryMetric term="Fat" value={formatGrams(item.results.fatGrams)} />
         <HistoryMetric
-          term="Water"
+          term={t('nutrition:results.fat')}
+          value={formatGrams(item.results.fatGrams)}
+        />
+        <HistoryMetric
+          term={t('nutrition:results.water')}
           value={formatLiters(item.results.waterLiters)}
         />
         <HistoryMetric
-          term="Goal"
-          value={item.inputs ? formatGoal(item.inputs.goal) : 'Not available'}
+          term={t('nutrition:history.goal')}
+          value={
+            item.inputs
+              ? formatGoal(item.inputs.goal)
+              : t('common:states.unavailable')
+          }
         />
       </dl>
     </article>

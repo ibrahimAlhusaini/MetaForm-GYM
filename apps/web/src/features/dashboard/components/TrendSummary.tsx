@@ -5,6 +5,7 @@ import {
   Minus,
 } from 'lucide-react'
 import type { BodyWeightTrendDirection } from '@metaform/shared-types'
+import { useTranslation } from 'react-i18next'
 import {
   formatSignedPercentage,
   formatSignedWeight,
@@ -37,11 +38,12 @@ export function TrendSummary({
   changeKg,
   percentageChange,
 }: TrendSummaryProps) {
+  const { t } = useTranslation('dashboard')
   const directionLabel = direction
     ? formatTrendDirection(direction)
     : changeKg === null
-      ? 'Previous comparison unavailable'
-      : 'Load change'
+      ? t('trend.previousUnavailable')
+      : t('trend.loadChange')
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-400">
@@ -50,7 +52,9 @@ export function TrendSummary({
         {directionLabel}
       </span>
       {changeKg === null ? null : (
-        <span>Change {formatSignedWeight(changeKg)}</span>
+        <span>
+          {t('trend.change', { value: formatSignedWeight(changeKg) })}
+        </span>
       )}
       {percentageChange === null ? null : (
         <span>({formatSignedPercentage(percentageChange)})</span>

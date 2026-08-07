@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
+import { LanguageSwitcher } from '../LanguageSwitcher.js'
 
 interface AuthLayoutProps {
   eyebrow: string
@@ -13,10 +15,11 @@ export function AuthLayout({
   description,
   children,
 }: AuthLayoutProps) {
+  const { t } = useTranslation('auth')
   return (
     <main className="min-h-screen bg-[#090a0b] text-zinc-50">
       <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.05fr)_minmax(32rem,0.95fr)]">
-        <aside className="relative hidden overflow-hidden border-r border-white/8 bg-[#0c0e0f] p-12 lg:flex lg:flex-col lg:justify-between xl:p-16">
+        <aside className="relative hidden overflow-hidden border-e border-white/8 bg-[#0c0e0f] p-12 lg:flex lg:flex-col lg:justify-between xl:p-16">
           <div className="auth-grid absolute inset-0 opacity-50" />
           <div className="absolute -top-24 -left-24 size-96 rounded-full bg-lime-300/8 blur-3xl" />
           <div className="relative flex items-center gap-3">
@@ -34,24 +37,26 @@ export function AuthLayout({
               <span className="size-2 rounded-full bg-lime-300 shadow-[0_0_24px_rgba(217,249,75,0.8)]" />
             </div>
             <p className="mb-4 text-sm font-semibold tracking-[0.18em] text-lime-300 uppercase">
-              Fitness intelligence
+              {t('layout.eyebrow')}
             </p>
             <h2 className="max-w-lg text-5xl leading-[1.04] font-semibold tracking-[-0.04em] xl:text-6xl">
-              Every session becomes measurable progress.
+              {t('layout.title')}
             </h2>
             <p className="mt-7 max-w-md text-lg leading-8 text-zinc-400">
-              A focused analytics platform designed to make training decisions
-              clearer, more consistent, and easier to understand.
+              {t('layout.description')}
             </p>
           </div>
 
           <div className="relative flex items-center gap-3 text-sm text-zinc-500">
             <span className="size-2 rounded-full bg-lime-300" />
-            Secure account access
+            {t('layout.secure')}
           </div>
         </aside>
 
-        <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10 lg:px-14 xl:px-20">
+        <section className="relative flex min-h-screen items-center justify-center px-5 py-20 sm:px-10 lg:px-14 xl:px-20">
+          <div className="absolute end-5 top-5">
+            <LanguageSwitcher />
+          </div>
           <div className="w-full max-w-md">
             <div className="mb-10 flex items-center gap-3 lg:hidden">
               <span className="grid size-10 place-items-center rounded-xl bg-lime-300 font-black text-zinc-950">

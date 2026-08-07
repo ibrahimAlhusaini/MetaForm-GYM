@@ -1,9 +1,11 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchSessions } from '../services/weight-tracker.service.js'
 import type { SessionQuery } from '../types/weight-tracker.types.js'
 import { useAsyncResource } from './useAsyncResource.js'
 
 export const useSessions = (query: SessionQuery) => {
+  const { t } = useTranslation('weightTracker')
   const {
     completed,
     dateFrom,
@@ -28,8 +30,5 @@ export const useSessions = (query: SessionQuery) => {
       }),
     [completed, dateFrom, dateTo, limit, page, search, sortBy, sortOrder],
   )
-  return useAsyncResource(
-    load,
-    'We could not load your workouts. Please try again.',
-  )
+  return useAsyncResource(load, t('errors.workouts'))
 }

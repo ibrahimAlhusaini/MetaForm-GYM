@@ -1,9 +1,11 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAsyncResource } from '../../weight-tracker/hooks/useAsyncResource.js'
 import { fetchExercises } from '../services/exercise-library.service.js'
 import type { ExerciseListQuery } from '../types/exercise-library.types.js'
 
 export const useExerciseList = (query: ExerciseListQuery) => {
+  const { t } = useTranslation('exerciseLibrary')
   const {
     difficultyLevel,
     equipmentType,
@@ -43,8 +45,5 @@ export const useExerciseList = (query: ExerciseListQuery) => {
       sortOrder,
     ],
   )
-  return useAsyncResource(
-    load,
-    'We could not load the exercise library. Please try again.',
-  )
+  return useAsyncResource(load, t('errors.list'))
 }

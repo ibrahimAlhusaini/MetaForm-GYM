@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { DashboardSummaryData } from '@metaform/shared-types'
 import { fetchDashboardSummary } from '../services/dashboard.service.js'
 
@@ -12,10 +13,8 @@ interface DashboardSummaryHook {
   retry: () => void
 }
 
-const DASHBOARD_ERROR_MESSAGE =
-  'We could not load your dashboard. Please try again.'
-
 export function useDashboardSummary(): DashboardSummaryHook {
+  const { t } = useTranslation('dashboard')
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState<DashboardState>({
     status: 'loading',
@@ -37,7 +36,7 @@ export function useDashboardSummary(): DashboardSummaryHook {
           setState({
             status: 'error',
             data: null,
-            errorMessage: DASHBOARD_ERROR_MESSAGE,
+            errorMessage: t('error.message'),
           })
         }
       },
@@ -46,7 +45,7 @@ export function useDashboardSummary(): DashboardSummaryHook {
     return () => {
       isCurrentRequest = false
     }
-  }, [attempt])
+  }, [attempt, t])
 
   const retry = useCallback(() => {
     setState({ status: 'loading', data: null, errorMessage: null })

@@ -4,41 +4,50 @@ import {
   authResponseSchema,
   currentUserResponseSchema,
   type AuthenticatedUser,
+  type AuthErrorCode,
   type LoginRequest,
   type RegisterRequest,
 } from '../types/auth.js'
 import { apiClient, requestAccessTokenRefresh } from './api-client.js'
 
-const safeAuthError = (error: unknown, fallback: string): Error => {
+export class AuthRequestError extends Error {
+  readonly code: AuthErrorCode
+
+  constructor(code: AuthErrorCode) {
+    super(code)
+    this.code = code
+  }
+}
+
+const safeAuthError = (
+  error: unknown,
+  fallback: AuthErrorCode,
+): AuthRequestError => {
   if (!axios.isAxiosError(error)) {
-    return new Error(fallback)
+    return new AuthRequestError(fallback)
   }
 
   if (!error.response) {
-    return new Error(
-      'Unable to reach the server. Check your connection and try again.',
-    )
+    return new AuthRequestError('network')
   }
 
   const parsedError = apiErrorResponseSchema.safeParse(error.response.data)
 
   if (error.response.status === 429) {
-    return new Error('Too many attempts. Please wait and try again.')
+    return new AuthRequestError('rateLimited')
   }
 
   if (parsedError.success) {
-    const allowedMessages = new Set([
-      'Invalid email or password',
-      'An account with this email already exists',
-      'Account is inactive',
-    ])
-
-    if (allowedMessages.has(parsedError.data.message)) {
-      return new Error(parsedError.data.message)
+    const knownMessages: Record<string, AuthErrorCode> = {
+      'Invalid email or password': 'invalidCredentials',
+      'An account with this email already exists': 'emailExists',
+      'Account is inactive': 'inactive',
     }
+    const code = knownMessages[parsedError.data.message]
+    if (code) return new AuthRequestError(code)
   }
 
-  return new Error(fallback)
+  return new AuthRequestError(fallback)
 }
 
 export const loginRequest = async (input: LoginRequest) => {
@@ -46,7 +55,7 @@ export const loginRequest = async (input: LoginRequest) => {
     const response = await apiClient.post<unknown>('/auth/login', input)
     return authResponseSchema.parse(response.data)
   } catch (error) {
-    throw safeAuthError(error, 'Unable to sign in. Please try again.')
+    throw safeAuthError(error, 'login')
   }
 }
 
@@ -55,10 +64,7 @@ export const registerRequest = async (input: RegisterRequest) => {
     const response = await apiClient.post<unknown>('/auth/register', input)
     return authResponseSchema.parse(response.data)
   } catch (error) {
-    throw safeAuthError(
-      error,
-      'Unable to create your account. Please try again.',
-    )
+    throw safeAuthError(error, 'register')
   }
 }
 
@@ -67,7 +73,7 @@ export const fetchCurrentUserRequest = async (): Promise<AuthenticatedUser> => {
     const response = await apiClient.get<unknown>('/auth/me')
     return currentUserResponseSchema.parse(response.data).data.user
   } catch (error) {
-    throw safeAuthError(error, 'Unable to load your account.')
+    throw safeAuthError(error, 'account')
   }
 }
 

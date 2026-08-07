@@ -1,12 +1,11 @@
 import { Dumbbell, RefreshCw, TriangleAlert } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
-export function WeightTrackerSkeleton({
-  label = 'Loading weight tracker',
-}: {
-  label?: string
-}) {
+export function WeightTrackerSkeleton({ label }: { label?: string }) {
+  const { t } = useTranslation('weightTracker')
+  const accessibleLabel = label ?? t('loading.default')
   return (
-    <div aria-label={label} aria-busy="true" className="space-y-4">
+    <div aria-label={accessibleLabel} aria-busy="true" className="space-y-4">
       <div className="h-24 animate-pulse rounded-2xl bg-white/5" />
       <div className="grid gap-4 md:grid-cols-2">
         <div className="h-56 animate-pulse rounded-2xl bg-white/5" />
@@ -23,6 +22,7 @@ export function WeightTrackerErrorState({
   message: string
   onRetry: () => void
 }) {
+  const { t } = useTranslation(['weightTracker', 'common'])
   return (
     <section
       role="alert"
@@ -32,7 +32,9 @@ export function WeightTrackerErrorState({
         className="mx-auto size-6 text-red-300"
         aria-hidden="true"
       />
-      <h2 className="mt-4 text-xl font-semibold">Something went wrong</h2>
+      <h2 className="mt-4 text-xl font-semibold">
+        {t('weightTracker:errors.genericTitle')}
+      </h2>
       <p className="mt-2 text-zinc-400">{message}</p>
       <button
         type="button"
@@ -40,7 +42,7 @@ export function WeightTrackerErrorState({
         className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-lime-300 px-5 font-semibold text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300"
       >
         <RefreshCw className="size-4" aria-hidden="true" />
-        Try again
+        {t('common:actions.retry')}
       </button>
     </section>
   )

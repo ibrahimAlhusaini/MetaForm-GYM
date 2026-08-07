@@ -1,10 +1,11 @@
 import { HeartPulse } from 'lucide-react'
-import { HEALTH_DISCLAIMER } from '../constants/nutrition.constants.js'
+import { useTranslation } from 'react-i18next'
 
 export function HealthDisclaimer() {
+  const { t } = useTranslation('nutrition')
   return (
     <aside
-      aria-label="Health disclaimer"
+      aria-label={t('disclaimer.label')}
       className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-5 text-sm leading-6 text-zinc-400"
     >
       <HeartPulse
@@ -12,11 +13,8 @@ export function HealthDisclaimer() {
         aria-hidden="true"
       />
       <div>
-        <h2 className="font-semibold text-zinc-100">Health disclaimer</h2>
-        <p className="mt-1">
-          {HEALTH_DISCLAIMER} Individual needs vary; consult a qualified
-          professional for personalized health guidance.
-        </p>
+        <h2 className="font-semibold text-zinc-100">{t('disclaimer.title')}</h2>
+        <p className="mt-1">{t('disclaimer.text')}</p>
       </div>
     </aside>
   )

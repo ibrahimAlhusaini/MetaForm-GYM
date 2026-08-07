@@ -9,7 +9,13 @@ import {
 } from 'recharts'
 import { Scale } from 'lucide-react'
 import type { DashboardSummaryData } from '@metaform/shared-types'
-import { formatChartDate, formatWeight } from '../utils/dashboard-formatters.js'
+import { useTranslation } from 'react-i18next'
+import {
+  formatChartDate,
+  formatCount,
+  formatTrendDirection,
+  formatWeight,
+} from '../utils/dashboard-formatters.js'
 import { SectionEmptyState } from './SectionEmptyState.js'
 import { TrendSummary } from './TrendSummary.js'
 import { WeightChartTooltip } from './WeightChartTooltip.js'
@@ -19,6 +25,7 @@ interface BodyWeightChartProps {
 }
 
 export function BodyWeightChart({ progress }: BodyWeightChartProps) {
+  const { t } = useTranslation(['dashboard', 'common'])
   const latestPoint = progress.points.at(-1)
 
   return (
@@ -32,10 +39,10 @@ export function BodyWeightChart({ progress }: BodyWeightChartProps) {
             id="body-weight-title"
             className="text-xl font-semibold text-white"
           >
-            Body weight progress
+            {t('dashboard:bodyWeight.title')}
           </h2>
           <p className="mt-1 text-sm leading-6 text-zinc-500">
-            Recorded measurements from the latest 90-day window.
+            {t('dashboard:bodyWeight.description')}
           </p>
         </div>
         <TrendSummary
@@ -49,21 +56,24 @@ export function BodyWeightChart({ progress }: BodyWeightChartProps) {
         <div className="mt-6">
           <SectionEmptyState
             icon={Scale}
-            title="No body-weight history yet"
-            description="Body measurements will appear here after they are added in a later stage."
+            title={t('dashboard:bodyWeight.emptyTitle')}
+            description={t('dashboard:bodyWeight.emptyDescription')}
           />
         </div>
       ) : (
         <>
           <p className="mt-5 text-sm text-zinc-400" aria-live="polite">
-            {progress.points.length} recorded measurements. Latest value{' '}
-            {latestPoint ? formatWeight(latestPoint.weightKg) : 'unavailable'}.
-            Trend: {progress.trend.direction.toLowerCase().replaceAll('_', ' ')}
-            .
+            {t('dashboard:bodyWeight.summary', {
+              count: formatCount(progress.points.length, 'measurements'),
+              value: latestPoint
+                ? formatWeight(latestPoint.weightKg)
+                : t('common:states.unavailable'),
+              trend: formatTrendDirection(progress.trend.direction),
+            })}
           </p>
           <div
             role="img"
-            aria-label="Body weight line chart. Values are also summarized in text above."
+            aria-label={t('dashboard:bodyWeight.chartLabel')}
             className="mt-5 h-72 min-w-0"
           >
             <ResponsiveContainer width="100%" height="100%">
@@ -99,7 +109,7 @@ export function BodyWeightChart({ progress }: BodyWeightChartProps) {
                 <Line
                   type="linear"
                   dataKey="weightKg"
-                  name="Weight"
+                  name={t('dashboard:bodyWeight.weightSeries')}
                   stroke="#d9f94b"
                   strokeWidth={2}
                   connectNulls={false}

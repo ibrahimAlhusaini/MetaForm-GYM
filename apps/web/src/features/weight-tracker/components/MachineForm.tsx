@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { muscleLabel } from '../../../i18n/enum-labels.js'
+import { muscleGroups } from '../constants/weight-tracker.constants.js'
 import {
-  muscleGroups,
-  muscleLabels,
-} from '../constants/weight-tracker.constants.js'
-import {
-  machineFormSchema,
+  createMachineFormSchema,
   type MachineFormValues,
 } from '../validation/weight-tracker.schemas.js'
 import { MachineImage } from './MachineImage.js'
@@ -23,13 +23,15 @@ export function MachineForm({
   errorMessage: string | null
   onSubmit: (values: MachineFormValues) => Promise<void>
 }) {
+  const { t } = useTranslation('weightTracker')
+  const schema = useMemo(() => createMachineFormSchema(t), [t])
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<MachineFormValues>({
-    resolver: zodResolver(machineFormSchema),
+    resolver: zodResolver(schema),
     defaultValues: defaultValues ?? {
       name: '',
       imageUrl: '',
@@ -48,7 +50,7 @@ export function MachineForm({
       <div className="space-y-5 rounded-2xl border border-white/8 bg-[#111315] p-5 sm:p-7">
         <div>
           <label htmlFor="machine-name" className="block text-sm font-medium">
-            Machine name
+            {t('machines.form.name')}
           </label>
           <input
             id="machine-name"
@@ -67,7 +69,7 @@ export function MachineForm({
         </div>
         <div>
           <label htmlFor="machine-muscle" className="block text-sm font-medium">
-            Target muscle
+            {t('machines.form.muscle')}
           </label>
           <select
             id="machine-muscle"
@@ -76,7 +78,7 @@ export function MachineForm({
           >
             {muscleGroups.map((group) => (
               <option key={group} value={group}>
-                {muscleLabels[group]}
+                {muscleLabel(t, group)}
               </option>
             ))}
           </select>
@@ -86,7 +88,8 @@ export function MachineForm({
             htmlFor="machine-image-url"
             className="block text-sm font-medium"
           >
-            Image URL <span className="text-zinc-500">(optional)</span>
+            {t('machines.form.imageUrl')}{' '}
+            <span className="text-zinc-500">{t('machines.form.optional')}</span>
           </label>
           <input
             id="machine-image-url"
@@ -95,6 +98,7 @@ export function MachineForm({
             }
             {...register('imageUrl')}
             inputMode="url"
+            dir="ltr"
             placeholder="https://…"
             className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 outline-none focus:border-lime-300"
           />
@@ -112,7 +116,8 @@ export function MachineForm({
             htmlFor="machine-description"
             className="block text-sm font-medium"
           >
-            Description <span className="text-zinc-500">(optional)</span>
+            {t('machines.form.description')}{' '}
+            <span className="text-zinc-500">{t('machines.form.optional')}</span>
           </label>
           <textarea
             id="machine-description"
@@ -134,19 +139,23 @@ export function MachineForm({
           disabled={pending}
           className="min-h-12 rounded-xl bg-lime-300 px-6 font-semibold text-zinc-950 disabled:opacity-50"
         >
-          {pending ? 'Saving…' : submitLabel}
+          {pending ? t('machines.form.saving') : submitLabel}
         </button>
       </div>
       <aside className="rounded-2xl border border-white/8 bg-[#111315] p-4">
-        <p className="mb-3 text-sm font-medium text-zinc-400">Preview</p>
+        <p className="mb-3 text-sm font-medium text-zinc-400">
+          {t('machines.form.preview')}
+        </p>
         <MachineImage
           imageUrl={imageUrl || null}
-          name={name || 'Machine'}
+          name={name || t('machines.form.previewFallback')}
           className="aspect-[4/3] w-full rounded-xl"
         />
-        <p className="mt-4 font-semibold">{name || 'Your machine'}</p>
+        <p className="mt-4 font-semibold">
+          {name || t('machines.form.previewName')}
+        </p>
         <p className="mt-1 text-sm text-zinc-500">
-          URL preview only. File upload is not available.
+          {t('machines.form.previewDescription')}
         </p>
       </aside>
     </form>

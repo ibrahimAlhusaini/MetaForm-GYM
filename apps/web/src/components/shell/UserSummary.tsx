@@ -1,4 +1,5 @@
 import { useAuthStore } from '../../store/auth.store.js'
+import { useTranslation } from 'react-i18next'
 
 interface UserSummaryProps {
   compact?: boolean
@@ -17,8 +18,9 @@ const getInitials = (name: string): string => {
 }
 
 export function UserSummary({ compact = false }: UserSummaryProps) {
+  const { t } = useTranslation('navigation')
   const user = useAuthStore((state) => state.user)
-  const name = user?.profile?.fullName ?? 'Member'
+  const name = user?.profile?.fullName ?? t('shell.member')
 
   return (
     <div className="flex min-w-0 items-center gap-3">

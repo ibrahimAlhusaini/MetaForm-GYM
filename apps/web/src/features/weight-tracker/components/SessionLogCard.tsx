@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import type { ExerciseLog, SetInput } from '../types/weight-tracker.types.js'
 import { SetMutationForm } from './SetMutationForm.js'
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function SessionLogCard(props: Props) {
+  const { t } = useTranslation('weightTracker')
   const { log } = props
   const [editingNotes, setEditingNotes] = useState(false)
   const [notes, setNotes] = useState(log.notes ?? '')
@@ -42,13 +44,17 @@ export function SessionLogCard(props: Props) {
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-lg font-semibold">{log.source.name}</h2>
             <span className="rounded-full bg-white/5 px-2 py-1 text-xs text-zinc-400">
-              {log.source.type === 'machine' ? 'Custom machine' : 'Exercise'}
+              {t(
+                log.source.type === 'machine'
+                  ? 'detail.sourceMachine'
+                  : 'detail.sourceExercise',
+              )}
             </span>
           </div>
           {editingNotes ? (
             <div className="mt-3 flex gap-2">
               <input
-                aria-label={`Notes for ${log.source.name}`}
+                aria-label={t('detail.notesFor', { name: log.source.name })}
                 value={notes}
                 onChange={(e) => {
                   setNotes(e.target.value)
@@ -64,19 +70,19 @@ export function SessionLogCard(props: Props) {
                 }
                 className="rounded-lg bg-lime-300 px-3 font-semibold text-zinc-950"
               >
-                Save
+                {t('detail.save')}
               </button>
             </div>
           ) : (
             <p className="mt-2 text-sm text-zinc-400">
-              {log.notes ?? 'No exercise notes'}
+              {log.notes ?? t('detail.noExerciseNotes')}
             </p>
           )}
         </div>
         <div className="flex gap-2">
           <button
             type="button"
-            aria-label={`Edit notes for ${log.source.name}`}
+            aria-label={t('detail.editNotes', { name: log.source.name })}
             onClick={() => {
               setEditingNotes(true)
             }}
@@ -86,7 +92,7 @@ export function SessionLogCard(props: Props) {
           </button>
           <button
             type="button"
-            aria-label={`Move ${log.source.name} up`}
+            aria-label={t('detail.moveUp', { name: log.source.name })}
             disabled={props.index === 0 || props.pending}
             onClick={() => void props.onMove(-1)}
             className="rounded-lg border border-white/10 p-2 disabled:opacity-30"
@@ -95,7 +101,7 @@ export function SessionLogCard(props: Props) {
           </button>
           <button
             type="button"
-            aria-label={`Move ${log.source.name} down`}
+            aria-label={t('detail.moveDown', { name: log.source.name })}
             disabled={props.index === props.total - 1 || props.pending}
             onClick={() => void props.onMove(1)}
             className="rounded-lg border border-white/10 p-2 disabled:opacity-30"
@@ -104,7 +110,7 @@ export function SessionLogCard(props: Props) {
           </button>
           <button
             type="button"
-            aria-label={`Delete ${log.source.name}`}
+            aria-label={t('detail.deleteName', { name: log.source.name })}
             disabled={props.pending}
             onClick={() => {
               setConfirmation({ kind: 'log' })
@@ -176,29 +182,31 @@ export function SessionLogCard(props: Props) {
           className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-lg border border-lime-300/20 px-3 text-sm font-semibold text-lime-300"
         >
           <Plus className="size-4" />
-          Add set
+          {t('set.add')}
         </button>
       )}
       <Link
         to={`/app/weights/history/${log.source.type}/${log.source.id}`}
-        className="mt-4 ml-3 inline-block text-sm font-semibold text-zinc-400 hover:text-lime-300"
+        className="ms-3 mt-4 inline-block text-sm font-semibold text-zinc-400 hover:text-lime-300"
       >
-        View history
+        {t('detail.viewHistory')}
       </Link>
       <ConfirmationDialog
         open={confirmation !== null}
         title={
           confirmation?.kind === 'set'
-            ? `Delete set ${String(confirmation.setNumber)}?`
-            : `Delete ${log.source.name}?`
+            ? t('set.deleteTitle', { number: confirmation.setNumber })
+            : t('set.deleteEntryTitle', { name: log.source.name })
         }
         description={
           confirmation?.kind === 'set'
-            ? 'This permanently removes the recorded set from this workout.'
-            : 'This permanently removes this exercise entry and all of its recorded sets.'
+            ? t('set.deleteDescription')
+            : t('set.deleteEntryDescription')
         }
         confirmLabel={
-          confirmation?.kind === 'set' ? 'Delete set' : 'Delete entry'
+          confirmation?.kind === 'set'
+            ? t('set.confirmDelete')
+            : t('set.deleteEntry')
         }
         pending={props.pending}
         onClose={() => {

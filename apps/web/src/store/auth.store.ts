@@ -9,6 +9,7 @@ import {
 import { configureAuthSession } from '../services/api-client.js'
 import type {
   AuthenticatedUser,
+  AuthErrorCode,
   LoginRequest,
   RegisterRequest,
 } from '../types/auth.js'
@@ -19,7 +20,7 @@ interface AuthState {
   isAuthenticated: boolean
   isInitializing: boolean
   isSubmitting: boolean
-  error: string | null
+  error: AuthErrorCode | null
   initializeAuth: () => Promise<void>
   register: (input: RegisterRequest) => Promise<boolean>
   login: (input: LoginRequest) => Promise<boolean>
@@ -40,8 +41,31 @@ const initialState = {
 
 let initializationPromise: Promise<void> | null = null
 
-const getSafeMessage = (error: unknown, fallback: string): string =>
-  error instanceof Error ? error.message : fallback
+const isAuthErrorCode = (value: unknown): value is AuthErrorCode =>
+  value === 'invalidCredentials' ||
+  value === 'emailExists' ||
+  value === 'inactive' ||
+  value === 'network' ||
+  value === 'rateLimited' ||
+  value === 'login' ||
+  value === 'register'
+
+const getAuthErrorCode = (
+  error: unknown,
+  fallback: AuthErrorCode,
+): AuthErrorCode => {
+  if (!(error instanceof Error)) return fallback
+
+  const safeMessageCodes: Record<string, AuthErrorCode> = {
+    'Invalid email or password': 'invalidCredentials',
+    'An account with this email already exists': 'emailExists',
+    'Account is inactive': 'inactive',
+  }
+  const code = safeMessageCodes[error.message]
+  if (code) return code
+
+  return 'code' in error && isAuthErrorCode(error.code) ? error.code : fallback
+}
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   ...initialState,
@@ -95,7 +119,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       get().clearAuth()
       set({
-        error: getSafeMessage(error, 'Unable to sign in. Please try again.'),
+        error: getAuthErrorCode(error, 'login'),
       })
       return false
     } finally {
@@ -114,10 +138,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       get().clearAuth()
       set({
-        error: getSafeMessage(
-          error,
-          'Unable to create your account. Please try again.',
-        ),
+        error: getAuthErrorCode(error, 'register'),
       })
       return false
     } finally {

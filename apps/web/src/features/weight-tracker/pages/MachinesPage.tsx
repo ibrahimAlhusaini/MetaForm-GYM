@@ -1,10 +1,9 @@
 import { Plus, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import {
-  muscleGroups,
-  muscleLabels,
-} from '../constants/weight-tracker.constants.js'
+import { muscleLabel } from '../../../i18n/enum-labels.js'
+import { muscleGroups } from '../constants/weight-tracker.constants.js'
 import { useMachines } from '../hooks/useMachines.js'
 import type {
   MachineQuery,
@@ -19,6 +18,7 @@ import { MachineCard } from '../components/MachineCard.js'
 import { PaginationControls } from '../components/PaginationControls.js'
 
 export function MachinesPage() {
+  const { t } = useTranslation('weightTracker')
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [muscle, setMuscle] = useState<MuscleGroup | ''>('')
@@ -39,38 +39,36 @@ export function MachinesPage() {
     <div>
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold">Custom machines</h1>
-          <p className="mt-2 text-zinc-400">
-            Manage the equipment available in your workout builder.
-          </p>
+          <h1 className="text-3xl font-semibold">{t('machines.title')}</h1>
+          <p className="mt-2 text-zinc-400">{t('machines.description')}</p>
         </div>
         <Link
           to="new"
           className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-lime-300 px-5 font-semibold text-zinc-950"
         >
           <Plus className="size-4" />
-          Add machine
+          {t('machines.add')}
         </Link>
       </header>
       <section
-        aria-label="Machine filters"
+        aria-label={t('machines.filters')}
         className="mt-7 grid gap-3 rounded-2xl border border-white/8 bg-[#111315] p-4 md:grid-cols-[1fr_13rem_13rem]"
       >
         <label className="relative">
-          <span className="sr-only">Search machines</span>
-          <Search className="absolute top-3.5 left-3 size-4 text-zinc-500" />
+          <span className="sr-only">{t('machines.search')}</span>
+          <Search className="absolute start-3 top-3.5 size-4 text-zinc-500" />
           <input
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
               setPage(1)
             }}
-            placeholder="Search machines"
-            className="min-h-11 w-full rounded-xl border border-white/10 bg-black/20 pr-3 pl-10"
+            placeholder={t('machines.search')}
+            className="min-h-11 w-full rounded-xl border border-white/10 bg-black/20 ps-10 pe-3"
           />
         </label>
         <label>
-          <span className="sr-only">Target muscle</span>
+          <span className="sr-only">{t('machines.targetMuscle')}</span>
           <select
             value={muscle}
             onChange={(e) => {
@@ -79,16 +77,16 @@ export function MachinesPage() {
             }}
             className="min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3"
           >
-            <option value="">All muscles</option>
+            <option value="">{t('machines.allMuscles')}</option>
             {muscleGroups.map((group) => (
               <option key={group} value={group}>
-                {muscleLabels[group]}
+                {muscleLabel(t, group)}
               </option>
             ))}
           </select>
         </label>
         <label>
-          <span className="sr-only">Sort machines</span>
+          <span className="sr-only">{t('machines.sort')}</span>
           <select
             value={sort}
             onChange={(e) => {
@@ -96,15 +94,15 @@ export function MachinesPage() {
             }}
             className="min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3"
           >
-            <option value="updatedAt">Recently updated</option>
-            <option value="createdAt">Recently created</option>
-            <option value="name">Name</option>
+            <option value="updatedAt">{t('machines.updated')}</option>
+            <option value="createdAt">{t('machines.created')}</option>
+            <option value="name">{t('machines.name')}</option>
           </select>
         </label>
       </section>
       <div className="mt-6">
         {state.status === 'loading' ? (
-          <WeightTrackerSkeleton label="Loading machines" />
+          <WeightTrackerSkeleton label={t('loading.machines')} />
         ) : state.status === 'error' ? (
           <WeightTrackerErrorState
             message={state.errorMessage}
@@ -112,8 +110,8 @@ export function MachinesPage() {
           />
         ) : state.data.items.length === 0 ? (
           <EmptyState
-            title="No matching machines"
-            description="Adjust the filters or add a new custom machine."
+            title={t('machines.emptyTitle')}
+            description={t('machines.emptyDescription')}
           />
         ) : (
           <>

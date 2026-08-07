@@ -1,5 +1,7 @@
 import { ArrowDown, ArrowUp, Award, Pencil, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import type { ExerciseSet } from '../types/weight-tracker.types.js'
 import { formatKg } from '../utils/formatters.js'
 
@@ -13,12 +15,16 @@ interface Props {
   onDelete: () => void
 }
 
-const metricText = (set: ExerciseSet): string =>
+const metricText = (set: ExerciseSet, t: TFunction): string =>
   [
     set.weightKg === null ? null : formatKg(set.weightKg),
-    set.reps === null ? null : `${String(set.reps)} reps`,
-    set.durationSeconds === null ? null : `${String(set.durationSeconds)} sec`,
-    set.distanceMeters === null ? null : `${String(set.distanceMeters)} m`,
+    set.reps === null ? null : t('common:units.reps', { value: set.reps }),
+    set.durationSeconds === null
+      ? null
+      : t('common:units.seconds', { value: set.durationSeconds }),
+    set.distanceMeters === null
+      ? null
+      : t('common:units.meters', { value: set.distanceMeters }),
   ]
     .filter(Boolean)
     .join(' · ')
@@ -32,29 +38,38 @@ export function RecordedSetRow({
   onMove,
   onDelete,
 }: Props) {
+  const { t } = useTranslation(['weightTracker', 'common'])
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/7 bg-black/15 px-3 py-3">
       <span className="grid size-8 place-items-center rounded-lg bg-white/5 text-sm font-semibold">
         {String(set.setNumber)}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{metricText(set)}</p>
+        <p className="text-sm font-medium">{metricText(set, t)}</p>
         <div className="mt-1 flex gap-2 text-xs">
           <span className={set.isWarmup ? 'text-amber-200' : 'text-zinc-500'}>
-            {set.isWarmup ? 'Warmup' : 'Working set'}
+            {t(
+              set.isWarmup
+                ? 'weightTracker:set.warmup'
+                : 'weightTracker:set.working',
+            )}
           </span>
           {set.isPersonalRecord ? (
             <span className="inline-flex items-center gap-1 font-semibold text-lime-300">
-              <Award className="size-3" /> Personal record
+              <Award className="size-3" />{' '}
+              {t('weightTracker:set.personalRecord')}
             </span>
           ) : null}
         </div>
       </div>
-      <SetAction label={`Edit set ${String(set.setNumber)}`} onClick={onEdit}>
+      <SetAction
+        label={t('weightTracker:set.edit', { number: set.setNumber })}
+        onClick={onEdit}
+      >
         <Pencil className="size-4" />
       </SetAction>
       <SetAction
-        label={`Move set ${String(set.setNumber)} up`}
+        label={t('weightTracker:set.moveUp', { number: set.setNumber })}
         disabled={index === 0 || pending}
         onClick={() => {
           onMove(-1)
@@ -63,7 +78,7 @@ export function RecordedSetRow({
         <ArrowUp className="size-4" />
       </SetAction>
       <SetAction
-        label={`Move set ${String(set.setNumber)} down`}
+        label={t('weightTracker:set.moveDown', { number: set.setNumber })}
         disabled={index === total - 1 || pending}
         onClick={() => {
           onMove(1)
@@ -72,7 +87,7 @@ export function RecordedSetRow({
         <ArrowDown className="size-4" />
       </SetAction>
       <SetAction
-        label={`Delete set ${String(set.setNumber)}`}
+        label={t('weightTracker:set.delete', { number: set.setNumber })}
         disabled={pending}
         onClick={onDelete}
         destructive

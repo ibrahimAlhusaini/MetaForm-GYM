@@ -1,6 +1,8 @@
+import type { TFunction } from 'i18next'
 import { z } from 'zod'
 
 const requiredNumber = (
+  t: TFunction,
   label: string,
   minimum: number,
   maximum: number,
@@ -9,49 +11,53 @@ const requiredNumber = (
   z
     .string()
     .trim()
-    .min(1, `${label} is required`)
+    .min(1, t('common:validation.required', { field: label }))
     .refine(
       (value) => Number.isFinite(Number(value)),
-      `${label} must be a number`,
+      t('common:validation.number', { field: label }),
     )
     .refine(
       (value) => Number(value) >= minimum && Number(value) <= maximum,
-      `${label} must be between ${String(minimum)} and ${String(maximum)}`,
+      t('common:validation.range', { field: label, minimum, maximum }),
     )
     .refine(
       (value) => !integer || Number.isInteger(Number(value)),
-      `${label} must be a whole number`,
+      t('common:validation.wholeNumber', { field: label }),
     )
 
-export const nutritionFormSchema = z.object({
-  age: requiredNumber('Age', 14, 100, true),
-  gender: z
-    .enum(['', 'MALE', 'FEMALE', 'PREFER_NOT_TO_SAY'])
-    .refine((value) => value !== '', 'Gender is required')
-    .refine(
-      (value) => value !== 'PREFER_NOT_TO_SAY',
-      'This formula requires a temporary male or female selection. Your profile preference will not change.',
-    ),
-  heightCm: requiredNumber('Height', 100, 250),
-  weightKg: requiredNumber('Weight', 30, 350),
-  activityLevel: z
-    .enum([
-      '',
-      'SEDENTARY',
-      'LIGHT',
-      'MODERATE',
-      'VERY_ACTIVE',
-      'EXTREMELY_ACTIVE',
-    ])
-    .refine((value) => value !== '', 'Activity level is required'),
-  goal: z
-    .enum([
-      '',
-      'BUILD_MUSCLE',
-      'LOSE_FAT',
-      'MAINTAIN_WEIGHT',
-      'IMPROVE_STRENGTH',
-      'GENERAL_FITNESS',
-    ])
-    .refine((value) => value !== '', 'Fitness goal is required'),
-})
+export const createNutritionFormSchema = (t: TFunction) =>
+  z.object({
+    age: requiredNumber(t, t('nutrition:form.age'), 14, 100, true),
+    gender: z
+      .enum(['', 'MALE', 'FEMALE', 'PREFER_NOT_TO_SAY'])
+      .refine((value) => value !== '', t('nutrition:validation.genderRequired'))
+      .refine(
+        (value) => value !== 'PREFER_NOT_TO_SAY',
+        t('nutrition:validation.temporaryGender'),
+      ),
+    heightCm: requiredNumber(t, t('nutrition:form.height'), 100, 250),
+    weightKg: requiredNumber(t, t('nutrition:form.weight'), 30, 350),
+    activityLevel: z
+      .enum([
+        '',
+        'SEDENTARY',
+        'LIGHT',
+        'MODERATE',
+        'VERY_ACTIVE',
+        'EXTREMELY_ACTIVE',
+      ])
+      .refine(
+        (value) => value !== '',
+        t('nutrition:validation.activityRequired'),
+      ),
+    goal: z
+      .enum([
+        '',
+        'BUILD_MUSCLE',
+        'LOSE_FAT',
+        'MAINTAIN_WEIGHT',
+        'IMPROVE_STRENGTH',
+        'GENERAL_FITNESS',
+      ])
+      .refine((value) => value !== '', t('nutrition:validation.goalRequired')),
+  })

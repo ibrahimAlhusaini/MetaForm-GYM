@@ -1,5 +1,6 @@
 import type { NutritionHistoryItem } from '@metaform/shared-types'
 import { Clock3 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { AsyncState } from '../../weight-tracker/hooks/useAsyncResource.js'
 import {
   formatCalories,
@@ -21,12 +22,13 @@ export function LatestCalculationCard({
   state: AsyncState<NutritionHistoryItem | null>
   onRetry: () => void
 }) {
+  const { t } = useTranslation(['nutrition', 'common'])
   if (state.status === 'loading')
-    return <NutritionSkeleton label="Loading latest calculation" />
+    return <NutritionSkeleton label={t('nutrition:loading.latest')} />
   if (state.status === 'error')
     return (
       <NutritionErrorState
-        title="Latest calculation unavailable"
+        title={t('nutrition:errors.latestTitle')}
         message={state.errorMessage}
         onRetry={onRetry}
       />
@@ -34,8 +36,8 @@ export function LatestCalculationCard({
   if (!state.data)
     return (
       <NutritionEmptyState
-        title="No calculation yet"
-        description="Your most recent calculation will appear here after you calculate your targets."
+        title={t('nutrition:latest.emptyTitle')}
+        description={t('nutrition:latest.emptyDescription')}
       />
     )
 
@@ -44,7 +46,9 @@ export function LatestCalculationCard({
     <article className="rounded-2xl border border-white/10 bg-[#111315] p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold">Latest calculation</h2>
+          <h2 className="text-xl font-semibold">
+            {t('nutrition:latest.title')}
+          </h2>
           <p className="mt-1 flex items-center gap-2 text-sm text-zinc-400">
             <Clock3 className="size-4" aria-hidden="true" />
             {formatDateTime(item.calculatedAt)}
@@ -58,28 +62,31 @@ export function LatestCalculationCard({
       </div>
       <dl className="mt-5 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <LatestMetric
-          term="Maintenance"
+          term={t('nutrition:latest.maintenance')}
           value={formatCalories(item.results.maintenanceCalories)}
         />
         <LatestMetric
-          term="Recommended"
+          term={t('nutrition:latest.recommended')}
           value={
             item.results.recommendedCalories === null
-              ? 'Not available'
+              ? t('common:states.unavailable')
               : formatCalories(item.results.recommendedCalories)
           }
         />
         <LatestMetric
-          term="Protein"
+          term={t('nutrition:results.protein')}
           value={formatGrams(item.results.proteinGrams)}
         />
         <LatestMetric
-          term="Carbs"
+          term={t('nutrition:results.carbs')}
           value={formatGrams(item.results.carbohydrateGrams)}
         />
-        <LatestMetric term="Fat" value={formatGrams(item.results.fatGrams)} />
         <LatestMetric
-          term="Water"
+          term={t('nutrition:results.fat')}
+          value={formatGrams(item.results.fatGrams)}
+        />
+        <LatestMetric
+          term={t('nutrition:results.water')}
           value={formatLiters(item.results.waterLiters)}
         />
       </dl>

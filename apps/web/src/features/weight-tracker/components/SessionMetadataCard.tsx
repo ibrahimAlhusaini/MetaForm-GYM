@@ -1,4 +1,5 @@
 import type { SessionDetail } from '../types/weight-tracker.types.js'
+import { useTranslation } from 'react-i18next'
 import {
   formatDateTime,
   formatDuration,
@@ -19,16 +20,26 @@ export function SessionMetadataCard({
   onEditingChange,
   onSave,
 }: Props) {
+  const { t } = useTranslation('weightTracker')
   return (
     <section className="mt-6 rounded-2xl border border-white/8 bg-[#111315] p-5">
       <div className="grid gap-4 sm:grid-cols-4">
-        <Metric label="Started" value={formatDateTime(session.startedAt)} />
-        <Metric label="Completed" value={formatDateTime(session.completedAt)} />
         <Metric
-          label="Duration"
+          label={t('metadata.started')}
+          value={formatDateTime(session.startedAt)}
+        />
+        <Metric
+          label={t('metadata.completed')}
+          value={formatDateTime(session.completedAt)}
+        />
+        <Metric
+          label={t('metadata.duration')}
           value={formatDuration(session.durationMinutes)}
         />
-        <Metric label="Volume" value={formatVolume(session.totalVolumeKg)} />
+        <Metric
+          label={t('metadata.volume')}
+          value={formatVolume(session.totalVolumeKg)}
+        />
       </div>
       {editing ? (
         <form
@@ -52,24 +63,26 @@ export function SessionMetadataCard({
         >
           <input
             name="startedAt"
-            aria-label="Workout start time"
+            aria-label={t('metadata.startTime')}
             type="datetime-local"
             defaultValue={toDateTimeLocal(session.startedAt)}
             className="min-h-11 rounded-xl border border-white/10 bg-black/20 px-3"
           />
           <input
             name="notes"
-            aria-label="Workout notes"
+            aria-label={t('metadata.notes')}
             defaultValue={session.notes ?? ''}
             className="min-h-11 rounded-xl border border-white/10 bg-black/20 px-3"
           />
           <button className="rounded-xl bg-lime-300 px-4 font-semibold text-zinc-950">
-            Save details
+            {t('metadata.save')}
           </button>
         </form>
       ) : (
         <div className="mt-5 flex items-center justify-between gap-4 border-t border-white/8 pt-4">
-          <p className="text-zinc-400">{session.notes ?? 'No workout notes'}</p>
+          <p className="text-zinc-400">
+            {session.notes ?? t('metadata.noNotes')}
+          </p>
           <button
             type="button"
             onClick={() => {
@@ -77,7 +90,7 @@ export function SessionMetadataCard({
             }}
             className="text-sm font-semibold text-lime-300"
           >
-            Edit details
+            {t('metadata.edit')}
           </button>
         </div>
       )}

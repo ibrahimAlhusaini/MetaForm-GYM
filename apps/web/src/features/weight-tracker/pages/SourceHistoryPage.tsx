@@ -1,5 +1,6 @@
 import { Award, BarChart3, Dumbbell, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 import {
   EmptyState,
@@ -25,35 +26,39 @@ import {
 const isSourceType = (value: string | undefined): value is SourceType =>
   value === 'exercise' || value === 'machine'
 function StatCards({ history }: { history: SourceHistory }) {
+  const { t } = useTranslation('weightTracker')
   const stats = [
     {
-      label: 'Personal record',
+      label: t('history.personalRecord'),
       value: formatKg(history.personalRecordKg),
       icon: Award,
     },
     {
-      label: 'Average representative',
+      label: t('history.average'),
       value: formatKg(history.averageRepresentativeWeightKg),
       icon: BarChart3,
     },
     {
-      label: 'Latest representative',
+      label: t('history.latest'),
       value: formatKg(history.latestRepresentativeWeightKg),
       icon: Dumbbell,
     },
     {
-      label: 'Previous representative',
+      label: t('history.previous'),
       value: formatKg(history.previousRepresentativeWeightKg),
       icon: Dumbbell,
     },
     {
-      label: 'Best improvement',
+      label: t('history.improvement'),
       value: formatKg(history.bestImprovementKg),
       icon: TrendingUp,
     },
     {
-      label: 'Completed history',
-      value: `${String(history.totalSessions)} sessions · ${String(history.totalSets)} sets`,
+      label: t('history.completed'),
+      value: t('history.completedValue', {
+        sessions: t('history.sessions', { count: history.totalSessions }),
+        sets: t('history.sets', { count: history.totalSets }),
+      }),
       icon: BarChart3,
     },
   ]
@@ -73,6 +78,7 @@ function StatCards({ history }: { history: SourceHistory }) {
   )
 }
 export function SourceHistoryPage() {
+  const { t } = useTranslation('weightTracker')
   const params = useParams()
   const [page, setPage] = useState(1)
   const sourceType = isSourceType(params.sourceType)
@@ -83,12 +89,12 @@ export function SourceHistoryPage() {
   if (!isSourceType(params.sourceType) || !sourceId)
     return (
       <WeightTrackerErrorState
-        message="This history address is invalid."
+        message={t('errors.invalidHistory')}
         onRetry={() => undefined}
       />
     )
   if (state.status === 'loading')
-    return <WeightTrackerSkeleton label="Loading strength history" />
+    return <WeightTrackerSkeleton label={t('loading.history')} />
   if (state.status === 'error')
     return (
       <WeightTrackerErrorState message={state.errorMessage} onRetry={retry} />
@@ -104,7 +110,7 @@ export function SourceHistoryPage() {
         />
         <div>
           <Link to="/app/weights/machines" className="text-sm text-lime-300">
-            Back to machines
+            {t('history.back')}
           </Link>
           <p className="mt-3 text-sm font-semibold tracking-wider text-zinc-500 uppercase">
             {formatSourceType(history.source.type)}
@@ -118,8 +124,8 @@ export function SourceHistoryPage() {
       {history.totalSessions === 0 ? (
         <div className="mt-6">
           <EmptyState
-            title="No completed strength history"
-            description="Complete a workout with a non-warmup weighted set to create the first representative point."
+            title={t('history.emptyTitle')}
+            description={t('history.emptyDescription')}
           />
         </div>
       ) : (
@@ -134,7 +140,9 @@ export function SourceHistoryPage() {
             />
           </div>
           <section className="mt-6 rounded-2xl border border-white/8 bg-[#111315] p-5">
-            <h2 className="text-xl font-semibold">Previous sessions</h2>
+            <h2 className="text-xl font-semibold">
+              {t('history.previousSessions')}
+            </h2>
             <div className="mt-4 space-y-3">
               {history.sessions.items.map((session) => (
                 <article
@@ -146,24 +154,28 @@ export function SourceHistoryPage() {
                       {formatDate(session.startedAt)}
                     </p>
                     <p className="mt-1 truncate text-sm text-zinc-500">
-                      {session.notes ?? 'No session notes'}
+                      {session.notes ?? t('history.noNotes')}
                     </p>
                   </div>
-                  <div className="grid grid-cols-3 gap-4 text-sm sm:text-right">
+                  <div className="grid grid-cols-3 gap-4 text-sm sm:text-end">
                     <div>
-                      <p className="text-zinc-500">Representative</p>
+                      <p className="text-zinc-500">
+                        {t('history.representative')}
+                      </p>
                       <p className="font-semibold">
                         {formatKg(session.representativeWeightKg)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-zinc-500">Sets</p>
+                      <p className="text-zinc-500">{t('historyLabels.sets')}</p>
                       <p className="font-semibold">
-                        {String(session.workingSets)} working
+                        {t('history.workingSets', {
+                          count: session.workingSets,
+                        })}
                       </p>
                     </div>
                     <div>
-                      <p className="text-zinc-500">Volume</p>
+                      <p className="text-zinc-500">{t('history.volume')}</p>
                       <p className="font-semibold">
                         {formatVolume(session.estimatedVolumeKg)}
                       </p>

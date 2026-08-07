@@ -33,9 +33,9 @@ export type AppNavigationId = keyof typeof appPaths
 export interface AppNavigationItem {
   id: AppNavigationId
   path: (typeof appPaths)[AppNavigationId]
-  label: string
-  pageTitle: string
-  description: string
+  labelKey: string
+  pageTitleKey: string
+  descriptionKey: string
   icon: LucideIcon
 }
 
@@ -43,60 +43,57 @@ export const appNavigationItems: readonly AppNavigationItem[] = [
   {
     id: 'home',
     path: appPaths.home,
-    label: 'Home',
-    pageTitle: 'Home',
-    description: 'Dashboard analytics will be implemented in the next stage.',
+    labelKey: 'items.home.label',
+    pageTitleKey: 'items.home.title',
+    descriptionKey: 'items.home.description',
     icon: House,
   },
   {
     id: 'weights',
     path: appPaths.weights,
-    label: 'Weight Tracker',
-    pageTitle: 'Weight Tracker',
-    description:
-      'Build workouts, manage machines, and review strength history.',
+    labelKey: 'items.weights.label',
+    pageTitleKey: 'items.weights.title',
+    descriptionKey: 'items.weights.description',
     icon: Scale,
   },
   {
     id: 'exercises',
     path: appPaths.exercises,
-    label: 'Exercise Library',
-    pageTitle: 'Exercise Library',
-    description: 'Browse published movements and training guidance.',
+    labelKey: 'items.exercises.label',
+    pageTitleKey: 'items.exercises.title',
+    descriptionKey: 'items.exercises.description',
     icon: Dumbbell,
   },
   {
     id: 'aiCoach',
     path: appPaths.aiCoach,
-    label: 'AI Coach',
-    pageTitle: 'AI Coach',
-    description:
-      'Coaching conversations and recommendations are intentionally postponed.',
+    labelKey: 'items.aiCoach.label',
+    pageTitleKey: 'items.aiCoach.title',
+    descriptionKey: 'items.aiCoach.description',
     icon: Bot,
   },
   {
     id: 'calories',
     path: appPaths.calories,
-    label: 'Calories',
-    pageTitle: 'Calories Calculator',
-    description: 'Calculate calorie, macronutrient, and hydration estimates.',
+    labelKey: 'items.calories.label',
+    pageTitleKey: 'items.calories.title',
+    descriptionKey: 'items.calories.description',
     icon: Calculator,
   },
   {
     id: 'plans',
     path: appPaths.plans,
-    label: 'Workout Plans',
-    pageTitle: 'Workout Plans',
-    description: 'Plan creation and scheduling tools will be added later.',
+    labelKey: 'items.plans.label',
+    pageTitleKey: 'items.plans.title',
+    descriptionKey: 'items.plans.description',
     icon: CalendarDays,
   },
   {
     id: 'profile',
     path: appPaths.profile,
-    label: 'Profile',
-    pageTitle: 'Profile',
-    description:
-      'Profile details are read-only until the profile stage is implemented.',
+    labelKey: 'items.profile.label',
+    pageTitleKey: 'items.profile.title',
+    descriptionKey: 'items.profile.description',
     icon: UserRound,
   },
 ]
@@ -111,9 +108,9 @@ export const getNavigationItem = (id: AppNavigationId): AppNavigationItem => {
   return item
 }
 
-export const getPageTitle = (pathname: string): string =>
+export const getPageTitleKey = (pathname: string): string =>
   appNavigationItems.find(
     (item) =>
       item.path === pathname ||
       (item.path !== appPaths.home && pathname.startsWith(`${item.path}/`)),
-  )?.pageTitle ?? 'Page not found'
+  )?.pageTitleKey ?? 'notFound.title'

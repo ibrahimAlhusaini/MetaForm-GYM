@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { PlaceholderPage } from '../components/shell/PlaceholderPage.js'
 import {
   getNavigationItem,
@@ -11,12 +12,12 @@ interface FeaturePlaceholderPageProps {
 export function FeaturePlaceholderPage({
   navigationId,
 }: FeaturePlaceholderPageProps) {
+  const { t } = useTranslation('navigation')
   const navigationItem = getNavigationItem(navigationId)
-
   return (
     <PlaceholderPage
-      title={navigationItem.pageTitle}
-      description={navigationItem.description}
+      title={t(navigationItem.pageTitleKey)}
+      description={t(navigationItem.descriptionKey)}
     />
   )
 }

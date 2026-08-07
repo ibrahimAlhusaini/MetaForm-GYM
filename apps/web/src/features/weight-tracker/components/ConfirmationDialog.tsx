@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   open: boolean
@@ -22,6 +23,7 @@ export function ConfirmationDialog({
   onConfirm,
   onClose,
 }: Props) {
+  const { t } = useTranslation(['weightTracker', 'common'])
   const dialogRef = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const dialog = dialogRef.current
@@ -55,7 +57,7 @@ export function ConfirmationDialog({
             type="button"
             onClick={onClose}
             disabled={pending}
-            aria-label="Close confirmation"
+            aria-label={t('weightTracker:dialog.close')}
             className="rounded-lg p-2 text-zinc-400 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-lime-300"
           >
             <X className="size-5" />
@@ -69,7 +71,7 @@ export function ConfirmationDialog({
             disabled={pending}
             className="min-h-11 rounded-xl border border-white/10 px-4 font-medium"
           >
-            Cancel
+            {t('common:actions.cancel')}
           </button>
           <button
             type="button"
@@ -77,7 +79,7 @@ export function ConfirmationDialog({
             disabled={pending}
             className={`min-h-11 rounded-xl px-4 font-semibold text-zinc-950 ${destructive ? 'bg-red-300 hover:bg-red-200' : 'bg-lime-300 hover:bg-lime-200'}`}
           >
-            {pending ? 'Working…' : confirmLabel}
+            {pending ? t('weightTracker:dialog.working') : confirmLabel}
           </button>
         </div>
       </div>

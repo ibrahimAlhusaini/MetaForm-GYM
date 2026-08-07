@@ -18,16 +18,3 @@ export const muscleGroups = [
   'LOWER_BACK',
   'FULL_BODY',
 ] as const
-
-export const muscleLabels: Record<(typeof muscleGroups)[number], string> = {
-  CHEST: 'Chest',
-  BACK: 'Back',
-  SHOULDERS: 'Shoulders',
-  BICEPS: 'Biceps',
-  TRICEPS: 'Triceps',
-  LEGS: 'Legs',
-  CORE: 'Core',
-  GLUTES: 'Glutes',
-  LOWER_BACK: 'Lower back',
-  FULL_BODY: 'Full body',
-}

@@ -3,86 +3,67 @@ import type {
   DashboardMuscleGroup,
   StrengthSourceType,
 } from '@metaform/shared-types'
+import i18n from '../../../i18n/index.js'
+import { localeForLanguage } from '../../../i18n/locale.js'
+import {
+  muscleLabel,
+  sourceTypeLabel,
+  trendLabel,
+} from '../../../i18n/enum-labels.js'
 
-const decimalFormatter = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 2,
-})
-
-const wholeNumberFormatter = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 0,
-})
-
-const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-})
-
-const chartDateFormatter = new Intl.DateTimeFormat(undefined, {
-  month: 'short',
-  day: 'numeric',
-})
-
+const locale = () => localeForLanguage(i18n.resolvedLanguage ?? i18n.language)
+const number = (value: number, digits = 2) =>
+  new Intl.NumberFormat(locale(), { maximumFractionDigits: digits }).format(
+    value,
+  )
 const parseDate = (value: string): Date | null => {
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? null : date
 }
 
 export const formatWeight = (value: number): string =>
-  `${decimalFormatter.format(value)} kg`
-
+  i18n.t('units.kg', { ns: 'common', value: number(value) })
 export const formatCalories = (value: number): string =>
-  `${wholeNumberFormatter.format(value)} kcal`
-
+  i18n.t('units.kcal', { ns: 'common', value: number(value, 0) })
 export const formatDuration = (minutes: number): string =>
-  `${wholeNumberFormatter.format(minutes)} min`
-
+  i18n.t('units.minutes', { ns: 'common', value: number(minutes, 0) })
 export const formatCount = (
   value: number,
-  pluralUnit: string,
-  descriptor?: string,
-): string => {
-  const unit = value === 1 ? pluralUnit.replace(/s$/, '') : pluralUnit
-  const qualifier = descriptor ? `${descriptor} ` : ''
-  return `${wholeNumberFormatter.format(value)} ${qualifier}${unit}`
-}
-
-export const formatSignedWeight = (value: number): string => {
-  const prefix = value > 0 ? '+' : ''
-  return `${prefix}${decimalFormatter.format(value)} kg`
-}
-
-export const formatSignedPercentage = (value: number): string => {
-  const prefix = value > 0 ? '+' : ''
-  return `${prefix}${decimalFormatter.format(value)}%`
-}
-
+  unit:
+    'days' | 'workouts' | 'sessions' | 'measurements' | 'representativePoints',
+): string => i18n.t(`counts.${unit}`, { ns: 'dashboard', count: value })
+export const formatSignedWeight = (value: number): string =>
+  i18n.t('units.kg', {
+    ns: 'common',
+    value: `${value > 0 ? '+' : ''}${number(value)}`,
+  })
+export const formatSignedPercentage = (value: number): string =>
+  i18n.t('units.percent', {
+    ns: 'common',
+    value: `${value > 0 ? '+' : ''}${number(value)}`,
+  })
 export const formatDateTime = (value: string): string => {
   const date = parseDate(value)
-  return date ? dateTimeFormatter.format(date) : 'Update time unavailable'
+  return date
+    ? new Intl.DateTimeFormat(locale(), {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(date)
+    : i18n.t('header.updateUnavailable', { ns: 'dashboard' })
 }
-
 export const formatChartDate = (value: string): string => {
   const date = parseDate(`${value}T00:00:00.000Z`)
-  return date ? chartDateFormatter.format(date) : value
+  return date
+    ? new Intl.DateTimeFormat(locale(), {
+        month: 'short',
+        day: 'numeric',
+      }).format(date)
+    : value
 }
-
-const trendLabels: Record<BodyWeightTrendDirection, string> = {
-  INCREASING: 'Increasing',
-  DECREASING: 'Decreasing',
-  STABLE: 'Stable',
-  INSUFFICIENT_DATA: 'Insufficient data',
-}
-
 export const formatTrendDirection = (
   direction: BodyWeightTrendDirection,
-): string => trendLabels[direction]
-
+): string => trendLabel(i18n.t, direction)
 export const formatMuscleGroup = (muscle: DashboardMuscleGroup): string =>
-  muscle
-    .toLowerCase()
-    .split('_')
-    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
-    .join(' ')
-
+  muscleLabel(i18n.t, muscle)
 export const formatSourceType = (sourceType: StrengthSourceType): string =>
-  sourceType === 'EXERCISE' ? 'Exercise' : 'Custom machine'
+  sourceTypeLabel(i18n.t, sourceType)

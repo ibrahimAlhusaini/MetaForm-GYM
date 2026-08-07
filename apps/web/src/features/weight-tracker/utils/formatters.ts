@@ -1,37 +1,48 @@
-import { muscleLabels } from '../constants/weight-tracker.constants.js'
+import i18n from '../../../i18n/index.js'
+import {
+  muscleLabel,
+  sessionStatusLabel,
+  sourceTypeLabel,
+} from '../../../i18n/enum-labels.js'
+import { localeForLanguage } from '../../../i18n/locale.js'
 import type { MuscleGroup, SourceType } from '../types/weight-tracker.types.js'
 
-const numberFormatter = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 2,
-})
+const locale = () => localeForLanguage(i18n.resolvedLanguage ?? i18n.language)
+const number = (value: number) =>
+  new Intl.NumberFormat(locale(), { maximumFractionDigits: 2 }).format(value)
 export const formatKg = (value: number | null): string =>
-  value === null ? 'Not available' : `${numberFormatter.format(value)} kg`
+  value === null
+    ? i18n.t('states.unavailable', { ns: 'common' })
+    : i18n.t('units.kg', { ns: 'common', value: number(value) })
 export const formatVolume = (value: number): string =>
-  `${numberFormatter.format(value)} kg`
+  i18n.t('units.kg', { ns: 'common', value: number(value) })
 export const formatDuration = (minutes: number | null): string =>
-  minutes === null ? 'In progress' : `${String(minutes)} min`
+  minutes === null
+    ? i18n.t('sessions.durationInProgress', { ns: 'weightTracker' })
+    : i18n.t('units.minutes', { ns: 'common', value: number(minutes) })
 export const formatDate = (value: string): string =>
-  new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(
+  new Intl.DateTimeFormat(locale(), { dateStyle: 'medium' }).format(
     new Date(value),
   )
 export const formatDateTime = (value: string | null): string =>
   value
-    ? new Intl.DateTimeFormat(undefined, {
+    ? new Intl.DateTimeFormat(locale(), {
         dateStyle: 'medium',
         timeStyle: 'short',
       }).format(new Date(value))
-    : 'Not completed'
+    : i18n.t('sessions.notCompleted', { ns: 'weightTracker' })
 export const formatMuscle = (value: MuscleGroup | null | undefined): string =>
-  value ? muscleLabels[value] : 'Not specified'
+  value
+    ? muscleLabel(i18n.t, value)
+    : i18n.t('states.notSpecified', { ns: 'common' })
 export const formatSourceType = (value: SourceType): string =>
-  value === 'machine' ? 'Custom machine' : 'Exercise'
+  sourceTypeLabel(i18n.t, value === 'machine' ? 'CUSTOM_MACHINE' : 'EXERCISE')
 export const sessionStatus = (completedAt: string | null): string =>
-  completedAt ? 'Completed' : 'In progress'
+  sessionStatusLabel(i18n.t, Boolean(completedAt))
 export const paginationLabel = (page: number, totalPages: number): string =>
   totalPages === 0
-    ? 'No pages'
-    : `Page ${String(page)} of ${String(totalPages)}`
-
+    ? i18n.t('states.noPages', { ns: 'common' })
+    : i18n.t('states.pageOf', { ns: 'common', page, totalPages })
 export const toDateTimeLocal = (iso?: string): string => {
   const date = iso ? new Date(iso) : new Date()
   const offset = date.getTimezoneOffset() * 60_000

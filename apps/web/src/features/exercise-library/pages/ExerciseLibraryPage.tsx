@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   ExerciseEmptyState,
   ExerciseLibraryErrorState,
@@ -33,6 +34,7 @@ const sortValues: ExerciseSortValue[] = [
 ]
 
 export function ExerciseLibraryPage() {
+  const { t } = useTranslation('exerciseLibrary')
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState<string | undefined>()
   const [filters, setFilters] = useState<ExerciseFilterState>(initialFilters)
@@ -121,19 +123,18 @@ export function ExerciseLibraryPage() {
     <div>
       <header>
         <p className="text-sm font-semibold tracking-[.18em] text-lime-300 uppercase">
-          Movement knowledge
+          {t('header.eyebrow')}
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Exercise Library
+          {t('header.title')}
         </h1>
         <p className="mt-3 max-w-2xl leading-7 text-zinc-400">
-          Explore published exercises, refine by training focus, and open clear
-          movement guidance.
+          {t('header.description')}
         </p>
       </header>
       <div className="mt-8">
         {filterOptions.state.status === 'loading' ? (
-          <ExerciseLibrarySkeleton label="Loading exercise filters" />
+          <ExerciseLibrarySkeleton label={t('loading.filters')} />
         ) : null}
         {filterOptions.state.status === 'error' ? (
           <ExerciseLibraryErrorState
@@ -162,7 +163,7 @@ export function ExerciseLibraryPage() {
         aria-busy={exercises.state.status === 'loading'}
       >
         {exercises.state.status === 'loading' ? (
-          <ExerciseLibrarySkeleton label="Loading published exercises" />
+          <ExerciseLibrarySkeleton label={t('loading.list')} />
         ) : null}
         {exercises.state.status === 'error' ? (
           <ExerciseLibraryErrorState
@@ -178,10 +179,9 @@ export function ExerciseLibraryPage() {
         exercises.state.data.items.length > 0 ? (
           <>
             <p className="mb-4 text-sm text-zinc-400">
-              {exercises.state.data.pagination.totalItems} published{' '}
-              {exercises.state.data.pagination.totalItems === 1
-                ? 'exercise'
-                : 'exercises'}
+              {t('list.count', {
+                count: exercises.state.data.pagination.totalItems,
+              })}
             </p>
             <ExerciseGrid items={exercises.state.data.items} />
             <ExercisePagination

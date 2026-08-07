@@ -1,10 +1,12 @@
 import { ArrowUpRight, Pencil } from 'lucide-react'
 import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import type { Machine } from '../types/weight-tracker.types.js'
 import { formatMuscle } from '../utils/formatters.js'
 import { MachineImage } from './MachineImage.js'
 
 export function MachineCard({ machine }: { machine: Machine }) {
+  const { t } = useTranslation('weightTracker')
   return (
     <article className="overflow-hidden rounded-2xl border border-white/8 bg-[#111315]">
       <MachineImage
@@ -22,7 +24,7 @@ export function MachineCard({ machine }: { machine: Machine }) {
           </div>
           <Link
             to={`/app/weights/machines/${machine.id}`}
-            aria-label={`Edit ${machine.name}`}
+            aria-label={t('machines.edit', { name: machine.name })}
             className="rounded-lg border border-white/10 p-2 text-zinc-400 hover:text-lime-300"
           >
             <Pencil className="size-4" />
@@ -37,7 +39,7 @@ export function MachineCard({ machine }: { machine: Machine }) {
           to={`/app/weights/history/machine/${machine.id}`}
           className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-zinc-200 hover:text-lime-300"
         >
-          View strength history
+          {t('machines.history')}
           <ArrowUpRight className="size-4" />
         </Link>
       </div>

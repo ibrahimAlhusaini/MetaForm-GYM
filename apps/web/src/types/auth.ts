@@ -11,6 +11,16 @@ export interface RegisterRequest {
   password: string
 }
 
+export type AuthErrorCode =
+  | 'invalidCredentials'
+  | 'emailExists'
+  | 'inactive'
+  | 'rateLimited'
+  | 'network'
+  | 'login'
+  | 'register'
+  | 'account'
+
 const userRoleSchema = z.enum(['USER', 'ADMIN'])
 const nullableMeasurementSchema = z.union([z.string(), z.number()]).nullable()
 

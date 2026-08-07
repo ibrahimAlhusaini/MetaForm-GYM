@@ -1,5 +1,6 @@
 import type { ExerciseListItem } from '@metaform/shared-types'
 import { ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import {
   difficultyLabel,
@@ -12,6 +13,7 @@ import {
 import { ExerciseMedia } from './ExerciseMedia.js'
 
 export function ExerciseCard({ exercise }: { exercise: ExerciseListItem }) {
+  const { t } = useTranslation('exerciseLibrary')
   const recommendation = recommendationLabel(
     exercise.recommendedSets,
     exercise.recommendedReps,
@@ -20,7 +22,7 @@ export function ExerciseCard({ exercise }: { exercise: ExerciseListItem }) {
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#111315] transition hover:border-lime-300/30">
       <ExerciseMedia
         src={exercise.thumbnailUrl}
-        alt={`${exercise.name} exercise`}
+        alt={t('list.imageAlt', { name: exercise.name })}
         className="aspect-[16/9] w-full"
       />
       <div className="flex flex-1 flex-col p-5">
@@ -42,36 +44,37 @@ export function ExerciseCard({ exercise }: { exercise: ExerciseListItem }) {
         </h2>
         <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
           <div>
-            <dt className="text-zinc-500">Subgroup</dt>
+            <dt className="text-zinc-500">{t('list.subgroup')}</dt>
             <dd className="text-zinc-200">
               {subgroupLabel(exercise.muscleSubgroup)}
             </dd>
           </div>
           <div>
-            <dt className="text-zinc-500">Equipment</dt>
+            <dt className="text-zinc-500">{t('list.equipment')}</dt>
             <dd className="text-zinc-200">
               {equipmentLabel(exercise.equipmentType)}
             </dd>
           </div>
           <div>
-            <dt className="text-zinc-500">Movement</dt>
+            <dt className="text-zinc-500">{t('list.movement')}</dt>
             <dd className="text-zinc-200">
               {movementLabel(exercise.movementType)}
             </dd>
           </div>
           {recommendation ? (
             <div>
-              <dt className="text-zinc-500">Target</dt>
+              <dt className="text-zinc-500">{t('list.target')}</dt>
               <dd className="text-zinc-200">{recommendation}</dd>
             </div>
           ) : null}
         </dl>
         <Link
           to={`/app/exercises/${exercise.id}`}
-          aria-label={`View details for ${exercise.name}`}
+          aria-label={t('list.viewLabel', { name: exercise.name })}
           className="mt-5 inline-flex min-h-10 items-center gap-2 self-start rounded-lg font-semibold text-lime-300 outline-none focus-visible:ring-2 focus-visible:ring-lime-300"
         >
-          View exercise <ArrowRight className="size-4" aria-hidden="true" />
+          {t('list.view')}{' '}
+          <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
         </Link>
       </div>
     </article>

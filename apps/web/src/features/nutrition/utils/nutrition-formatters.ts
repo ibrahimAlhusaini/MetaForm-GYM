@@ -5,41 +5,45 @@ import type {
   NutritionFitnessGoal,
   NutritionInputSource,
 } from '@metaform/shared-types'
+import i18n from '../../../i18n/index.js'
 import {
-  activityOptions,
-  bmiCategoryLabels,
-  bmrFormulaLabels,
-  goalOptions,
-  inputSourceLabels,
-} from '../constants/nutrition.constants.js'
+  activityLabel,
+  bmiCategoryLabel,
+  bmrFormulaLabel,
+  fitnessGoalLabel,
+  inputSourceLabel,
+} from '../../../i18n/enum-labels.js'
+import { localeForLanguage } from '../../../i18n/locale.js'
 
-const numberFormatter = (maximumFractionDigits: number) =>
-  new Intl.NumberFormat(undefined, { maximumFractionDigits })
+const locale = () => localeForLanguage(i18n.resolvedLanguage ?? i18n.language)
+const number = (value: number, digits: number) =>
+  new Intl.NumberFormat(locale(), { maximumFractionDigits: digits }).format(
+    value,
+  )
+const unit = (key: string, value: number, digits: number) =>
+  i18n.t(`units.${key}`, { ns: 'common', value: number(value, digits) })
 
 export const formatCalories = (value: number): string =>
-  `${numberFormatter(0).format(value)} kcal/day`
+  unit('kcalPerDay', value, 0)
 export const formatGrams = (value: number): string =>
-  `${numberFormatter(0).format(value)} g/day`
+  unit('gramsPerDay', value, 0)
 export const formatLiters = (value: number): string =>
-  `${numberFormatter(2).format(value)} L/day`
-export const formatWeight = (value: number): string =>
-  `${numberFormatter(2).format(value)} kg`
-export const formatHeight = (value: number): string =>
-  `${numberFormatter(2).format(value)} cm`
-export const formatBmi = (value: number): string =>
-  numberFormatter(2).format(value)
+  unit('litersPerDay', value, 2)
+export const formatWeight = (value: number): string => unit('kg', value, 2)
+export const formatHeight = (value: number): string => unit('cm', value, 2)
+export const formatBmi = (value: number): string => number(value, 2)
 export const formatDateTime = (value: string): string =>
-  new Intl.DateTimeFormat(undefined, {
+  new Intl.DateTimeFormat(locale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(value))
 export const formatActivity = (value: NutritionActivityLevel): string =>
-  activityOptions.find((option) => option.value === value)?.label ?? value
+  activityLabel(i18n.t, value)
 export const formatGoal = (value: NutritionFitnessGoal): string =>
-  goalOptions.find((option) => option.value === value)?.label ?? value
+  fitnessGoalLabel(i18n.t, value)
 export const formatBmiCategory = (value: NutritionBmiCategory): string =>
-  bmiCategoryLabels[value]
+  bmiCategoryLabel(i18n.t, value)
 export const formatInputSource = (value: NutritionInputSource): string =>
-  inputSourceLabels[value]
+  inputSourceLabel(i18n.t, value)
 export const formatBmrFormula = (value: NutritionBmrFormula): string =>
-  bmrFormulaLabels[value]
+  bmrFormulaLabel(i18n.t, value)

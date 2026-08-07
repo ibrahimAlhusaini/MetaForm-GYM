@@ -1,0 +1,80 @@
+export const dashboard = {
+  header: {
+    eyebrow: 'Training overview',
+    welcome: 'Welcome back, {{name}}',
+    description:
+      'Review your latest training, body-weight, and strength activity in one focused view.',
+    updated: 'Updated {{date}}',
+    updateUnavailable: 'Update time unavailable',
+  },
+  loading: 'Loading dashboard',
+  error: {
+    title: 'Dashboard unavailable',
+    message: 'We could not load your dashboard. Please try again.',
+  },
+  overview: {
+    title: 'Overview',
+    description: 'Your latest available training summary.',
+    currentWeight: 'Current body weight',
+    currentWeightDetail: 'Latest measurement or profile snapshot',
+    dailyMaintenance: 'Daily maintenance',
+    dailyMaintenanceDetail: 'Most recent saved nutrition calculation',
+    workoutStreak: 'Workout streak',
+    workoutStreakDetail: 'Consecutive completed workout days',
+    workoutsCompleted: 'Workouts completed',
+    workoutsCompletedDetail: 'All completed workout sessions',
+    lastWorkout: 'Last workout',
+    completedAt: 'Completed {{date}}',
+    noData: 'No data yet',
+    completeToSee: 'Complete a workout to see it here',
+    weeklyProgress: 'Weekly progress',
+    newActivity: 'New activity',
+    versusPrevious: '{{percentage}} vs previous week',
+    previousWeek: 'Previous week: {{count}}',
+  },
+  counts: {
+    days_one: '{{count}} day',
+    days_other: '{{count}} days',
+    workouts_one: '{{count}} workout',
+    workouts_other: '{{count}} workouts',
+    sessions_one: '{{count}} session',
+    sessions_other: '{{count}} sessions',
+    measurements_one: '{{count}} recorded measurement',
+    measurements_other: '{{count}} recorded measurements',
+    representativePoints_one: '{{count}} representative session point',
+    representativePoints_other: '{{count}} representative session points',
+  },
+  bodyWeight: {
+    title: 'Body weight progress',
+    description: 'Recorded measurements from the latest 90-day window.',
+    emptyTitle: 'No body-weight history yet',
+    emptyDescription:
+      'Body measurements will appear here after they are added in a later stage.',
+    summary: '{{count}}. Latest value {{value}}. Trend: {{trend}}.',
+    chartLabel:
+      'Body weight line chart. Values are also summarized in text above.',
+    weightSeries: 'Weight',
+  },
+  strength: {
+    title: 'Strength progress',
+    description:
+      'Maximum qualifying load from each completed training session.',
+    emptyTitle: 'No strength history yet',
+    emptyDescription:
+      'Completed weighted exercises will appear here after workout logging is introduced.',
+    imageAlt: '{{name}} equipment',
+    imageUnavailable: '{{name}} image unavailable',
+    personalRecord: 'Personal record',
+    latestLoad: 'Latest load',
+    previousLoad: 'Previous load',
+    qualifyingHistory: 'Qualifying history',
+    summary: '{{points}}. Latest load {{weight}}.',
+    chartLabel:
+      '{{name}} load progression chart. Values are summarized in text above.',
+  },
+  trend: {
+    previousUnavailable: 'Previous comparison unavailable',
+    loadChange: 'Load change',
+    change: 'Change {{value}}',
+  },
+} as const

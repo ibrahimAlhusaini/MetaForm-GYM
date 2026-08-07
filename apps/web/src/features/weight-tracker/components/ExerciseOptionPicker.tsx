@@ -1,6 +1,7 @@
 import type { ExerciseOption } from '@metaform/shared-types'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ExerciseMedia } from '../../exercise-library/components/ExerciseMedia.js'
 import { EXERCISE_SEARCH_DEBOUNCE_MS } from '../../exercise-library/constants/exercise-library.constants.js'
 import { useDebouncedValue } from '../../exercise-library/hooks/useDebouncedValue.js'
@@ -18,19 +19,21 @@ export function ExerciseOptionPicker({
   selectedId: string
   onSelect: (option: ExerciseOption) => void
 }) {
+  const { t } = useTranslation('weightTracker')
   const [search, setSearch] = useState('')
   const [selectedOption, setSelectedOption] = useState<ExerciseOption | null>(
     null,
   )
-  const debouncedSearch = useDebouncedValue(search, EXERCISE_SEARCH_DEBOUNCE_MS)
-  const options = useExerciseOptions(debouncedSearch)
+  const options = useExerciseOptions(
+    useDebouncedValue(search, EXERCISE_SEARCH_DEBOUNCE_MS),
+  )
   return (
     <div className="mt-4">
       <label className="text-sm font-medium">
-        Search Exercise Library
+        {t('source.searchLibrary')}
         <span className="mt-2 flex rounded-xl border border-white/10 bg-[#151719] focus-within:border-lime-300">
           <Search
-            className="ml-3 size-4 self-center text-zinc-500"
+            className="ms-3 size-4 self-center text-zinc-500"
             aria-hidden="true"
           />
           <input
@@ -38,7 +41,7 @@ export function ExerciseOptionPicker({
             onChange={(event) => {
               setSearch(event.target.value)
             }}
-            placeholder="Search published exercises"
+            placeholder={t('source.searchPlaceholder')}
             className="min-h-11 w-full bg-transparent px-3 outline-none"
           />
         </span>
@@ -53,7 +56,7 @@ export function ExerciseOptionPicker({
       />
       {selectedId && selectedOption ? (
         <p className="mt-3 text-sm text-lime-300">
-          Selected: {selectedOption.name}
+          {t('source.selected', { name: selectedOption.name })}
         </p>
       ) : null}
     </div>
@@ -69,6 +72,7 @@ function ExerciseOptionResults({
   resource: ReturnType<typeof useExerciseOptions>
   onSelect: (option: ExerciseOption) => void
 }) {
+  const { t } = useTranslation(['weightTracker', 'common'])
   const { state } = resource
   return (
     <div
@@ -78,7 +82,7 @@ function ExerciseOptionResults({
     >
       {state.status === 'loading' ? (
         <p role="status" className="text-sm text-zinc-400">
-          Loading Exercise Library options…
+          {t('weightTracker:loading.exerciseOptions')}
         </p>
       ) : null}
       {state.status === 'error' ? (
@@ -92,20 +96,20 @@ function ExerciseOptionResults({
             onClick={resource.retry}
             className="font-semibold text-white underline"
           >
-            Try again
+            {t('common:actions.retry')}
           </button>
         </div>
       ) : null}
       {state.status === 'success' && state.data.length === 0 ? (
         <p className="text-sm text-zinc-400">
-          No published exercises match this search.
+          {t('weightTracker:source.noMatch')}
         </p>
       ) : null}
       {state.status === 'success' && state.data.length > 0 ? (
         <div
           role="listbox"
-          aria-label="Published exercise options"
-          className="max-h-72 space-y-2 overflow-y-auto pr-1"
+          aria-label={t('weightTracker:source.optionsLabel')}
+          className="max-h-72 space-y-2 overflow-y-auto pe-1"
         >
           {state.data.map((option) => (
             <button
@@ -116,11 +120,11 @@ function ExerciseOptionResults({
               onClick={() => {
                 onSelect(option)
               }}
-              className={`flex min-h-16 w-full items-center gap-3 rounded-xl border p-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-lime-300 ${selectedId === option.id ? 'border-lime-300/60 bg-lime-300/8' : 'border-white/10 bg-black/15'}`}
+              className={`flex min-h-16 w-full items-center gap-3 rounded-xl border p-2 text-start outline-none focus-visible:ring-2 focus-visible:ring-lime-300 ${selectedId === option.id ? 'border-lime-300/60 bg-lime-300/8' : 'border-white/10 bg-black/15'}`}
             >
               <ExerciseMedia
                 src={option.thumbnailUrl}
-                alt={`${option.name} exercise`}
+                alt={t('weightTracker:source.optionAlt', { name: option.name })}
                 className="size-12 shrink-0 rounded-lg"
               />
               <span className="min-w-0">

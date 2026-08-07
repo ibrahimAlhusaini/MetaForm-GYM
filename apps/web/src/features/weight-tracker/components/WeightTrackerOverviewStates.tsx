@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import type { useMachines } from '../hooks/useMachines.js'
 import type { useSessions } from '../hooks/useSessions.js'
 import {
@@ -29,6 +30,7 @@ function Panel({
   browsePath: string
   children: React.ReactNode
 }) {
+  const { t } = useTranslation('weightTracker')
   return (
     <section className="rounded-2xl border border-white/8 bg-white/[0.015] p-5 sm:p-6">
       <div className="mb-5 flex items-center justify-between">
@@ -37,8 +39,8 @@ function Panel({
           to={browsePath}
           className="inline-flex items-center gap-1 text-sm font-semibold text-lime-300"
         >
-          View all
-          <ArrowRight className="size-4" />
+          {t('overview.viewAll')}
+          <ArrowRight className="size-4 rtl:rotate-180" />
         </Link>
       </div>
       {children}
@@ -47,11 +49,16 @@ function Panel({
 }
 
 export function AsyncStatePanel(props: Props) {
+  const { t } = useTranslation('weightTracker')
   const { state, retry } = props.resource
   if (state.status === 'loading')
     return (
       <Panel title={props.title} browsePath={props.browsePath}>
-        <WeightTrackerSkeleton label={`Loading ${props.title.toLowerCase()}`} />
+        <WeightTrackerSkeleton
+          label={t('overview.loadingPanel', {
+            title: props.title.toLowerCase(),
+          })}
+        />
       </Panel>
     )
   if (state.status === 'error')

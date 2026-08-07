@@ -24,6 +24,7 @@ export function FormField({
       <input
         {...registration}
         inputMode={inputMode}
+        dir="ltr"
         aria-invalid={Boolean(error)}
         className={fieldClass}
       />
@@ -38,12 +39,14 @@ export function SelectField({
   error,
   registration,
   options,
+  placeholder,
 }: {
   label: string
   source: string
   error: FieldError | undefined
   registration: UseFormRegisterReturn
   options: { value: string; label: string }[]
+  placeholder: string
 }) {
   return (
     <label className="text-sm font-medium">
@@ -53,7 +56,7 @@ export function SelectField({
         aria-invalid={Boolean(error)}
         className={fieldClass}
       >
-        <option value="">Select {label.toLowerCase()}</option>
+        <option value="">{placeholder}</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

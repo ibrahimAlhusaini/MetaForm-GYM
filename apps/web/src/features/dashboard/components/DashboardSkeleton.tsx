@@ -13,9 +13,10 @@ const SkeletonBlock = ({ className }: { className: string }) => (
 )
 
 export function DashboardSkeleton() {
+  const { t } = useTranslation('dashboard')
   return (
-    <div aria-label="Loading dashboard" aria-busy="true">
-      <span className="sr-only">Loading dashboard</span>
+    <div aria-label={t('loading')} aria-busy="true">
+      <span className="sr-only">{t('loading')}</span>
       <div className="border-b border-white/8 pb-8">
         <SkeletonBlock className="h-3 w-28" />
         <SkeletonBlock className="mt-5 h-10 w-full max-w-sm" />
@@ -55,3 +56,4 @@ export function DashboardSkeleton() {
     </div>
   )
 }
+import { useTranslation } from 'react-i18next'

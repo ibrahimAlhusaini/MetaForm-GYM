@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { BrandMark } from './BrandMark.js'
 import { NavigationList } from './NavigationList.js'
 import { UserSummary } from './UserSummary.js'
@@ -10,6 +11,7 @@ interface MobileNavigationProps {
 }
 
 export function MobileNavigation({ isOpen, onClose }: MobileNavigationProps) {
+  const { t } = useTranslation('navigation')
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
 
@@ -59,15 +61,15 @@ export function MobileNavigation({ isOpen, onClose }: MobileNavigationProps) {
       <button
         type="button"
         className="absolute inset-0 bg-black/75 backdrop-blur-sm"
-        aria-label="Close application menu"
+        aria-label={t('shell.closeMenu')}
         onClick={onClose}
       />
       <aside
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Application menu"
-        className="relative flex h-full w-[min(20rem,88vw)] flex-col border-r border-white/10 bg-[#0d0f10] shadow-2xl"
+        aria-label={t('shell.applicationMenu')}
+        className="relative flex h-full w-[min(20rem,88vw)] flex-col border-e border-white/10 bg-[#0d0f10] shadow-2xl"
       >
         <div className="flex items-center justify-between border-b border-white/8 px-5 py-5">
           <BrandMark />
@@ -75,7 +77,7 @@ export function MobileNavigation({ isOpen, onClose }: MobileNavigationProps) {
             ref={closeButtonRef}
             type="button"
             onClick={onClose}
-            aria-label="Close application menu"
+            aria-label={t('shell.closeMenu')}
             className="grid size-10 place-items-center rounded-lg text-zinc-400 transition hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300"
           >
             <X className="size-5" aria-hidden="true" />

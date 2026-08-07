@@ -1,4 +1,5 @@
 import { RefreshCw, TriangleAlert } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface DashboardErrorStateProps {
   message: string
@@ -9,6 +10,7 @@ export function DashboardErrorState({
   message,
   onRetry,
 }: DashboardErrorStateProps) {
+  const { t } = useTranslation(['dashboard', 'common'])
   return (
     <section
       role="alert"
@@ -18,7 +20,7 @@ export function DashboardErrorState({
         <TriangleAlert className="size-5" aria-hidden="true" />
       </span>
       <h1 className="mt-5 text-2xl font-semibold text-white">
-        Dashboard unavailable
+        {t('dashboard:error.title')}
       </h1>
       <p className="mx-auto mt-3 max-w-md leading-7 text-zinc-400">{message}</p>
       <button
@@ -27,7 +29,7 @@ export function DashboardErrorState({
         className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-xl bg-lime-300 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-lime-200 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-lime-300"
       >
         <RefreshCw className="size-4" aria-hidden="true" />
-        Try again
+        {t('common:actions.retry')}
       </button>
     </section>
   )

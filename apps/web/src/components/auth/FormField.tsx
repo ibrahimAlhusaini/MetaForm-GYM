@@ -34,6 +34,7 @@ export function FormField({
         {...registration}
         id={id}
         type={type}
+        dir={type === 'email' || type === 'url' ? 'ltr' : undefined}
         autoComplete={autoComplete}
         placeholder={placeholder}
         aria-invalid={Boolean(error)}

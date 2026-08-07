@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 
 interface PasswordFieldProps {
@@ -18,6 +19,7 @@ export function PasswordField({
   registration,
   error,
 }: PasswordFieldProps) {
+  const { t } = useTranslation('auth')
   const [isVisible, setIsVisible] = useState(false)
   const errorId = `${id}-error`
 
@@ -38,20 +40,19 @@ export function PasswordField({
           placeholder={placeholder}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="h-12 w-full rounded-xl border border-white/10 bg-[#151719] pr-12 pl-4 text-[0.95rem] text-white transition outline-none placeholder:text-zinc-600 hover:border-white/20 focus:border-lime-300 focus:ring-3 focus:ring-lime-300/12"
+          dir="ltr"
+          className="h-12 w-full rounded-xl border border-white/10 bg-[#151719] ps-4 pe-12 text-[0.95rem] text-white transition outline-none placeholder:text-zinc-600 hover:border-white/20 focus:border-lime-300 focus:ring-3 focus:ring-lime-300/12"
         />
         <button
           type="button"
           onClick={() => {
             setIsVisible((visible) => !visible)
           }}
-          aria-label={
-            isVisible
-              ? `Hide ${label.toLowerCase()}`
-              : `Show ${label.toLowerCase()}`
-          }
+          aria-label={t(isVisible ? 'password.hide' : 'password.show', {
+            label,
+          })}
           aria-pressed={isVisible}
-          className="absolute inset-y-0 right-0 grid w-12 place-items-center rounded-r-xl text-zinc-500 transition hover:text-lime-300 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-lime-300"
+          className="absolute inset-y-0 end-0 grid w-12 place-items-center rounded-e-xl text-zinc-500 transition hover:text-lime-300 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-lime-300"
         >
           {isVisible ? (
             <svg

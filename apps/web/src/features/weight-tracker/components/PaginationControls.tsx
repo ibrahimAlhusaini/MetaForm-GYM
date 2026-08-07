@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { paginationLabel } from '../utils/formatters.js'
+import { useTranslation } from 'react-i18next'
 import type { Pagination } from '../types/weight-tracker.types.js'
+import { paginationLabel } from '../utils/formatters.js'
 
 export function PaginationControls({
   pagination,
@@ -9,14 +10,15 @@ export function PaginationControls({
   pagination: Pagination
   onPageChange: (page: number) => void
 }) {
+  const { t } = useTranslation(['weightTracker', 'common'])
   return (
     <nav
-      aria-label="Pagination"
+      aria-label={t('common:pagination.label')}
       className="flex flex-wrap items-center justify-between gap-3 border-t border-white/8 pt-5"
     >
       <p className="text-sm text-zinc-400">
         {paginationLabel(pagination.page, pagination.totalPages)} ·{' '}
-        {String(pagination.totalItems)} items
+        {t('weightTracker:pagination.items', { count: pagination.totalItems })}
       </p>
       <div className="flex gap-2">
         <button
@@ -27,8 +29,8 @@ export function PaginationControls({
           }}
           className="inline-flex min-h-10 items-center gap-1 rounded-lg border border-white/10 px-3 text-sm disabled:opacity-40"
         >
-          <ChevronLeft className="size-4" />
-          Previous
+          <ChevronLeft className="size-4 rtl:rotate-180" />
+          {t('common:actions.previous')}
         </button>
         <button
           type="button"
@@ -38,8 +40,8 @@ export function PaginationControls({
           }}
           className="inline-flex min-h-10 items-center gap-1 rounded-lg border border-white/10 px-3 text-sm disabled:opacity-40"
         >
-          Next
-          <ChevronRight className="size-4" />
+          {t('common:actions.next')}
+          <ChevronRight className="size-4 rtl:rotate-180" />
         </button>
       </div>
     </nav>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Dumbbell } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function MachineImage({
   imageUrl,
@@ -10,12 +11,13 @@ export function MachineImage({
   name: string
   className?: string
 }) {
+  const { t } = useTranslation('weightTracker')
   const [failed, setFailed] = useState(false)
   if (!imageUrl || failed)
     return (
       <div
         role="img"
-        aria-label={`${name} image unavailable`}
+        aria-label={t('machines.imageUnavailable', { name })}
         className={`grid place-items-center bg-gradient-to-br from-lime-300/12 to-white/3 text-lime-300 ${className}`}
       >
         <Dumbbell className="size-8" aria-hidden="true" />
@@ -24,7 +26,7 @@ export function MachineImage({
   return (
     <img
       src={imageUrl}
-      alt={`${name} machine`}
+      alt={t('machines.imageAlt', { name })}
       onError={() => {
         setFailed(true)
       }}

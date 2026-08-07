@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { EntryDraft, Machine } from '../types/weight-tracker.types.js'
 import { emptySetDraft } from '../utils/payload-transformers.js'
 import { SetEditor } from './SetEditor.js'
@@ -29,6 +30,7 @@ export function ExerciseEntryEditor({
   onMove: (direction: -1 | 1) => void
   onRemove: () => void
 }) {
+  const { t } = useTranslation('weightTracker')
   const updateSet = (setIndex: number, set: EntryDraft['sets'][number]) => {
     onChange({
       ...entry,
@@ -40,7 +42,7 @@ export function ExerciseEntryEditor({
   return (
     <fieldset className="rounded-2xl border border-white/10 bg-[#111315] p-4 sm:p-6">
       <legend className="px-2 text-lg font-semibold">
-        Exercise {String(index + 1)}
+        {t('entry.title', { number: index + 1 })}
       </legend>
       <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
         <ExerciseSourceSelector
@@ -51,7 +53,7 @@ export function ExerciseEntryEditor({
         <div className="flex items-end gap-2">
           <button
             type="button"
-            aria-label={`Move exercise ${String(index + 1)} up`}
+            aria-label={t('entry.moveUp', { number: index + 1 })}
             disabled={index === 0}
             onClick={() => {
               onMove(-1)
@@ -62,7 +64,7 @@ export function ExerciseEntryEditor({
           </button>
           <button
             type="button"
-            aria-label={`Move exercise ${String(index + 1)} down`}
+            aria-label={t('entry.moveDown', { number: index + 1 })}
             disabled={index === total - 1}
             onClick={() => {
               onMove(1)
@@ -73,7 +75,7 @@ export function ExerciseEntryEditor({
           </button>
           <button
             type="button"
-            aria-label={`Delete exercise ${String(index + 1)}`}
+            aria-label={t('entry.delete', { number: index + 1 })}
             onClick={onRemove}
             className="rounded-lg border border-red-400/20 p-3 text-red-300"
           >
@@ -82,7 +84,8 @@ export function ExerciseEntryEditor({
         </div>
       </div>
       <label className="mt-4 block text-sm font-medium">
-        Entry notes <span className="text-zinc-500">(optional)</span>
+        {t('entry.notes')}{' '}
+        <span className="text-zinc-500">{t('entry.optional')}</span>
         <input
           value={entry.notes}
           onChange={(e) => {
@@ -128,7 +131,7 @@ export function ExerciseEntryEditor({
         className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-lg border border-lime-300/20 px-3 text-sm font-semibold text-lime-300"
       >
         <Plus className="size-4" />
-        Add set
+        {t('set.add')}
       </button>
     </fieldset>
   )

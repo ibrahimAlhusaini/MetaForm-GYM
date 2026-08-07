@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router'
 import { ConfirmationDialog } from '../components/ConfirmationDialog.js'
 import { SessionLogCard } from '../components/SessionLogCard.js'
@@ -35,6 +36,7 @@ const moved = <T,>(items: T[], index: number, direction: -1 | 1): T[] => {
   return next
 }
 export function SessionDetailPage() {
+  const { t } = useTranslation('weightTracker')
   const { sessionId = '' } = useParams()
   const navigate = useNavigate()
   const detail = useSessionDetail(sessionId)
@@ -61,18 +63,13 @@ export function SessionDetailPage() {
       await operation()
       detail.retry()
     } catch (reason) {
-      setError(
-        weightTrackerErrorMessage(
-          reason,
-          'We could not update this workout. Please try again.',
-        ),
-      )
+      setError(weightTrackerErrorMessage(reason, t('errors.updateWorkout')))
     } finally {
       setPending(false)
     }
   }
   if (detail.state.status === 'loading')
-    return <WeightTrackerSkeleton label="Loading workout" />
+    return <WeightTrackerSkeleton label={t('loading.workout')} />
   if (detail.state.status === 'error')
     return (
       <WeightTrackerErrorState
@@ -129,7 +126,7 @@ export function SessionDetailPage() {
       ) : null}
       <section className="mt-7">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Exercises</h2>
+          <h2 className="text-2xl font-semibold">{t('detail.exercises')}</h2>
           {!session.completedAt ? (
             <button
               type="button"
@@ -139,21 +136,21 @@ export function SessionDetailPage() {
               className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-lime-300/20 px-3 font-semibold text-lime-300"
             >
               <Plus className="size-4" />
-              Add machine
+              {t('detail.addMachine')}
             </button>
           ) : null}
         </div>
         {addingLog ? (
           <div className="mt-4 flex flex-wrap gap-3 rounded-xl border border-lime-300/20 p-4">
             <select
-              aria-label="Machine to add"
+              aria-label={t('detail.machineToAdd')}
               value={machineId}
               onChange={(e) => {
                 setMachineId(e.target.value)
               }}
               className="min-h-11 min-w-60 flex-1 rounded-xl border border-white/10 bg-[#151719] px-3"
             >
-              <option value="">Choose a machine</option>
+              <option value="">{t('detail.chooseMachine')}</option>
               {machines.state.status === 'success'
                 ? machines.state.data.items.map((machine) => (
                     <option key={machine.id} value={machine.id}>
@@ -180,15 +177,15 @@ export function SessionDetailPage() {
               }
               className="rounded-xl bg-lime-300 px-4 font-semibold text-zinc-950 disabled:opacity-50"
             >
-              Add entry
+              {t('detail.addEntry')}
             </button>
           </div>
         ) : null}
         <div className="mt-4 space-y-4">
           {session.exerciseLogs.length === 0 ? (
             <EmptyState
-              title="No exercises yet"
-              description="Add a custom machine to start recording sets."
+              title={t('detail.emptyTitle')}
+              description={t('detail.emptyDescription')}
             />
           ) : (
             session.exerciseLogs.map((log, index) => (
@@ -216,15 +213,14 @@ export function SessionDetailPage() {
       </section>
       {session.completedAt ? (
         <p className="mt-6 rounded-xl border border-lime-300/15 bg-lime-300/5 p-4 text-sm text-zinc-300">
-          This completed workout contributes to dashboard strength analytics and
-          source history.
+          {t('detail.analyticsNote')}
         </p>
       ) : null}
       <ConfirmationDialog
         open={confirm === 'complete'}
-        title="Complete this workout?"
-        description="Completion uses the current time and recalculates PR indicators. Completed history feeds dashboard analytics."
-        confirmLabel="Complete workout"
+        title={t('detail.completeTitle')}
+        description={t('detail.completeDescription')}
+        confirmLabel={t('detail.complete')}
         destructive={false}
         pending={pending}
         onClose={() => {
@@ -238,9 +234,9 @@ export function SessionDetailPage() {
       />
       <ConfirmationDialog
         open={confirm === 'delete'}
-        title="Delete this workout?"
-        description="This permanently removes the session, exercise logs, sets, and their contribution to analytics."
-        confirmLabel="Delete workout"
+        title={t('detail.deleteTitle')}
+        description={t('detail.deleteDescription')}
+        confirmLabel={t('detail.confirmDelete')}
         pending={pending}
         onClose={() => {
           setConfirm(null)
@@ -250,10 +246,7 @@ export function SessionDetailPage() {
             .then(() => navigate('/app/weights/sessions'))
             .catch((reason: unknown) => {
               setError(
-                weightTrackerErrorMessage(
-                  reason,
-                  'We could not delete this workout.',
-                ),
+                weightTrackerErrorMessage(reason, t('errors.deleteWorkout')),
               )
             })
         }

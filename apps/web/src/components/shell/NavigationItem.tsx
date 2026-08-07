@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import {
   appPaths,
   type AppNavigationItem,
@@ -10,6 +11,7 @@ interface NavigationItemProps {
 }
 
 export function NavigationItem({ item, onNavigate }: NavigationItemProps) {
+  const { t } = useTranslation('navigation')
   const Icon = item.icon
 
   return (
@@ -31,7 +33,7 @@ export function NavigationItem({ item, onNavigate }: NavigationItemProps) {
         strokeWidth={1.8}
         aria-hidden="true"
       />
-      <span>{item.label}</span>
+      <span>{t(item.labelKey)}</span>
     </NavLink>
   )
 }

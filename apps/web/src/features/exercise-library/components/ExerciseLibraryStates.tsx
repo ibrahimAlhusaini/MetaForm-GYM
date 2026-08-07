@@ -1,4 +1,5 @@
 import { AlertTriangle, Dumbbell, LoaderCircle, SearchX } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function ExerciseLibrarySkeleton({ label }: { label: string }) {
   return (
@@ -23,6 +24,7 @@ export function ExerciseLibraryErrorState({
   message: string
   onRetry: () => void
 }) {
+  const { t } = useTranslation(['exerciseLibrary', 'common'])
   return (
     <div
       role="alert"
@@ -32,20 +34,23 @@ export function ExerciseLibraryErrorState({
         className="mx-auto size-8 text-red-300"
         aria-hidden="true"
       />
-      <h2 className="mt-4 text-xl font-semibold">Unable to load exercises</h2>
+      <h2 className="mt-4 text-xl font-semibold">
+        {t('exerciseLibrary:errors.title')}
+      </h2>
       <p className="mt-2 text-zinc-400">{message}</p>
       <button
         type="button"
         onClick={onRetry}
         className="mt-5 min-h-11 rounded-xl bg-white px-5 font-semibold text-zinc-950 outline-none focus-visible:ring-2 focus-visible:ring-lime-300"
       >
-        Try again
+        {t('common:actions.retry')}
       </button>
     </div>
   )
 }
 
 export function ExerciseEmptyState({ filtered }: { filtered: boolean }) {
+  const { t } = useTranslation('exerciseLibrary')
   return (
     <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center">
       {filtered ? (
@@ -54,14 +59,10 @@ export function ExerciseEmptyState({ filtered }: { filtered: boolean }) {
         <Dumbbell className="mx-auto size-9 text-zinc-500" aria-hidden="true" />
       )}
       <h2 className="mt-4 text-xl font-semibold">
-        {filtered
-          ? 'No exercises match these filters'
-          : 'No published exercises yet'}
+        {t(filtered ? 'empty.filteredTitle' : 'empty.libraryTitle')}
       </h2>
       <p className="mx-auto mt-2 max-w-lg text-zinc-400">
-        {filtered
-          ? 'Clear or adjust the filters to broaden your results.'
-          : 'Published exercises will appear here when they become available.'}
+        {t(filtered ? 'empty.filteredDescription' : 'empty.libraryDescription')}
       </p>
     </div>
   )

@@ -1,4 +1,5 @@
 import { Calculator, RefreshCw, TriangleAlert } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function NutritionSkeleton({ label }: { label: string }) {
   return (
@@ -26,6 +27,7 @@ export function NutritionErrorState({
   message: string
   onRetry: () => void
 }) {
+  const { t } = useTranslation('common')
   return (
     <section
       role="alert"
@@ -42,7 +44,7 @@ export function NutritionErrorState({
         onClick={onRetry}
         className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 font-semibold text-zinc-950 outline-none focus-visible:ring-2 focus-visible:ring-lime-300"
       >
-        <RefreshCw className="size-4" aria-hidden="true" /> Try again
+        <RefreshCw className="size-4" aria-hidden="true" /> {t('actions.retry')}
       </button>
     </section>
   )

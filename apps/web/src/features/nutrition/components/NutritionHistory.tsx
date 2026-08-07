@@ -1,5 +1,6 @@
 import type { NutritionHistoryResponse } from '@metaform/shared-types'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { AsyncState } from '../../weight-tracker/hooks/useAsyncResource.js'
 import type { NutritionDateFilters } from '../types/nutrition.types.js'
 import {
@@ -24,6 +25,7 @@ export function NutritionHistory({
   onPageChange: (page: number) => void
   onRetry: () => void
 }) {
+  const { t } = useTranslation(['nutrition', 'common'])
   const [dates, setDates] = useState<NutritionDateFilters>({
     dateFrom: '',
     dateTo: '',
@@ -36,23 +38,23 @@ export function NutritionHistory({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 id="nutrition-history-title" className="text-xl font-semibold">
-            Calculation history
+            {t('nutrition:history.title')}
           </h2>
           <p className="mt-1 text-sm text-zinc-400">
-            Review prior estimates without changing them.
+            {t('nutrition:history.description')}
           </p>
         </div>
         <label className="text-sm">
-          Sort order
+          {t('nutrition:history.sort')}
           <select
             value={sortOrder}
             onChange={(event) => {
               onSortChange(event.target.value === 'asc' ? 'asc' : 'desc')
             }}
-            className="ml-2 min-h-10 rounded-lg border border-white/10 bg-black/30 px-3"
+            className="ms-2 min-h-10 rounded-lg border border-white/10 bg-black/30 px-3"
           >
-            <option value="desc">Newest first</option>
-            <option value="asc">Oldest first</option>
+            <option value="desc">{t('nutrition:history.newest')}</option>
+            <option value="asc">{t('nutrition:history.oldest')}</option>
           </select>
         </label>
       </div>
@@ -64,14 +66,14 @@ export function NutritionHistory({
         }}
       >
         <DateField
-          label="From date"
+          label={t('nutrition:history.from')}
           value={dates.dateFrom}
           onChange={(dateFrom) => {
             setDates((current) => ({ ...current, dateFrom }))
           }}
         />
         <DateField
-          label="To date"
+          label={t('nutrition:history.to')}
           value={dates.dateTo}
           onChange={(dateTo) => {
             setDates((current) => ({ ...current, dateTo }))
@@ -81,7 +83,7 @@ export function NutritionHistory({
           type="submit"
           className="min-h-11 rounded-xl bg-white px-4 font-semibold text-zinc-950 focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:outline-none"
         >
-          Apply dates
+          {t('nutrition:history.apply')}
         </button>
         <button
           type="button"
@@ -92,24 +94,24 @@ export function NutritionHistory({
           }}
           className="min-h-11 rounded-xl border border-white/15 px-4 font-semibold focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:outline-none"
         >
-          Clear
+          {t('nutrition:history.clear')}
         </button>
       </form>
       <div className="mt-5" aria-live="polite">
         {state.status === 'loading' ? (
-          <NutritionSkeleton label="Loading calculation history" />
+          <NutritionSkeleton label={t('nutrition:loading.history')} />
         ) : null}
         {state.status === 'error' ? (
           <NutritionErrorState
-            title="History unavailable"
+            title={t('nutrition:errors.historyTitle')}
             message={state.errorMessage}
             onRetry={onRetry}
           />
         ) : null}
         {state.status === 'success' && state.data.items.length === 0 ? (
           <NutritionEmptyState
-            title="No calculations found"
-            description="Try another date range, or complete your first nutrition calculation."
+            title={t('nutrition:history.emptyTitle')}
+            description={t('nutrition:history.emptyDescription')}
           />
         ) : null}
         {state.status === 'success' && state.data.items.length > 0 ? (
@@ -120,6 +122,13 @@ export function NutritionHistory({
             <Pagination
               pagination={state.data.pagination}
               onPageChange={onPageChange}
+              label={t('nutrition:history.pages')}
+              previous={t('common:actions.previous')}
+              next={t('common:actions.next')}
+              pageLabel={t('common:states.pageOf', {
+                page: state.data.pagination.page,
+                totalPages: Math.max(state.data.pagination.totalPages, 1),
+              })}
             />
           </div>
         ) : null}
@@ -155,13 +164,21 @@ function DateField({
 function Pagination({
   pagination,
   onPageChange,
+  label,
+  previous,
+  next,
+  pageLabel,
 }: {
   pagination: NutritionHistoryResponse['data']['pagination']
   onPageChange: (page: number) => void
+  label: string
+  previous: string
+  next: string
+  pageLabel: string
 }) {
   return (
     <nav
-      aria-label="Nutrition history pages"
+      aria-label={label}
       className="flex items-center justify-between gap-4 pt-2"
     >
       <button
@@ -172,11 +189,9 @@ function Pagination({
         }}
         className="min-h-10 rounded-lg border border-white/15 px-4 disabled:opacity-40"
       >
-        Previous
+        {previous}
       </button>
-      <span className="text-sm text-zinc-400">
-        Page {pagination.page} of {Math.max(pagination.totalPages, 1)}
-      </span>
+      <span className="text-sm text-zinc-400">{pageLabel}</span>
       <button
         type="button"
         disabled={!pagination.hasNextPage}
@@ -185,7 +200,7 @@ function Pagination({
         }}
         className="min-h-10 rounded-lg border border-white/15 px-4 disabled:opacity-40"
       >
-        Next
+        {next}
       </button>
     </nav>
   )

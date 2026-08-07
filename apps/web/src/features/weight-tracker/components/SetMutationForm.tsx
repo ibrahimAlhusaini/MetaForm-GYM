@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type {
   ExerciseSet,
   SetDraft,
   SetInput,
 } from '../types/weight-tracker.types.js'
 import { emptySetDraft, setPayload } from '../utils/payload-transformers.js'
-import { setDraftSchema } from '../validation/weight-tracker.schemas.js'
+import { createSetDraftSchema } from '../validation/weight-tracker.schemas.js'
 import { SetEditor } from './SetEditor.js'
 
 const fromSet = (set: ExerciseSet): SetDraft => ({
@@ -16,6 +17,7 @@ const fromSet = (set: ExerciseSet): SetDraft => ({
   distanceMeters: set.distanceMeters?.toString() ?? '',
   isWarmup: set.isWarmup,
 })
+
 export function SetMutationForm({
   set,
   nextNumber,
@@ -29,14 +31,16 @@ export function SetMutationForm({
   onSave: (input: SetInput) => Promise<void>
   onCancel: () => void
 }) {
+  const { t } = useTranslation(['weightTracker', 'common'])
+  const schema = useMemo(() => createSetDraftSchema(t), [t])
   const [draft, setDraft] = useState(() =>
     set ? fromSet(set) : emptySetDraft(nextNumber),
   )
   const [error, setError] = useState<string | null>(null)
   const submit = async () => {
-    const result = setDraftSchema.safeParse(draft)
+    const result = schema.safeParse(draft)
     if (!result.success) {
-      setError(result.error.issues[0]?.message ?? 'Check this set')
+      setError(result.error.issues[0]?.message ?? t('weightTracker:set.check'))
       return
     }
     setError(null)
@@ -59,7 +63,7 @@ export function SetMutationForm({
           onClick={onCancel}
           className="min-h-10 rounded-lg border border-white/10 px-3"
         >
-          Cancel
+          {t('common:actions.cancel')}
         </button>
         <button
           type="button"
@@ -67,7 +71,9 @@ export function SetMutationForm({
           onClick={() => void submit()}
           className="min-h-10 rounded-lg bg-lime-300 px-4 font-semibold text-zinc-950 disabled:opacity-50"
         >
-          {pending ? 'Saving…' : 'Save set'}
+          {pending
+            ? t('weightTracker:set.saving')
+            : t('weightTracker:set.save')}
         </button>
       </div>
     </div>

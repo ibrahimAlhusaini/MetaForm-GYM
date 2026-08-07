@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { ExerciseEntryEditor } from '../components/ExerciseEntryEditor.js'
 import {
@@ -11,7 +12,7 @@ import { createBulkSession } from '../services/weight-tracker.service.js'
 import type { EntryDraft, SessionDraft } from '../types/weight-tracker.types.js'
 import { toDateTimeLocal } from '../utils/formatters.js'
 import { emptySetDraft, sessionPayload } from '../utils/payload-transformers.js'
-import { sessionDraftSchema } from '../validation/weight-tracker.schemas.js'
+import { createSessionDraftSchema } from '../validation/weight-tracker.schemas.js'
 import { weightTrackerErrorMessage } from '../utils/error-message.js'
 
 const emptyEntry = (): EntryDraft => ({
@@ -29,6 +30,8 @@ const move = <T,>(items: T[], from: number, to: number): T[] => {
 }
 
 export function SessionBuilderPage() {
+  const { t } = useTranslation('weightTracker')
+  const sessionDraftSchema = useMemo(() => createSessionDraftSchema(t), [t])
   const navigate = useNavigate()
   const machineQuery = useMemo(
     () => ({
@@ -62,18 +65,13 @@ export function SessionBuilderPage() {
       const session = await createBulkSession(sessionPayload(draft))
       void navigate(`/app/weights/sessions/${session.id}`)
     } catch (reason) {
-      setApiError(
-        weightTrackerErrorMessage(
-          reason,
-          'We could not save this workout. Your entries are still here; please try again.',
-        ),
-      )
+      setApiError(weightTrackerErrorMessage(reason, t('errors.saveWorkout')))
     } finally {
       setSaving(false)
     }
   }
   if (machines.state.status === 'loading')
-    return <WeightTrackerSkeleton label="Loading workout builder" />
+    return <WeightTrackerSkeleton label={t('loading.builder')} />
   if (machines.state.status === 'error')
     return (
       <WeightTrackerErrorState
@@ -92,17 +90,14 @@ export function SessionBuilderPage() {
     >
       <header>
         <Link to="/app/weights" className="text-sm text-lime-300">
-          Back to Weight Tracker
+          {t('builder.back')}
         </Link>
-        <h1 className="mt-3 text-3xl font-semibold">Build a workout</h1>
-        <p className="mt-2 text-zinc-400">
-          Choose published exercises or your custom machines, add sets, and save
-          every entry atomically.
-        </p>
+        <h1 className="mt-3 text-3xl font-semibold">{t('builder.title')}</h1>
+        <p className="mt-2 text-zinc-400">{t('builder.description')}</p>
       </header>
       <section className="grid gap-4 rounded-2xl border border-white/8 bg-[#111315] p-5 sm:grid-cols-2">
         <label className="text-sm font-medium">
-          Start time
+          {t('builder.startTime')}
           <input
             type="datetime-local"
             value={draft.startedAt}
@@ -113,7 +108,7 @@ export function SessionBuilderPage() {
           />
         </label>
         <label className="text-sm font-medium">
-          Workout notes
+          {t('builder.notes')}
           <input
             value={draft.notes}
             onChange={(e) => {
@@ -131,7 +126,7 @@ export function SessionBuilderPage() {
             }}
             className="size-4 accent-lime-300"
           />
-          Complete this workout immediately after saving
+          {t('builder.completeImmediately')}
         </label>
       </section>
       <div className="space-y-5">
@@ -173,15 +168,15 @@ export function SessionBuilderPage() {
         className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-lime-300/20 px-4 font-semibold text-lime-300"
       >
         <Plus className="size-4" />
-        Add exercise entry
+        {t('builder.addEntry')}
       </button>
       {errors.length > 0 ? (
         <div
           role="alert"
           className="rounded-xl border border-red-400/20 bg-red-400/5 p-4 text-sm text-red-200"
         >
-          <p className="font-semibold">Review this workout:</p>
-          <ul className="mt-2 list-disc pl-5">
+          <p className="font-semibold">{t('builder.review')}</p>
+          <ul className="mt-2 list-disc ps-5">
             {[...new Set(errors)].map((error) => (
               <li key={error}>{error}</li>
             ))}
@@ -203,10 +198,10 @@ export function SessionBuilderPage() {
           className="min-h-12 rounded-xl bg-lime-300 px-7 font-semibold text-zinc-950 disabled:opacity-50"
         >
           {saving
-            ? 'Saving workout…'
+            ? t('builder.saving')
             : draft.completeImmediately
-              ? 'Save and complete workout'
-              : 'Save workout'}
+              ? t('builder.saveComplete')
+              : t('builder.save')}
         </button>
       </div>
     </form>

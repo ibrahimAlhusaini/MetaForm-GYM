@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { SetDraft } from '../types/weight-tracker.types.js'
 
 const fieldClass =
@@ -20,19 +21,20 @@ export function SetEditor({
   onMove: (direction: -1 | 1) => void
   onRemove: () => void
 }) {
+  const { t } = useTranslation('weightTracker')
   const update = (field: keyof SetDraft, value: string | boolean) => {
     onChange({ ...set, [field]: value })
   }
   return (
     <fieldset className="rounded-xl border border-white/8 bg-black/15 p-3">
       <legend className="px-1 text-sm font-semibold text-zinc-300">
-        Set {String(index + 1)}
+        {t('set.title', { number: index + 1 })}
       </legend>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <label className="text-xs text-zinc-400">
-          Weight kg
+          {t('set.weight')}
           <input
-            aria-label={`Set ${String(index + 1)} weight kg`}
+            aria-label={t('set.weightLabel', { number: index + 1 })}
             type="number"
             min="0"
             step="0.01"
@@ -44,9 +46,9 @@ export function SetEditor({
           />
         </label>
         <label className="text-xs text-zinc-400">
-          Reps
+          {t('set.reps')}
           <input
-            aria-label={`Set ${String(index + 1)} reps`}
+            aria-label={t('set.repsLabel', { number: index + 1 })}
             type="number"
             min="0"
             step="1"
@@ -58,9 +60,9 @@ export function SetEditor({
           />
         </label>
         <label className="text-xs text-zinc-400">
-          Duration sec
+          {t('set.duration')}
           <input
-            aria-label={`Set ${String(index + 1)} duration seconds`}
+            aria-label={t('set.durationLabel', { number: index + 1 })}
             type="number"
             min="0"
             step="1"
@@ -72,9 +74,9 @@ export function SetEditor({
           />
         </label>
         <label className="text-xs text-zinc-400">
-          Distance m
+          {t('set.distance')}
           <input
-            aria-label={`Set ${String(index + 1)} distance meters`}
+            aria-label={t('set.distanceLabel', { number: index + 1 })}
             type="number"
             min="0"
             step="0.01"
@@ -87,7 +89,7 @@ export function SetEditor({
         </label>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <label className="mr-auto inline-flex items-center gap-2 text-sm">
+        <label className="me-auto inline-flex items-center gap-2 text-sm">
           <input
             type="checkbox"
             checked={set.isWarmup}
@@ -96,11 +98,11 @@ export function SetEditor({
             }}
             className="size-4 accent-lime-300"
           />
-          Warmup
+          {t('set.warmup')}
         </label>
         <button
           type="button"
-          aria-label={`Move set ${String(index + 1)} up`}
+          aria-label={t('set.moveUp', { number: index + 1 })}
           disabled={index === 0}
           onClick={() => {
             onMove(-1)
@@ -111,7 +113,7 @@ export function SetEditor({
         </button>
         <button
           type="button"
-          aria-label={`Move set ${String(index + 1)} down`}
+          aria-label={t('set.moveDown', { number: index + 1 })}
           disabled={index === total - 1}
           onClick={() => {
             onMove(1)
@@ -122,7 +124,7 @@ export function SetEditor({
         </button>
         <button
           type="button"
-          aria-label={`Delete set ${String(index + 1)}`}
+          aria-label={t('set.delete', { number: index + 1 })}
           onClick={onRemove}
           className="rounded-lg border border-red-400/20 p-2 text-red-300"
         >

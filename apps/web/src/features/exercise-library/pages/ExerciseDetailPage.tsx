@@ -1,4 +1,5 @@
 import { ArrowLeft, CheckCircle2, Info, TriangleAlert } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 import {
   ExerciseLibraryErrorState,
@@ -17,10 +18,13 @@ import {
 } from '../utils/exercise-formatters.js'
 
 export function ExerciseDetailPage() {
+  const { t } = useTranslation(['exerciseLibrary', 'common'])
   const { exerciseId = '' } = useParams()
   const resource = useExerciseDetail(exerciseId)
   if (resource.state.status === 'loading')
-    return <ExerciseLibrarySkeleton label="Loading exercise details" />
+    return (
+      <ExerciseLibrarySkeleton label={t('exerciseLibrary:loading.detail')} />
+    )
   if (resource.state.status === 'error')
     return (
       <ExerciseLibraryErrorState
@@ -39,8 +43,8 @@ export function ExerciseDetailPage() {
         to="/app/exercises"
         className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-lime-300 outline-none focus-visible:ring-2 focus-visible:ring-lime-300"
       >
-        <ArrowLeft className="size-4" aria-hidden="true" /> Back to Exercise
-        Library
+        <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden="true" />{' '}
+        {t('exerciseLibrary:detail.back')}
       </Link>
       <header className="mt-5">
         <p className="text-sm font-semibold tracking-[.18em] text-lime-300 uppercase">
@@ -64,7 +68,9 @@ export function ExerciseDetailPage() {
           />
           <ExerciseMedia
             src={exercise.thumbnailUrl}
-            alt={`${exercise.name} reference position`}
+            alt={t('exerciseLibrary:detail.referenceAlt', {
+              name: exercise.name,
+            })}
             className="max-h-80 w-full rounded-2xl"
           />
         </div>
@@ -73,59 +79,59 @@ export function ExerciseDetailPage() {
           className="rounded-2xl border border-white/10 bg-[#111315] p-6"
         >
           <h2 id="classification-heading" className="text-xl font-semibold">
-            Exercise profile
+            {t('exerciseLibrary:detail.profile')}
           </h2>
           <dl className="mt-5 grid grid-cols-2 gap-5 text-sm">
             <DetailFact
-              label="Primary muscle"
+              label={t('exerciseLibrary:detail.primaryMuscle')}
               value={primaryMuscleLabel(exercise.primaryMuscle)}
             />
             <DetailFact
-              label="Subgroup"
+              label={t('exerciseLibrary:detail.subgroup')}
               value={subgroupLabel(exercise.muscleSubgroup)}
             />
             <DetailFact
-              label="Equipment"
+              label={t('exerciseLibrary:detail.equipment')}
               value={equipmentLabel(exercise.equipmentType)}
             />
             <DetailFact
-              label="Difficulty"
+              label={t('exerciseLibrary:detail.difficulty')}
               value={difficultyLabel(exercise.difficultyLevel)}
             />
             <DetailFact
-              label="Movement"
+              label={t('exerciseLibrary:detail.movement')}
               value={movementLabel(exercise.movementType)}
             />
             <DetailFact
-              label="Recommended"
-              value={recommendation ?? 'Not specified'}
+              label={t('exerciseLibrary:detail.recommended')}
+              value={recommendation ?? t('common:states.notSpecified')}
             />
           </dl>
           <div className="mt-6 border-t border-white/10 pt-5">
             <h3 className="text-sm font-medium text-zinc-500">
-              Secondary muscles
+              {t('exerciseLibrary:detail.secondaryMuscles')}
             </h3>
             <p className="mt-2 text-zinc-200">
               {exercise.secondaryMuscles.length > 0
                 ? exercise.secondaryMuscles.map(primaryMuscleLabel).join(', ')
-                : 'None specified'}
+                : t('exerciseLibrary:detail.noneSpecified')}
             </p>
           </div>
         </section>
       </div>
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <ContentList
-          title="Instructions"
+          title={t('exerciseLibrary:detail.instructions')}
           items={exercise.instructions}
           ordered
           icon="check"
-          empty="No written instructions are available for this exercise."
+          empty={t('exerciseLibrary:detail.noInstructions')}
         />
         <ContentList
-          title="Common mistakes"
+          title={t('exerciseLibrary:detail.mistakes')}
           items={exercise.commonMistakes}
           icon="warning"
-          empty="No common mistakes have been documented."
+          empty={t('exerciseLibrary:detail.noMistakes')}
         />
       </div>
     </article>
@@ -163,13 +169,13 @@ function ContentList({
       </h2>
       {items.length > 0 ? (
         ordered ? (
-          <ol className="mt-5 list-decimal space-y-3 pl-5 leading-7 text-zinc-300">
+          <ol className="mt-5 list-decimal space-y-3 ps-5 leading-7 text-zinc-300">
             {items.map((item, index) => (
               <li key={`${String(index)}-${item}`}>{item}</li>
             ))}
           </ol>
         ) : (
-          <ul className="mt-5 list-disc space-y-3 pl-5 leading-7 text-zinc-300">
+          <ul className="mt-5 list-disc space-y-3 ps-5 leading-7 text-zinc-300">
             {items.map((item, index) => (
               <li key={`${String(index)}-${item}`}>{item}</li>
             ))}

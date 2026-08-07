@@ -1,4 +1,5 @@
 import { Library, Settings2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { EntryDraft, Machine } from '../types/weight-tracker.types.js'
 import { ExerciseOptionPicker } from './ExerciseOptionPicker.js'
 
@@ -11,6 +12,7 @@ export function ExerciseSourceSelector({
   machines: Machine[]
   onChange: (entry: EntryDraft) => void
 }) {
+  const { t } = useTranslation('weightTracker')
   const selectType = (sourceType: EntryDraft['sourceType']) => {
     onChange({
       ...entry,
@@ -22,15 +24,15 @@ export function ExerciseSourceSelector({
   return (
     <div>
       <fieldset>
-        <legend className="text-sm font-medium">Exercise source</legend>
+        <legend className="text-sm font-medium">{t('source.label')}</legend>
         <div
           role="radiogroup"
-          aria-label="Exercise source"
+          aria-label={t('source.label')}
           className="mt-2 grid gap-2 sm:grid-cols-2"
         >
           <SourceTypeButton
             active={entry.sourceType === 'exercise'}
-            label="Exercise Library"
+            label={t('source.library')}
             icon="library"
             onClick={() => {
               selectType('exercise')
@@ -38,7 +40,7 @@ export function ExerciseSourceSelector({
           />
           <SourceTypeButton
             active={entry.sourceType === 'machine'}
-            label="My Machines"
+            label={t('source.machines')}
             icon="machine"
             onClick={() => {
               selectType('machine')
@@ -48,7 +50,7 @@ export function ExerciseSourceSelector({
       </fieldset>
       {entry.sourceType === 'machine' ? (
         <label className="mt-4 block text-sm font-medium">
-          Custom machine
+          {t('source.customMachine')}
           <select
             value={entry.customMachineId}
             onChange={(event) => {
@@ -60,7 +62,7 @@ export function ExerciseSourceSelector({
             }}
             className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3"
           >
-            <option value="">Choose a machine</option>
+            <option value="">{t('source.chooseMachine')}</option>
             {machines.map((machine) => (
               <option key={machine.id} value={machine.id}>
                 {machine.name}
@@ -69,7 +71,7 @@ export function ExerciseSourceSelector({
           </select>
           {machines.length === 0 ? (
             <span className="mt-2 block text-sm font-normal text-zinc-500">
-              You have no custom machines yet.
+              {t('source.noMachines')}
             </span>
           ) : null}
         </label>
