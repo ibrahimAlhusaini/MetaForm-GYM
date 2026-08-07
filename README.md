@@ -2,6 +2,10 @@
 
 Production-oriented fitness analytics monorepo foundation. This stage contains only the application shell, API infrastructure, PostgreSQL/Prisma configuration, and health check.
 
+The independent read-only Python analytics and EDA workspace is documented in
+[`data-science/README.md`](data-science/README.md). It is intentionally not an npm
+workspace and does not alter application runtime behavior.
+
 ## Requirements
 
 - Node.js 22.12 or newer
