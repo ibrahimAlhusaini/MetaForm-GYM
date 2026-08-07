@@ -2,6 +2,28 @@ export interface HealthResponse {
   success: true
   message: string
 }
+export type {
+  AiCoachCapabilitiesResponse,
+  AiCoachCapabilityDefinition,
+  AiCoachCapabilityType,
+  AiCoachEvidence,
+  AiCoachFinding,
+  AiCoachFindingSeverity,
+  AiCoachLanguage,
+  AiCoachMetadata,
+  AiCoachPagination,
+  AiCoachRecommendation,
+  AiCoachResult,
+  AiCoachSelectionSummary,
+  AiCoachSessionCreateRequest,
+  AiCoachSessionDetail,
+  AiCoachSessionHistoryResponse,
+  AiCoachSessionResponse,
+  AiCoachSessionStatus,
+  AiCoachSessionSummary,
+  AiCoachSourceSelection,
+  AiCoachSourceType,
+} from './ai-coach.js'
 
 export type {
   BodyWeightPoint,
