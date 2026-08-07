@@ -15,6 +15,7 @@
     "test:exercise-library": "vitest run --config vitest.config.ts tests/exercise-library.public.integration.test.ts tests/exercise-library.admin.integration.test.ts",
     "test:nutrition": "vitest run --config vitest.config.ts tests/nutrition.calculator.test.ts tests/nutrition.integration.test.ts",
     "test:workout-plans": "vitest run --config vitest.config.ts tests/workout-plans.discovery.integration.test.ts tests/workout-plans.mutations.integration.test.ts tests/workout-plans.admin-compatibility.integration.test.ts",
+    "test:profile": "vitest run --config vitest.config.ts tests/profile.unit.test.ts tests/profile.integration.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"

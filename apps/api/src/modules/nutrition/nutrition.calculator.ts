@@ -11,6 +11,7 @@ import {
   PROTEIN_GRAMS_PER_KG,
 } from './nutrition.constants.js'
 import type { NutritionCalculatorInput } from './nutrition.types.js'
+export { ageFromBirthDate } from '../../utils/age.js'
 
 export const roundTo = (value: number, decimals: number): number => {
   const factor = 10 ** decimals
@@ -22,16 +23,6 @@ export const assertFiniteNutritionValues = (
 ): void => {
   if (values.some((value) => !Number.isFinite(value)))
     throw new RangeError('Nutrition calculation produced a non-finite value')
-}
-
-export const ageFromBirthDate = (birthDate: Date, now = new Date()): number => {
-  let age = now.getUTCFullYear() - birthDate.getUTCFullYear()
-  const birthdayPending =
-    now.getUTCMonth() < birthDate.getUTCMonth() ||
-    (now.getUTCMonth() === birthDate.getUTCMonth() &&
-      now.getUTCDate() < birthDate.getUTCDate())
-  if (birthdayPending) age -= 1
-  return age
 }
 
 export const bmiCategoryFor = (bmi: number): NutritionBmiCategory => {

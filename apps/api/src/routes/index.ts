@@ -7,6 +7,7 @@ import { adminExerciseRouter } from '../modules/exercise-library/admin-exercise.
 import { nutritionRouter } from '../modules/nutrition/nutrition.routes.js'
 import { workoutPlanRouter } from '../modules/workout-plans/workout-plan.routes.js'
 import { adminWorkoutPlanRouter } from '../modules/workout-plans/admin-workout-plan.routes.js'
+import { profileRouter } from '../modules/profile/profile.routes.js'
 import { healthRouter } from './health.routes.js'
 
 export const apiRouter = Router()
@@ -20,3 +21,4 @@ apiRouter.use('/admin/exercises', adminExerciseRouter)
 apiRouter.use('/nutrition', nutritionRouter)
 apiRouter.use('/workout-plans', workoutPlanRouter)
 apiRouter.use('/admin/workout-plans', adminWorkoutPlanRouter)
+apiRouter.use('/profile', profileRouter)

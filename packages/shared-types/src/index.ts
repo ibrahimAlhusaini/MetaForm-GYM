@@ -50,6 +50,17 @@ export type {
   NutritionResolvedInputs,
 } from './nutrition.js'
 export type {
+  ProfileCompleteness,
+  ProfileCompletenessFields,
+  ProfileCompletenessResponse,
+  ProfileDetail,
+  ProfileDetailResponse,
+  ProfileSummary,
+  ProfileSummaryResponse,
+  ProfileUpdateRequest,
+  ProfileUpdateResponse,
+} from './profile.js'
+export type {
   CloneWorkoutPlanRequest,
   CreatePlannedExerciseRequest,
   CreateSystemWorkoutPlanRequest,
