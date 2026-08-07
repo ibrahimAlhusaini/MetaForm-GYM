@@ -14,6 +14,7 @@ export const errorHandler: ErrorRequestHandler = (
     response.status(error.statusCode).json({
       success: false,
       message: error.message,
+      ...(error.details ? { details: error.details } : {}),
     })
     return
   }

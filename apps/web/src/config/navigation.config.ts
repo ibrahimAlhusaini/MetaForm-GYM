@@ -60,10 +60,9 @@ export const appNavigationItems: readonly AppNavigationItem[] = [
   {
     id: 'exercises',
     path: appPaths.exercises,
-    label: 'Exercise Videos',
-    pageTitle: 'Exercise Videos',
-    description:
-      'The guided exercise library will be introduced in a future stage.',
+    label: 'Exercise Library',
+    pageTitle: 'Exercise Library',
+    description: 'Browse published movements and training guidance.',
     icon: Dumbbell,
   },
   {
@@ -80,8 +79,7 @@ export const appNavigationItems: readonly AppNavigationItem[] = [
     path: appPaths.calories,
     label: 'Calories',
     pageTitle: 'Calories Calculator',
-    description:
-      'Nutrition calculations will be implemented in a dedicated stage.',
+    description: 'Calculate calorie, macronutrient, and hydration estimates.',
     icon: Calculator,
   },
   {

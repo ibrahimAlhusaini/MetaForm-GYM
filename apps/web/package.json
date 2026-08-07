@@ -9,6 +9,8 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:weight-tracker": "vitest run tests/weight-tracker.machines.test.tsx tests/weight-tracker.sessions.test.tsx tests/weight-tracker.history.test.tsx",
+    "test:exercise-library": "vitest run tests/exercise-library.test.tsx tests/exercise-detail.test.tsx tests/weight-tracker.sessions.test.tsx",
+    "test:nutrition": "vitest run tests/nutrition.test.tsx tests/application-shell.test.tsx",
     "test:watch": "vitest",
     "preview": "vite preview"
   },

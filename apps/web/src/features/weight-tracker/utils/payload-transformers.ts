@@ -34,8 +34,9 @@ export const sessionPayload = (draft: SessionDraft): BulkSessionInput => ({
   notes: nullableText(draft.notes),
   workoutPlanId: null,
   entries: draft.entries.map((entry, orderIndex) => ({
-    exerciseId: null,
-    customMachineId: entry.customMachineId,
+    exerciseId: entry.sourceType === 'exercise' ? entry.exerciseId : null,
+    customMachineId:
+      entry.sourceType === 'machine' ? entry.customMachineId : null,
     notes: nullableText(entry.notes),
     orderIndex,
     sets: entry.sets.map((set, index) => setPayload(set, index + 1)),

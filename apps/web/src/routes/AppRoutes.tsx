@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { AppLayout } from '../layouts/AppLayout.js'
 import { DashboardPage } from '../features/dashboard/DashboardPage.js'
+import { ExerciseDetailPage } from '../features/exercise-library/pages/ExerciseDetailPage.js'
+import { ExerciseLibraryPage } from '../features/exercise-library/pages/ExerciseLibraryPage.js'
+import { CaloriesCalculatorPage } from '../features/nutrition/pages/CaloriesCalculatorPage.js'
 import { MachineFormPage } from '../features/weight-tracker/pages/MachineFormPage.js'
 import { MachinesPage } from '../features/weight-tracker/pages/MachinesPage.js'
 import { SessionBuilderPage } from '../features/weight-tracker/pages/SessionBuilderPage.js'
@@ -47,17 +50,17 @@ export function AppRoutes() {
               element={<SourceHistoryPage />}
             />
           </Route>
-          <Route
-            path={appRouteSegments.exercises}
-            element={<FeaturePlaceholderPage navigationId="exercises" />}
-          />
+          <Route path={appRouteSegments.exercises}>
+            <Route index element={<ExerciseLibraryPage />} />
+            <Route path=":exerciseId" element={<ExerciseDetailPage />} />
+          </Route>
           <Route
             path={appRouteSegments.aiCoach}
             element={<FeaturePlaceholderPage navigationId="aiCoach" />}
           />
           <Route
             path={appRouteSegments.calories}
-            element={<FeaturePlaceholderPage navigationId="calories" />}
+            element={<CaloriesCalculatorPage />}
           />
           <Route
             path={appRouteSegments.plans}

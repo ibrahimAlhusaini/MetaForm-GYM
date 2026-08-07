@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ExerciseEntryEditor } from '../components/ExerciseEntryEditor.js'
 import {
-  EmptyState,
   WeightTrackerErrorState,
   WeightTrackerSkeleton,
 } from '../components/AsyncStates.js'
@@ -16,6 +15,8 @@ import { sessionDraftSchema } from '../validation/weight-tracker.schemas.js'
 import { weightTrackerErrorMessage } from '../utils/error-message.js'
 
 const emptyEntry = (): EntryDraft => ({
+  sourceType: 'machine',
+  exerciseId: '',
   customMachineId: '',
   notes: '',
   sets: [emptySetDraft()],
@@ -80,26 +81,6 @@ export function SessionBuilderPage() {
         onRetry={machines.retry}
       />
     )
-  if (machines.state.data.items.length === 0)
-    return (
-      <div>
-        <h1 className="text-3xl font-semibold">Build a workout</h1>
-        <div className="mt-7">
-          <EmptyState
-            title="Add a machine first"
-            description="The Exercise Library does not yet provide a read API, so this builder currently uses your custom machines."
-            action={
-              <Link
-                to="/app/weights/machines/new"
-                className="inline-flex min-h-11 items-center rounded-xl bg-lime-300 px-5 font-semibold text-zinc-950"
-              >
-                Add machine
-              </Link>
-            }
-          />
-        </div>
-      </div>
-    )
   const machineItems = machines.state.data.items
   return (
     <form
@@ -115,8 +96,8 @@ export function SessionBuilderPage() {
         </Link>
         <h1 className="mt-3 text-3xl font-semibold">Build a workout</h1>
         <p className="mt-2 text-zinc-400">
-          Save every entry atomically. Exercise Library selection will be added
-          when its read API is available.
+          Choose published exercises or your custom machines, add sets, and save
+          every entry atomically.
         </p>
       </header>
       <section className="grid gap-4 rounded-2xl border border-white/8 bg-[#111315] p-5 sm:grid-cols-2">
@@ -156,7 +137,7 @@ export function SessionBuilderPage() {
       <div className="space-y-5">
         {draft.entries.map((entry, index) => (
           <ExerciseEntryEditor
-            key={`${String(index)}-${entry.customMachineId}`}
+            key={String(index)}
             entry={entry}
             index={index}
             total={draft.entries.length}
@@ -192,7 +173,7 @@ export function SessionBuilderPage() {
         className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-lime-300/20 px-4 font-semibold text-lime-300"
       >
         <Plus className="size-4" />
-        Add machine entry
+        Add exercise entry
       </button>
       {errors.length > 0 ? (
         <div

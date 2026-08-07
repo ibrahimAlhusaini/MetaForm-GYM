@@ -15,6 +15,25 @@ import {
   fetchMachines,
   fetchSessions,
 } from '../src/features/weight-tracker/services/weight-tracker.service.js'
+import {
+  fetchExerciseFilterOptions,
+  fetchExercises,
+} from '../src/features/exercise-library/services/exercise-library.service.js'
+import {
+  exercise,
+  exerciseFilterOptions,
+  exercisePagination,
+} from './fixtures/exercise-library.fixture.js'
+import {
+  completeNutritionProfile,
+  nutritionHistoryItem,
+  nutritionPagination,
+} from './fixtures/nutrition.fixture.js'
+import {
+  fetchLatestNutrition,
+  fetchNutritionHistory,
+  fetchNutritionProfileInputs,
+} from '../src/features/nutrition/services/nutrition.service.js'
 
 vi.mock('../src/services/auth.service.js', () => ({
   fetchCurrentUserRequest: vi.fn(),
@@ -32,6 +51,21 @@ vi.mock(
   () => ({
     fetchMachines: vi.fn(),
     fetchSessions: vi.fn(),
+  }),
+)
+vi.mock('../src/features/nutrition/services/nutrition.service.js', () => ({
+  calculateNutrition: vi.fn(),
+  fetchLatestNutrition: vi.fn(),
+  fetchNutritionHistory: vi.fn(),
+  fetchNutritionProfileInputs: vi.fn(),
+}))
+vi.mock(
+  '../src/features/exercise-library/services/exercise-library.service.js',
+  () => ({
+    fetchExercise: vi.fn(),
+    fetchExerciseFilterOptions: vi.fn(),
+    fetchExerciseOptions: vi.fn(),
+    fetchExercises: vi.fn(),
   }),
 )
 
@@ -68,6 +102,19 @@ beforeEach(() => {
   }
   vi.mocked(fetchMachines).mockResolvedValue({ items: [], pagination })
   vi.mocked(fetchSessions).mockResolvedValue({ items: [], pagination })
+  vi.mocked(fetchExerciseFilterOptions).mockResolvedValue(exerciseFilterOptions)
+  vi.mocked(fetchExercises).mockResolvedValue({
+    items: [exercise],
+    pagination: exercisePagination,
+  })
+  vi.mocked(fetchNutritionProfileInputs).mockResolvedValue(
+    completeNutritionProfile,
+  )
+  vi.mocked(fetchLatestNutrition).mockResolvedValue(nutritionHistoryItem)
+  vi.mocked(fetchNutritionHistory).mockResolvedValue({
+    items: [nutritionHistoryItem],
+    pagination: nutritionPagination,
+  })
 })
 
 describe('authenticated application shell', () => {
@@ -86,7 +133,7 @@ describe('authenticated application shell', () => {
     for (const label of [
       'Home',
       'Weight Tracker',
-      'Exercise Videos',
+      'Exercise Library',
       'AI Coach',
       'Calories',
       'Workout Plans',
@@ -113,11 +160,11 @@ describe('authenticated application shell', () => {
     renderAt('/app/exercises')
 
     expect(
-      screen.getByRole('heading', { name: 'Exercise Videos' }),
+      screen.getByRole('heading', { name: 'Exercise Library' }),
     ).toBeVisible()
     expect(
       screen.getByText(
-        'The guided exercise library will be introduced in a future stage.',
+        'Explore published exercises, refine by training focus, and open clear movement guidance.',
       ),
     ).toBeVisible()
   })
@@ -156,7 +203,9 @@ describe('authenticated application shell', () => {
 
     expect(drawer).not.toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { name: 'Calories Calculator' }),
+      await screen.findByRole('heading', {
+        name: 'Calories & Macronutrient Calculator',
+      }),
     ).toBeVisible()
   })
 
@@ -174,7 +223,7 @@ describe('authenticated application shell', () => {
   })
 
   it('still redirects unauthenticated application access to login', () => {
-    renderAt('/app/plans', false)
+    renderAt('/app/calories', false)
 
     expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
     expect(screen.queryByLabelText('Desktop sidebar')).not.toBeInTheDocument()

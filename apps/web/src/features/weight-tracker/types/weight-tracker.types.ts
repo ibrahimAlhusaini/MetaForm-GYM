@@ -186,6 +186,8 @@ export interface SetDraft {
   isWarmup: boolean
 }
 export interface EntryDraft {
+  sourceType: SourceType
+  exerciseId: string
   customMachineId: string
   notes: string
   sets: SetDraft[]

@@ -1,9 +1,5 @@
-import type {
-  PaginationInput,
-  PaginationMetadata,
-  SourceReference,
-  SourceType,
-} from './weight-tracker.types.js'
+import type { SourceReference, SourceType } from './weight-tracker.types.js'
+export { paginationMetadata, paginationSkip } from '../../utils/pagination.js'
 
 type Numeric = number | string | { toString(): string }
 
@@ -16,24 +12,6 @@ export const roundNumber = (value: Numeric, places = 2): number => {
 
 export const optionalNumber = (value: Numeric | null): number | null =>
   value === null ? null : roundNumber(value)
-
-export const paginationMetadata = (
-  input: PaginationInput,
-  totalItems: number,
-): PaginationMetadata => {
-  const totalPages = Math.ceil(totalItems / input.limit)
-  return {
-    page: input.page,
-    limit: input.limit,
-    totalItems,
-    totalPages,
-    hasNextPage: input.page < totalPages,
-    hasPreviousPage: input.page > 1,
-  }
-}
-
-export const paginationSkip = ({ page, limit }: PaginationInput): number =>
-  (page - 1) * limit
 
 export const sourceKey = (source: SourceReference): string =>
   source.exerciseId

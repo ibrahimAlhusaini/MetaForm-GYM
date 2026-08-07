@@ -58,12 +58,36 @@ export const setDraftSchema = z
 
 const entryDraftSchema = z
   .object({
-    customMachineId: z.uuid('Choose a machine'),
+    sourceType: z.enum(['exercise', 'machine']),
+    exerciseId: z.string(),
+    customMachineId: z.string(),
     notes: z.string().trim().max(TEXT_MAX),
     sets: z
       .array(setDraftSchema)
       .min(1, 'Add at least one set')
       .max(MAX_SETS_PER_LOG),
+  })
+  .superRefine((entry, context) => {
+    const exerciseSelected = z.uuid().safeParse(entry.exerciseId).success
+    const machineSelected = z.uuid().safeParse(entry.customMachineId).success
+    if (entry.sourceType === 'exercise' && !exerciseSelected)
+      context.addIssue({
+        code: 'custom',
+        path: ['exerciseId'],
+        message: 'Choose an Exercise Library exercise',
+      })
+    if (entry.sourceType === 'machine' && !machineSelected)
+      context.addIssue({
+        code: 'custom',
+        path: ['customMachineId'],
+        message: 'Choose a machine',
+      })
+    if (exerciseSelected === machineSelected)
+      context.addIssue({
+        code: 'custom',
+        path: ['sourceType'],
+        message: 'Choose exactly one exercise source',
+      })
   })
   .refine(
     (entry) =>
@@ -78,7 +102,7 @@ export const sessionDraftSchema = z.object({
   completeImmediately: z.boolean(),
   entries: z
     .array(entryDraftSchema)
-    .min(1, 'Add at least one machine')
+    .min(1, 'Add at least one exercise')
     .max(MAX_LOGS_PER_SESSION),
 })
 

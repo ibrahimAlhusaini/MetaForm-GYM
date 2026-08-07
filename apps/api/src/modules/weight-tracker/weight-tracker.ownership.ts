@@ -79,8 +79,8 @@ export const validateSource = async (
   },
 ): Promise<void> => {
   if (source.exerciseId) {
-    const exercise = await client.exercise.findUnique({
-      where: { id: source.exerciseId },
+    const exercise = await client.exercise.findFirst({
+      where: { id: source.exerciseId, isPublished: true },
       select: { id: true },
     })
     if (!exercise) notFound()
@@ -116,7 +116,9 @@ export const validateSources = async (
     ),
   ]
   const [exerciseCount, machineCount] = await Promise.all([
-    client.exercise.count({ where: { id: { in: exerciseIds } } }),
+    client.exercise.count({
+      where: { id: { in: exerciseIds }, isPublished: true },
+    }),
     client.customMachine.count({ where: { id: { in: machineIds }, userId } }),
   ])
   if (

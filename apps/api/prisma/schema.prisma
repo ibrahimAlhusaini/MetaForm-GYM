@@ -34,6 +34,17 @@ enum ActivityLevel {
   EXTREMELY_ACTIVE
 }
 
+enum BmiCategory {
+  UNDERWEIGHT
+  NORMAL
+  OVERWEIGHT
+  OBESITY
+}
+
+enum BmrFormula {
+  MIFFLIN_ST_JEOR
+}
+
 enum MuscleGroup {
   CHEST
   BACK
@@ -45,6 +56,47 @@ enum MuscleGroup {
   GLUTES
   LOWER_BACK
   FULL_BODY
+}
+
+enum MuscleSubgroup {
+  UPPER_CHEST
+  MIDDLE_CHEST
+  LOWER_CHEST
+  ALL_CHEST
+  LATS
+  UPPER_BACK
+  MIDDLE_BACK
+  TRAPS
+  ALL_BACK
+  FRONT_DELTS
+  SIDE_DELTS
+  REAR_DELTS
+  ALL_SHOULDERS
+  BICEPS_LONG_HEAD
+  BICEPS_SHORT_HEAD
+  BRACHIALIS
+  ALL_BICEPS
+  TRICEPS_LONG_HEAD
+  TRICEPS_LATERAL_HEAD
+  TRICEPS_MEDIAL_HEAD
+  ALL_TRICEPS
+  QUADRICEPS
+  HAMSTRINGS
+  CALVES
+  ADDUCTORS
+  ALL_LEGS
+  UPPER_ABS
+  LOWER_ABS
+  OBLIQUES
+  DEEP_CORE
+  ALL_CORE
+  GLUTE_MAXIMUS
+  GLUTE_MEDIUS
+  GLUTE_MINIMUS
+  ALL_GLUTES
+  ERECTOR_SPINAE
+  ALL_LOWER_BACK
+  ALL_FULL_BODY
 }
 
 enum EquipmentType {
@@ -160,6 +212,7 @@ model Exercise {
   slug                 String                @unique
   description          String?               @db.Text
   primaryMuscle        MuscleGroup
+  muscleSubgroup       MuscleSubgroup?
   secondaryMuscles     MuscleGroup[]         @default([])
   equipmentType        EquipmentType
   difficultyLevel      DifficultyLevel
@@ -177,6 +230,8 @@ model Exercise {
   workoutPlanExercises WorkoutPlanExercise[]
 
   @@index([primaryMuscle, isPublished])
+  @@index([muscleSubgroup, isPublished])
+  @@index([isPublished, name])
   @@index([equipmentType, isPublished])
   @@index([secondaryMuscles], type: Gin)
 }
@@ -305,21 +360,33 @@ model WorkoutPlanExercise {
 }
 
 model NutritionCalculation {
-  id                  String   @id @default(uuid()) @db.Uuid
-  userId              String   @db.Uuid
-  bmi                 Decimal  @db.Decimal(5, 2)
-  bmr                 Decimal  @db.Decimal(10, 2)
-  tdee                Decimal  @db.Decimal(10, 2)
-  maintenanceCalories Int
-  bulkingCalories     Int
-  cuttingCalories     Int
-  proteinGrams        Decimal  @db.Decimal(8, 2)
-  carbohydrateGrams   Decimal  @db.Decimal(8, 2)
-  fatGrams            Decimal  @db.Decimal(8, 2)
-  waterLiters         Decimal  @db.Decimal(5, 2)
-  calculatedAt        DateTime @default(now()) @db.Timestamptz(3)
-  createdAt           DateTime @default(now()) @db.Timestamptz(3)
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String         @id @default(uuid()) @db.Uuid
+  userId               String         @db.Uuid
+  bmi                  Decimal        @db.Decimal(5, 2)
+  bmr                  Decimal        @db.Decimal(10, 2)
+  tdee                 Decimal        @db.Decimal(10, 2)
+  maintenanceCalories  Int
+  bulkingCalories      Int
+  cuttingCalories      Int
+  proteinGrams         Decimal        @db.Decimal(8, 2)
+  carbohydrateGrams    Decimal        @db.Decimal(8, 2)
+  fatGrams             Decimal        @db.Decimal(8, 2)
+  waterLiters          Decimal        @db.Decimal(5, 2)
+  age                  Int?
+  gender               Gender?
+  heightCm             Decimal?       @db.Decimal(5, 2)
+  weightKg             Decimal?       @db.Decimal(6, 2)
+  activityLevel        ActivityLevel?
+  fitnessGoal          FitnessGoal?
+  recommendedCalories  Int?
+  bmiCategory          BmiCategory?
+  bmrFormula           BmrFormula?
+  calculationVersion   String?        @db.VarChar(20)
+  safetyFloorApplied   Boolean?
+  macroFallbackApplied Boolean?
+  calculatedAt         DateTime       @default(now()) @db.Timestamptz(3)
+  createdAt            DateTime       @default(now()) @db.Timestamptz(3)
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, calculatedAt(sort: Desc)])
 }

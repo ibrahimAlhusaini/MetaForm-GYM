@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import type { EntryDraft, Machine } from '../types/weight-tracker.types.js'
 import { emptySetDraft } from '../utils/payload-transformers.js'
 import { SetEditor } from './SetEditor.js'
+import { ExerciseSourceSelector } from './ExerciseSourceSelector.js'
 
 const move = <T,>(items: T[], from: number, to: number): T[] => {
   const next = [...items]
@@ -42,23 +43,11 @@ export function ExerciseEntryEditor({
         Exercise {String(index + 1)}
       </legend>
       <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
-        <label className="text-sm font-medium">
-          Custom machine
-          <select
-            value={entry.customMachineId}
-            onChange={(e) => {
-              onChange({ ...entry, customMachineId: e.target.value })
-            }}
-            className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3"
-          >
-            <option value="">Choose a machine</option>
-            {machines.map((machine) => (
-              <option key={machine.id} value={machine.id}>
-                {machine.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <ExerciseSourceSelector
+          entry={entry}
+          machines={machines}
+          onChange={onChange}
+        />
         <div className="flex items-end gap-2">
           <button
             type="button"

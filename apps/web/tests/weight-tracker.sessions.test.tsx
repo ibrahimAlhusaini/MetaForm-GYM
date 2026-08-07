@@ -6,12 +6,24 @@ import { SessionBuilderPage } from '../src/features/weight-tracker/pages/Session
 import { SessionDetailPage } from '../src/features/weight-tracker/pages/SessionDetailPage.js'
 import { SessionsPage } from '../src/features/weight-tracker/pages/SessionsPage.js'
 import * as service from '../src/features/weight-tracker/services/weight-tracker.service.js'
+import * as exerciseService from '../src/features/exercise-library/services/exercise-library.service.js'
 import {
   machine,
   pagination,
   sessionDetail,
   sessionSummary,
 } from './fixtures/weight-tracker.fixture.js'
+import { exerciseOption } from './fixtures/exercise-library.fixture.js'
+
+vi.mock(
+  '../src/features/exercise-library/services/exercise-library.service.js',
+  () => ({
+    fetchExercise: vi.fn(),
+    fetchExerciseFilterOptions: vi.fn(),
+    fetchExerciseOptions: vi.fn(),
+    fetchExercises: vi.fn(),
+  }),
+)
 
 const fixtureLog = sessionDetail.exerciseLogs[0]
 if (!fixtureLog) throw new Error('Session fixture requires one exercise log')
@@ -90,6 +102,9 @@ beforeEach(() => {
     vi.mocked(fn).mockResolvedValue(undefined)
   vi.mocked(service.updateLog).mockResolvedValue(fixtureLog)
   vi.mocked(service.updateSession).mockResolvedValue(sessionDetail)
+  vi.mocked(exerciseService.fetchExerciseOptions).mockResolvedValue([
+    exerciseOption,
+  ])
 })
 
 describe('session list', () => {
@@ -132,14 +147,14 @@ describe('new workout builder', () => {
     await actor.click(
       await screen.findByRole('button', { name: 'Save workout' }),
     )
-    expect(await screen.findByText('Add at least one machine')).toBeVisible()
+    expect(await screen.findByText('Add at least one exercise')).toBeVisible()
     expect(service.createBulkSession).not.toHaveBeenCalled()
   })
   it('adds a machine and multiple sets', async () => {
     const actor = userEvent.setup()
     renderBuilder()
     await actor.click(
-      await screen.findByRole('button', { name: 'Add machine entry' }),
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
     )
     await actor.selectOptions(
       screen.getByLabelText('Custom machine'),
@@ -154,7 +169,7 @@ describe('new workout builder', () => {
     const actor = userEvent.setup()
     renderBuilder()
     await actor.click(
-      await screen.findByRole('button', { name: 'Add machine entry' }),
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
     )
     await actor.selectOptions(
       screen.getByLabelText('Custom machine'),
@@ -169,7 +184,7 @@ describe('new workout builder', () => {
     const actor = userEvent.setup()
     renderBuilder()
     await actor.click(
-      await screen.findByRole('button', { name: 'Add machine entry' }),
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
     )
     await actor.selectOptions(
       screen.getByLabelText('Custom machine'),
@@ -204,7 +219,7 @@ describe('new workout builder', () => {
     const actor = userEvent.setup()
     renderBuilder()
     await actor.click(
-      await screen.findByRole('button', { name: 'Add machine entry' }),
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
     )
     await actor.selectOptions(
       screen.getByLabelText('Custom machine'),
@@ -217,6 +232,99 @@ describe('new workout builder', () => {
     )
     expect(screen.getByLabelText('Set 1 weight kg')).toHaveValue(42.5)
     expect(screen.queryByText('private raw error')).not.toBeInTheDocument()
+  })
+  it('offers both source types and searches bounded library options', async () => {
+    const actor = userEvent.setup()
+    renderBuilder()
+    await actor.click(
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
+    )
+    expect(
+      screen.getByRole('radio', { name: 'Exercise Library' }),
+    ).toBeVisible()
+    expect(screen.getByRole('radio', { name: 'My Machines' })).toBeVisible()
+    await actor.click(screen.getByRole('radio', { name: 'Exercise Library' }))
+    await actor.type(
+      screen.getByLabelText('Search Exercise Library'),
+      'incline',
+    )
+    await waitFor(() => {
+      expect(exerciseService.fetchExerciseOptions).toHaveBeenLastCalledWith({
+        limit: 20,
+        search: 'incline',
+      })
+    })
+    expect(
+      await screen.findByRole('option', {
+        name: /Incline Barbell Bench Press/,
+      }),
+    ).toBeVisible()
+  })
+  it('selects a global exercise and submits exactly one source', async () => {
+    const actor = userEvent.setup()
+    renderBuilder()
+    await actor.click(
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
+    )
+    await actor.click(screen.getByRole('radio', { name: 'Exercise Library' }))
+    await actor.click(
+      await screen.findByRole('option', {
+        name: /Incline Barbell Bench Press/,
+      }),
+    )
+    await actor.type(screen.getByLabelText('Set 1 weight kg'), '60')
+    await actor.click(screen.getByRole('button', { name: 'Save workout' }))
+    await waitFor(() => {
+      expect(service.createBulkSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entries: [
+            expect.objectContaining({
+              exerciseId: exerciseOption.id,
+              customMachineId: null,
+            }),
+          ],
+        }),
+      )
+    })
+  })
+  it('clears stale source IDs while preserving set data', async () => {
+    const actor = userEvent.setup()
+    renderBuilder()
+    await actor.click(
+      await screen.findByRole('button', { name: 'Add exercise entry' }),
+    )
+    await actor.selectOptions(
+      screen.getByLabelText('Custom machine'),
+      machine.id,
+    )
+    await actor.type(screen.getByLabelText('Set 1 weight kg'), '52.5')
+    await actor.click(screen.getByRole('radio', { name: 'Exercise Library' }))
+    expect(screen.getByLabelText('Set 1 weight kg')).toHaveValue(52.5)
+    await actor.click(
+      await screen.findByRole('option', {
+        name: /Incline Barbell Bench Press/,
+      }),
+    )
+    await actor.click(screen.getByRole('radio', { name: 'My Machines' }))
+    expect(screen.getByLabelText('Set 1 weight kg')).toHaveValue(52.5)
+    await actor.selectOptions(
+      screen.getByLabelText('Custom machine'),
+      machine.id,
+    )
+    await actor.click(screen.getByRole('button', { name: 'Save workout' }))
+    await waitFor(() => {
+      expect(service.createBulkSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entries: [
+            expect.objectContaining({
+              exerciseId: null,
+              customMachineId: machine.id,
+              sets: [expect.objectContaining({ weightKg: 52.5 })],
+            }),
+          ],
+        }),
+      )
+    })
   })
 })
 

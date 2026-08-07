@@ -1,0 +1,11 @@
+-- CreateEnum
+CREATE TYPE "MuscleSubgroup" AS ENUM ('UPPER_CHEST', 'MIDDLE_CHEST', 'LOWER_CHEST', 'ALL_CHEST', 'LATS', 'UPPER_BACK', 'MIDDLE_BACK', 'TRAPS', 'ALL_BACK', 'FRONT_DELTS', 'SIDE_DELTS', 'REAR_DELTS', 'ALL_SHOULDERS', 'BICEPS_LONG_HEAD', 'BICEPS_SHORT_HEAD', 'BRACHIALIS', 'ALL_BICEPS', 'TRICEPS_LONG_HEAD', 'TRICEPS_LATERAL_HEAD', 'TRICEPS_MEDIAL_HEAD', 'ALL_TRICEPS', 'QUADRICEPS', 'HAMSTRINGS', 'CALVES', 'ADDUCTORS', 'ALL_LEGS', 'UPPER_ABS', 'LOWER_ABS', 'OBLIQUES', 'DEEP_CORE', 'ALL_CORE', 'GLUTE_MAXIMUS', 'GLUTE_MEDIUS', 'GLUTE_MINIMUS', 'ALL_GLUTES', 'ERECTOR_SPINAE', 'ALL_LOWER_BACK', 'ALL_FULL_BODY');
+
+-- AlterTable
+ALTER TABLE "Exercise" ADD COLUMN     "muscleSubgroup" "MuscleSubgroup";
+
+-- CreateIndex
+CREATE INDEX "Exercise_muscleSubgroup_isPublished_idx" ON "Exercise"("muscleSubgroup", "isPublished");
+
+-- CreateIndex
+CREATE INDEX "Exercise_isPublished_name_idx" ON "Exercise"("isPublished", "name");
