@@ -1,26 +1,6 @@
-import type {
-  NutritionActivityLevel,
-  NutritionFitnessGoal,
-  NutritionGender,
-} from '@metaform/shared-types'
-
 export const NUTRITION_HISTORY_LIMIT = 10
-export const genderValues: NutritionGender[] = [
-  'MALE',
-  'FEMALE',
-  'PREFER_NOT_TO_SAY',
-]
-export const activityValues: NutritionActivityLevel[] = [
-  'SEDENTARY',
-  'LIGHT',
-  'MODERATE',
-  'VERY_ACTIVE',
-  'EXTREMELY_ACTIVE',
-]
-export const goalValues: NutritionFitnessGoal[] = [
-  'BUILD_MUSCLE',
-  'LOSE_FAT',
-  'MAINTAIN_WEIGHT',
-  'IMPROVE_STRENGTH',
-  'GENERAL_FITNESS',
-]
+export {
+  activityValues,
+  genderValues,
+  goalValues,
+} from '../../../i18n/enum-values.js'

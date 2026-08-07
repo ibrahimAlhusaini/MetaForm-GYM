@@ -9,6 +9,7 @@ export const translationNamespaces = [
   'exerciseLibrary',
   'nutrition',
   'workoutPlans',
+  'profile',
 ] as const
 
 export type TranslationNamespace = (typeof translationNamespaces)[number]

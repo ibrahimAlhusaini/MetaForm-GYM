@@ -34,6 +34,16 @@ import {
   fetchNutritionHistory,
   fetchNutritionProfileInputs,
 } from '../src/features/nutrition/services/nutrition.service.js'
+import {
+  fetchProfile,
+  fetchProfileCompleteness,
+  fetchProfileSummary,
+} from '../src/features/profile/services/profile.service.js'
+import {
+  completeProfile,
+  profileCompleteness,
+  profileSummary,
+} from './fixtures/profile.fixture.js'
 
 vi.mock('../src/services/auth.service.js', () => ({
   fetchCurrentUserRequest: vi.fn(),
@@ -58,6 +68,12 @@ vi.mock('../src/features/nutrition/services/nutrition.service.js', () => ({
   fetchLatestNutrition: vi.fn(),
   fetchNutritionHistory: vi.fn(),
   fetchNutritionProfileInputs: vi.fn(),
+}))
+vi.mock('../src/features/profile/services/profile.service.js', () => ({
+  fetchProfile: vi.fn(),
+  fetchProfileCompleteness: vi.fn(),
+  fetchProfileSummary: vi.fn(),
+  updateProfile: vi.fn(),
 }))
 vi.mock(
   '../src/features/exercise-library/services/exercise-library.service.js',
@@ -115,6 +131,9 @@ beforeEach(() => {
     items: [nutritionHistoryItem],
     pagination: nutritionPagination,
   })
+  vi.mocked(fetchProfile).mockResolvedValue(completeProfile)
+  vi.mocked(fetchProfileCompleteness).mockResolvedValue(profileCompleteness)
+  vi.mocked(fetchProfileSummary).mockResolvedValue(profileSummary)
 })
 
 describe('authenticated application shell', () => {
@@ -247,6 +266,15 @@ describe('authenticated application shell', () => {
       await screen.findByRole('heading', { name: 'Weight Tracker' }),
     ).toBeVisible()
     expect(screen.getByRole('link', { name: 'Start workout' })).toBeVisible()
+    expect(screen.queryByText('Coming in next stage')).not.toBeInTheDocument()
+  })
+
+  it('renders the Profile workflow instead of its placeholder', async () => {
+    renderAt('/app/profile')
+    expect(
+      await screen.findByRole('heading', { name: 'Profile' }),
+    ).toBeVisible()
+    expect(screen.getByLabelText('Full name')).toHaveValue('Meta Member')
     expect(screen.queryByText('Coming in next stage')).not.toBeInTheDocument()
   })
 

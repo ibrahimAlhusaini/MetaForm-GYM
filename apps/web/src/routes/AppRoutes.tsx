@@ -4,6 +4,7 @@ import { DashboardPage } from '../features/dashboard/DashboardPage.js'
 import { ExerciseDetailPage } from '../features/exercise-library/pages/ExerciseDetailPage.js'
 import { ExerciseLibraryPage } from '../features/exercise-library/pages/ExerciseLibraryPage.js'
 import { CaloriesCalculatorPage } from '../features/nutrition/pages/CaloriesCalculatorPage.js'
+import { ProfilePage } from '../features/profile/pages/ProfilePage.js'
 import { WorkoutPlanCreatePage } from '../features/workout-plans/pages/WorkoutPlanCreatePage.js'
 import { WorkoutPlanDetailPage } from '../features/workout-plans/pages/WorkoutPlanDetailPage.js'
 import { WorkoutPlanEditPage } from '../features/workout-plans/pages/WorkoutPlanEditPage.js'
@@ -72,10 +73,7 @@ export function AppRoutes() {
             <Route path=":planId" element={<WorkoutPlanDetailPage />} />
             <Route path=":planId/edit" element={<WorkoutPlanEditPage />} />
           </Route>
-          <Route
-            path={appRouteSegments.profile}
-            element={<FeaturePlaceholderPage navigationId="profile" />}
-          />
+          <Route path={appRouteSegments.profile} element={<ProfilePage />} />
           <Route path="*" element={<AppNotFoundPage />} />
         </Route>
       </Route>
