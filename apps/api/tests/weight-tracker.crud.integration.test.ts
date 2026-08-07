@@ -151,6 +151,17 @@ describe('weight tracker session API', () => {
           .post('/api/v1/weight-tracker/sessions')
           .send({ workoutPlanId: systemPlan.id })
       ).status,
+    ).toBe(404)
+    await prisma.workoutPlan.update({
+      where: { id: systemPlan.id },
+      data: { isPublic: true },
+    })
+    expect(
+      (
+        await api(viewer.token)
+          .post('/api/v1/weight-tracker/sessions')
+          .send({ workoutPlanId: systemPlan.id })
+      ).status,
     ).toBe(201)
   })
 

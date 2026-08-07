@@ -63,7 +63,7 @@ export const validateWorkoutPlan = async (
   const plan = await client.workoutPlan.findFirst({
     where: {
       id: workoutPlanId,
-      OR: [{ userId }, { isPublic: true }, { userId: null }],
+      OR: [{ userId }, { isPublic: true }],
     },
     select: { id: true },
   })

@@ -5,6 +5,8 @@ import { weightTrackerRouter } from '../modules/weight-tracker/weight-tracker.ro
 import { exerciseLibraryRouter } from '../modules/exercise-library/exercise-library.routes.js'
 import { adminExerciseRouter } from '../modules/exercise-library/admin-exercise.routes.js'
 import { nutritionRouter } from '../modules/nutrition/nutrition.routes.js'
+import { workoutPlanRouter } from '../modules/workout-plans/workout-plan.routes.js'
+import { adminWorkoutPlanRouter } from '../modules/workout-plans/admin-workout-plan.routes.js'
 import { healthRouter } from './health.routes.js'
 
 export const apiRouter = Router()
@@ -16,3 +18,5 @@ apiRouter.use('/weight-tracker', weightTrackerRouter)
 apiRouter.use('/exercises', exerciseLibraryRouter)
 apiRouter.use('/admin/exercises', adminExerciseRouter)
 apiRouter.use('/nutrition', nutritionRouter)
+apiRouter.use('/workout-plans', workoutPlanRouter)
+apiRouter.use('/admin/workout-plans', adminWorkoutPlanRouter)

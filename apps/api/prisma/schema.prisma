@@ -321,7 +321,9 @@ model WorkoutPlan {
   workoutSessions WorkoutSession[]
 
   @@index([userId])
+  @@index([userId, updatedAt(sort: Desc)])
   @@index([isPublic, isTemplate])
+  @@index([isPublic, isTemplate, difficultyLevel])
 }
 
 model WorkoutPlanDay {
