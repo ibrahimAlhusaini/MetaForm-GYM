@@ -4,6 +4,10 @@ import { DashboardPage } from '../features/dashboard/DashboardPage.js'
 import { ExerciseDetailPage } from '../features/exercise-library/pages/ExerciseDetailPage.js'
 import { ExerciseLibraryPage } from '../features/exercise-library/pages/ExerciseLibraryPage.js'
 import { CaloriesCalculatorPage } from '../features/nutrition/pages/CaloriesCalculatorPage.js'
+import { WorkoutPlanCreatePage } from '../features/workout-plans/pages/WorkoutPlanCreatePage.js'
+import { WorkoutPlanDetailPage } from '../features/workout-plans/pages/WorkoutPlanDetailPage.js'
+import { WorkoutPlanEditPage } from '../features/workout-plans/pages/WorkoutPlanEditPage.js'
+import { WorkoutPlansPage } from '../features/workout-plans/pages/WorkoutPlansPage.js'
 import { MachineFormPage } from '../features/weight-tracker/pages/MachineFormPage.js'
 import { MachinesPage } from '../features/weight-tracker/pages/MachinesPage.js'
 import { SessionBuilderPage } from '../features/weight-tracker/pages/SessionBuilderPage.js'
@@ -62,10 +66,12 @@ export function AppRoutes() {
             path={appRouteSegments.calories}
             element={<CaloriesCalculatorPage />}
           />
-          <Route
-            path={appRouteSegments.plans}
-            element={<FeaturePlaceholderPage navigationId="plans" />}
-          />
+          <Route path={appRouteSegments.plans}>
+            <Route index element={<WorkoutPlansPage />} />
+            <Route path="new" element={<WorkoutPlanCreatePage />} />
+            <Route path=":planId" element={<WorkoutPlanDetailPage />} />
+            <Route path=":planId/edit" element={<WorkoutPlanEditPage />} />
+          </Route>
           <Route
             path={appRouteSegments.profile}
             element={<FeaturePlaceholderPage navigationId="profile" />}

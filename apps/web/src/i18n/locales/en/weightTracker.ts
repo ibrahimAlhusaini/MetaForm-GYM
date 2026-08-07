@@ -132,6 +132,10 @@ export const weightTracker = {
     saving: 'Saving workout…',
     saveComplete: 'Save and complete workout',
     save: 'Save workout',
+    planPrefill:
+      'Prefilled from {{plan}} · {{day}}. Planned sets and reps are guidance; edit actual performance freely.',
+    planGuidance:
+      'Plan guidance: {{sets}} sets · {{reps}} reps · {{rest}} sec rest',
   },
   source: {
     label: 'Exercise source',

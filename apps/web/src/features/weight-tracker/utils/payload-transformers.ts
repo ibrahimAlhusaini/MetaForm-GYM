@@ -32,7 +32,7 @@ export const sessionPayload = (draft: SessionDraft): BulkSessionInput => ({
   startedAt: new Date(draft.startedAt).toISOString(),
   completedAt: draft.completeImmediately ? new Date().toISOString() : null,
   notes: nullableText(draft.notes),
-  workoutPlanId: null,
+  workoutPlanId: draft.workoutPlanId ?? null,
   entries: draft.entries.map((entry, orderIndex) => ({
     exerciseId: entry.sourceType === 'exercise' ? entry.exerciseId : null,
     customMachineId:

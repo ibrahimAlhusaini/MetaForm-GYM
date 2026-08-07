@@ -193,6 +193,7 @@ export interface EntryDraft {
   sets: SetDraft[]
 }
 export interface SessionDraft {
+  workoutPlanId?: string | null
   startedAt: string
   notes: string
   completeImmediately: boolean
