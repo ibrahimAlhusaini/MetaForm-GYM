@@ -21,7 +21,10 @@ export const useWorkoutPlanPrefill = (
 ) => {
   const { t } = useTranslation(['weightTracker', 'workoutPlans', 'common'])
   const load = useCallback(async (): Promise<WorkoutPlanPrefill | null> => {
-    if (!workoutPlanId) return null
+    if (!workoutPlanId) {
+      if (planDayId) throw new Error('invalid plan selection')
+      return null
+    }
     if (
       !uuidPattern.test(workoutPlanId) ||
       (planDayId && !uuidPattern.test(planDayId))
@@ -49,7 +52,8 @@ export const useWorkoutPlanPrefill = (
           sourceType: 'exercise',
           exerciseId: item.exercise.id,
           customMachineId: '',
-          notes: [item.notes, guidance].filter(Boolean).join('\n'),
+          planGuidance: [item.notes, guidance].filter(Boolean).join(' — '),
+          notes: '',
           sets: Array.from({ length: item.sets ?? 1 }, (_, index) => ({
             ...emptySetDraft(index + 1),
             reps: numericReps,

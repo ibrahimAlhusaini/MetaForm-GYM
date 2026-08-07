@@ -2,6 +2,7 @@ import type { WorkoutPlanSummary } from '@metaform/shared-types'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useModalDialog } from '../hooks/useModalDialog.js'
 
 export function ClonePlanDialog({
   plan,
@@ -16,11 +17,16 @@ export function ClonePlanDialog({
 }) {
   const { t } = useTranslation(['workoutPlans', 'common'])
   const [name, setName] = useState('')
+  const dialogRef = useModalDialog(Boolean(plan))
   if (!plan) return null
   return (
     <dialog
-      open
+      ref={dialogRef}
       aria-labelledby="clone-plan-title"
+      onCancel={(event) => {
+        event.preventDefault()
+        if (!pending) onClose()
+      }}
       className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-white/10 bg-[#151719] p-0 text-zinc-100 backdrop:bg-black/75"
     >
       <form
@@ -52,6 +58,7 @@ export function ClonePlanDialog({
         <label className="mt-5 block text-sm font-medium">
           {t('workoutPlans:clone.name')}
           <input
+            autoFocus
             value={name}
             onChange={(event) => {
               setName(event.target.value)

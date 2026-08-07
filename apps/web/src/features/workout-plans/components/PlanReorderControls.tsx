@@ -6,19 +6,21 @@ export function PlanReorderControls({
   upLabel,
   downLabel,
   onMove,
+  disabled = false,
 }: {
   index: number
   total: number
   upLabel: string
   downLabel: string
   onMove: (direction: -1 | 1) => void
+  disabled?: boolean
 }) {
   return (
     <div className="flex gap-2">
       <button
         type="button"
         aria-label={upLabel}
-        disabled={index === 0}
+        disabled={disabled || index === 0}
         onClick={() => {
           onMove(-1)
         }}
@@ -29,7 +31,7 @@ export function PlanReorderControls({
       <button
         type="button"
         aria-label={downLabel}
-        disabled={index === total - 1}
+        disabled={disabled || index === total - 1}
         onClick={() => {
           onMove(1)
         }}

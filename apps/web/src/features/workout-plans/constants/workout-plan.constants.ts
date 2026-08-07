@@ -1,0 +1,1 @@
+export const MAX_PLAN_EXERCISES_PER_DAY = 50

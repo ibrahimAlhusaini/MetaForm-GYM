@@ -3,6 +3,14 @@ import { useTranslation } from 'react-i18next'
 import type { EntryDraft, Machine } from '../types/weight-tracker.types.js'
 import { ExerciseOptionPicker } from './ExerciseOptionPicker.js'
 
+const withoutPlanGuidance = (entry: EntryDraft): EntryDraft => ({
+  sourceType: entry.sourceType,
+  exerciseId: entry.exerciseId,
+  customMachineId: entry.customMachineId,
+  notes: entry.notes,
+  sets: entry.sets,
+})
+
 export function ExerciseSourceSelector({
   entry,
   machines,
@@ -14,12 +22,14 @@ export function ExerciseSourceSelector({
 }) {
   const { t } = useTranslation('weightTracker')
   const selectType = (sourceType: EntryDraft['sourceType']) => {
-    onChange({
+    const sourceChanged = sourceType !== entry.sourceType
+    const next = {
       ...entry,
       sourceType,
       exerciseId: sourceType === 'exercise' ? entry.exerciseId : '',
       customMachineId: sourceType === 'machine' ? entry.customMachineId : '',
-    })
+    }
+    onChange(sourceChanged ? withoutPlanGuidance(next) : next)
   }
   return (
     <div>
@@ -54,11 +64,13 @@ export function ExerciseSourceSelector({
           <select
             value={entry.customMachineId}
             onChange={(event) => {
-              onChange({
-                ...entry,
-                exerciseId: '',
-                customMachineId: event.target.value,
-              })
+              onChange(
+                withoutPlanGuidance({
+                  ...entry,
+                  exerciseId: '',
+                  customMachineId: event.target.value,
+                }),
+              )
             }}
             className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3"
           >
@@ -79,11 +91,13 @@ export function ExerciseSourceSelector({
         <ExerciseOptionPicker
           selectedId={entry.exerciseId}
           onSelect={(option) => {
-            onChange({
-              ...entry,
-              exerciseId: option.id,
-              customMachineId: '',
-            })
+            onChange(
+              withoutPlanGuidance({
+                ...entry,
+                exerciseId: option.id,
+                customMachineId: '',
+              }),
+            )
           }}
         />
       )}

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { TFunction } from 'i18next'
+import { MAX_PLAN_EXERCISES_PER_DAY } from '../constants/workout-plan.constants.js'
 
 const weekdays = [
   'MONDAY',
@@ -26,7 +27,11 @@ const optionalInteger = (t: TFunction, maximum: number) =>
 
 export const createPlanMetadataSchema = (t: TFunction) =>
   z.object({
-    name: z.string().trim().min(1, t('validation.nameRequired')).max(120),
+    name: z
+      .string()
+      .trim()
+      .min(1, t('validation.nameRequired'))
+      .max(120, t('validation.nameMax')),
     description: z.string().max(2000, t('validation.descriptionMax')),
     difficultyLevel: z.enum(difficulties, {
       error: t('validation.difficultyRequired'),
@@ -63,7 +68,12 @@ export const createPlanDraftSchema = (t: TFunction) => {
       name: z.string().max(120, t('validation.dayNameMax')),
       notes: z.string().max(2000, t('validation.notesMax')),
       isRestDay: z.boolean(),
-      exercises: z.array(exercise).max(50),
+      exercises: z.array(exercise).max(
+        MAX_PLAN_EXERCISES_PER_DAY,
+        t('validation.exerciseLimit', {
+          count: MAX_PLAN_EXERCISES_PER_DAY,
+        }),
+      ),
     })
     .refine((value) => !value.isRestDay || value.exercises.length === 0, {
       message: t('validation.restDayExercises'),
@@ -71,7 +81,7 @@ export const createPlanDraftSchema = (t: TFunction) => {
     })
   return z
     .array(day)
-    .max(14)
+    .max(weekdays.length, t('validation.dayLimit'))
     .superRefine((days, context) => {
       if (
         new Set(days.map((dayItem) => dayItem.dayOfWeek)).size !== days.length

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import i18n from '../src/i18n/index.js'
-import { moveItem } from '../src/features/workout-plans/utils/workout-plan-order.js'
+import {
+  moveItem,
+  nextOrderIndex,
+} from '../src/features/workout-plans/utils/workout-plan-order.js'
 import { createPlanPayload } from '../src/features/workout-plans/utils/workout-plan-payload.js'
 import { createPlanDraftSchema } from '../src/features/workout-plans/validation/workout-plan.schemas.js'
 import { sessionPayload } from '../src/features/weight-tracker/utils/payload-transformers.js'
@@ -14,6 +17,11 @@ describe('Workout Plan pure state and payload rules', () => {
     expect(moveItem(source, 0, 1)).toEqual(['tuesday', 'monday', 'wednesday'])
     expect(source).toEqual(['monday', 'tuesday', 'wednesday'])
     expect(moveItem(source, 0, -1)).toEqual(source)
+  })
+
+  it('allocates a collision-free append position when confirmed order has gaps', () => {
+    expect(nextOrderIndex([{ orderIndex: 2 }, { orderIndex: 5 }])).toBe(6)
+    expect(nextOrderIndex([])).toBe(0)
   })
 
   it('builds a complete contiguous nested create payload', () => {

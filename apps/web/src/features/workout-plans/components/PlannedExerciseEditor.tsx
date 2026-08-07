@@ -1,9 +1,8 @@
-import { Search, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useExerciseOptions } from '../../exercise-library/hooks/useExerciseOptions.js'
 import type { PlannedExerciseDraft } from '../types/workout-plans.types.js'
 import { PlanReorderControls } from './PlanReorderControls.js'
+import { PlannedExercisePicker } from './PlannedExercisePicker.js'
 
 export function PlannedExerciseEditor({
   item,
@@ -14,6 +13,7 @@ export function PlannedExerciseEditor({
   onRemove,
   onSave,
   pending = false,
+  reorderDisabled = false,
 }: {
   item: PlannedExerciseDraft
   index: number
@@ -23,10 +23,9 @@ export function PlannedExerciseEditor({
   onRemove: () => void
   onSave?: () => void
   pending?: boolean
+  reorderDisabled?: boolean
 }) {
   const { t } = useTranslation('workoutPlans')
-  const [search, setSearch] = useState('')
-  const options = useExerciseOptions(search, !item.exercise)
   return (
     <fieldset className="rounded-xl border border-white/10 bg-black/15 p-4">
       <legend className="px-2 text-sm font-semibold">
@@ -48,47 +47,11 @@ export function PlannedExerciseEditor({
               </span>
             </button>
           ) : (
-            <>
-              <label className="relative block">
-                <span className="sr-only">{t('builder.searchExercises')}</span>
-                <Search className="absolute start-3 top-3.5 size-4 text-zinc-500" />
-                <input
-                  value={search}
-                  onChange={(event) => {
-                    setSearch(event.target.value)
-                  }}
-                  placeholder={t('builder.searchExercises')}
-                  className="min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] ps-10 pe-3"
-                />
-              </label>
-              {options.state.status === 'success' ? (
-                <div
-                  role="listbox"
-                  aria-label={t('builder.chooseExercise')}
-                  className="mt-2 max-h-48 space-y-1 overflow-y-auto"
-                >
-                  {options.state.data.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      role="option"
-                      aria-selected="false"
-                      onClick={() => {
-                        onChange({ ...item, exercise: option })
-                      }}
-                      className="block min-h-10 w-full rounded-lg px-3 text-start hover:bg-white/5"
-                    >
-                      {option.name}
-                    </button>
-                  ))}
-                  {options.state.data.length === 0 ? (
-                    <p className="p-3 text-sm text-zinc-500">
-                      {t('builder.noExerciseMatches')}
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-            </>
+            <PlannedExercisePicker
+              onSelect={(option) => {
+                onChange({ ...item, exercise: option })
+              }}
+            />
           )}
         </div>
         <div className="flex gap-2">
@@ -98,6 +61,7 @@ export function PlannedExerciseEditor({
             upLabel={t('reorder.exerciseUp', { number: index + 1 })}
             downLabel={t('reorder.exerciseDown', { number: index + 1 })}
             onMove={onMove}
+            disabled={reorderDisabled}
           />
           <button
             type="button"

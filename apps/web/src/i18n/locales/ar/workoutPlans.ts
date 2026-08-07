@@ -96,6 +96,10 @@ export const workoutPlans = {
     chooseExercise: 'اختر تمرينًا منشورًا',
     searchExercises: 'البحث في مكتبة التمارين',
     noExerciseMatches: 'لا توجد تمارين منشورة تطابق بحثك.',
+    exerciseOptionsLoading: 'جارٍ تحميل التمارين المنشورة…',
+    exerciseOptionAlt: 'صورة تمرين {{name}}',
+    saveDayBeforeExercises: 'احفظ هذا اليوم قبل إضافة التمارين.',
+    exerciseLimit: 'يمكن أن يحتوي اليوم على {{count}} تمرينًا كحد أقصى.',
     pendingChanges: 'احفظ هذا العنصر قبل المتابعة.',
   },
   reorder: {
@@ -161,6 +165,7 @@ export const workoutPlans = {
   },
   validation: {
     nameRequired: 'اسم الخطة مطلوب',
+    nameMax: 'يجب ألا يتجاوز اسم الخطة 120 حرفًا',
     descriptionMax: 'يجب ألا يتجاوز الوصف 2000 حرف',
     difficultyRequired: 'مستوى الصعوبة مطلوب',
     exerciseRequired: 'اختر تمرينًا',
@@ -171,6 +176,8 @@ export const workoutPlans = {
     dayNameMax: 'يجب ألا يتجاوز اسم اليوم 120 حرفًا',
     restDayExercises: 'لا يمكن أن يحتوي يوم الراحة على تمارين',
     uniqueDays: 'يمكن إضافة كل يوم من الأسبوع مرة واحدة فقط',
+    dayLimit: 'يمكن أن تحتوي الخطة الأسبوعية على كل يوم مرة واحدة',
+    exerciseLimit: 'يمكن أن يحتوي اليوم على {{count}} تمرينًا كحد أقصى',
     review: 'راجع هذه الخطة:',
   },
 } as const

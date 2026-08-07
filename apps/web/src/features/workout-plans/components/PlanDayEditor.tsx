@@ -1,15 +1,12 @@
 import type { WorkoutPlanDayOfWeek } from '@metaform/shared-types'
-import { Plus, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { dayOfWeekLabel } from '../../../i18n/enum-labels.js'
-import type {
-  PlanDayDraft,
-  PlannedExerciseDraft,
-} from '../types/workout-plans.types.js'
-import { moveItem } from '../utils/workout-plan-order.js'
+import type { PlanDayDraft } from '../types/workout-plans.types.js'
+import { PlanExerciseListEditor } from './PlanExerciseListEditor.js'
 import { PlanReorderControls } from './PlanReorderControls.js'
-import { PlannedExerciseEditor } from './PlannedExerciseEditor.js'
+import { RestDayConfirmationDialog } from './RestDayConfirmationDialog.js'
 
 const weekdays: WorkoutPlanDayOfWeek[] = [
   'MONDAY',
@@ -20,14 +17,6 @@ const weekdays: WorkoutPlanDayOfWeek[] = [
   'SATURDAY',
   'SUNDAY',
 ]
-const emptyExercise = (): PlannedExerciseDraft => ({
-  exercise: null,
-  sets: '',
-  reps: '',
-  restSeconds: '',
-  notes: '',
-})
-
 export function PlanDayEditor({
   day,
   index,
@@ -41,6 +30,7 @@ export function PlanDayEditor({
   onRemoveExercise,
   onExerciseMove,
   pending = false,
+  reorderDisabled = false,
 }: {
   day: PlanDayDraft
   index: number
@@ -54,9 +44,12 @@ export function PlanDayEditor({
   onRemoveExercise?: (exerciseIndex: number) => void
   onExerciseMove?: (exerciseIndex: number, direction: -1 | 1) => void
   pending?: boolean
+  reorderDisabled?: boolean
 }) {
   const { t } = useTranslation(['workoutPlans', 'common'])
   const [confirmRest, setConfirmRest] = useState(false)
+  const persistedEditing = onSaveDay !== undefined
+  const unsavedEditDay = persistedEditing && !day.id
   const toggleRest = (checked: boolean) => {
     if (checked && day.exercises.length) setConfirmRest(true)
     else onChange({ ...day, isRestDay: checked })
@@ -115,6 +108,7 @@ export function PlanDayEditor({
             upLabel={t('workoutPlans:reorder.dayUp', { number: index + 1 })}
             downLabel={t('workoutPlans:reorder.dayDown', { number: index + 1 })}
             onMove={onMove}
+            disabled={reorderDisabled}
           />
           <button
             type="button"
@@ -166,107 +160,32 @@ export function PlanDayEditor({
           )}
         </button>
       ) : null}
-      {!day.isRestDay ? (
-        <div className="mt-5 space-y-4">
-          {day.exercises.map((exercise, exerciseIndex) => (
-            <PlannedExerciseEditor
-              key={exercise.id ?? String(exerciseIndex)}
-              item={exercise}
-              index={exerciseIndex}
-              total={day.exercises.length}
-              onChange={(value) => {
-                onChange({
-                  ...day,
-                  exercises: day.exercises.map((candidate, candidateIndex) =>
-                    candidateIndex === exerciseIndex ? value : candidate,
-                  ),
-                })
-              }}
-              onMove={(direction) => {
-                if (onExerciseMove) onExerciseMove(exerciseIndex, direction)
-                else
-                  onChange({
-                    ...day,
-                    exercises: moveItem(
-                      day.exercises,
-                      exerciseIndex,
-                      exerciseIndex + direction,
-                    ),
-                  })
-              }}
-              onRemove={() => {
-                if (onRemoveExercise) onRemoveExercise(exerciseIndex)
-                else
-                  onChange({
-                    ...day,
-                    exercises: day.exercises.filter(
-                      (_, candidateIndex) => candidateIndex !== exerciseIndex,
-                    ),
-                  })
-              }}
-              {...(onSaveExercise
-                ? {
-                    onSave: () => {
-                      onSaveExercise(exerciseIndex)
-                    },
-                  }
-                : {})}
-              pending={pending}
-            />
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              onChange({
-                ...day,
-                exercises: [...day.exercises, emptyExercise()],
-              })
-            }}
-            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-lime-300/20 px-3 text-sm font-semibold text-lime-300"
-          >
-            <Plus className="size-4" />
-            {t('workoutPlans:builder.addExercise')}
-          </button>
-        </div>
+      {!day.isRestDay && unsavedEditDay ? (
+        <p className="mt-5 rounded-xl border border-dashed border-white/10 p-4 text-sm text-zinc-400">
+          {t('workoutPlans:builder.saveDayBeforeExercises')}
+        </p>
       ) : null}
-      {confirmRest ? (
-        <dialog
-          open
-          aria-labelledby={`rest-confirm-${String(index)}`}
-          className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-white/10 bg-[#151719] p-6 text-zinc-100 backdrop:bg-black/75"
-        >
-          <h2
-            id={`rest-confirm-${String(index)}`}
-            className="text-xl font-semibold"
-          >
-            {t('workoutPlans:restConfirm.title')}
-          </h2>
-          <p className="mt-3 text-zinc-400">
-            {t('workoutPlans:restConfirm.description')}
-          </p>
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setConfirmRest(false)
-              }}
-              className="min-h-11 rounded-xl border border-white/10 px-4"
-            >
-              {t('common:actions.cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onChange({ ...day, isRestDay: true, exercises: [] })
-                setConfirmRest(false)
-              }}
-              className="min-h-11 rounded-xl bg-red-200 px-4 font-semibold text-zinc-950"
-            >
-              {t('workoutPlans:restConfirm.confirm')}
-            </button>
-          </div>
-        </dialog>
+      {!day.isRestDay && !unsavedEditDay ? (
+        <PlanExerciseListEditor
+          day={day}
+          onChange={onChange}
+          {...(onSaveExercise ? { onSave: onSaveExercise } : {})}
+          {...(onRemoveExercise ? { onRemove: onRemoveExercise } : {})}
+          {...(onExerciseMove ? { onMove: onExerciseMove } : {})}
+          pending={pending}
+        />
       ) : null}
+      <RestDayConfirmationDialog
+        open={confirmRest}
+        id={`rest-confirm-${String(index)}`}
+        onClose={() => {
+          setConfirmRest(false)
+        }}
+        onConfirm={() => {
+          onChange({ ...day, isRestDay: true, exercises: [] })
+          setConfirmRest(false)
+        }}
+      />
     </fieldset>
   )
 }

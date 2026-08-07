@@ -189,6 +189,7 @@ export interface EntryDraft {
   sourceType: SourceType
   exerciseId: string
   customMachineId: string
+  planGuidance?: string
   notes: string
   sets: SetDraft[]
 }

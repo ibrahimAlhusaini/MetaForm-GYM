@@ -83,6 +83,11 @@ export function ExerciseEntryEditor({
           </button>
         </div>
       </div>
+      {entry.planGuidance ? (
+        <p className="mt-4 rounded-xl border border-lime-300/15 bg-lime-300/5 p-3 text-sm leading-6 text-zinc-300">
+          {entry.planGuidance}
+        </p>
+      ) : null}
       <label className="mt-4 block text-sm font-medium">
         {t('entry.notes')}{' '}
         <span className="text-zinc-500">{t('entry.optional')}</span>

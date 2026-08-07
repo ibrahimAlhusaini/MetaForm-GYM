@@ -70,6 +70,7 @@ function WorkoutPlanEditor({ plan: initialPlan }: { plan: WorkoutPlanDetail }) {
               total={editor.days.length}
               usedDays={editor.days.map((item) => item.dayOfWeek)}
               pending={editor.mutations.pending}
+              reorderDisabled={editor.days.some((item) => !item.id)}
               onChange={(value) => {
                 editor.setDays(
                   editor.days.map((item, itemIndex) =>

@@ -9,3 +9,8 @@ export const moveItem = <T>(
   if (item !== undefined) next.splice(to, 0, item)
   return next
 }
+
+export const nextOrderIndex = (
+  items: readonly { orderIndex: number }[],
+): number =>
+  items.reduce((highest, item) => Math.max(highest, item.orderIndex), -1) + 1

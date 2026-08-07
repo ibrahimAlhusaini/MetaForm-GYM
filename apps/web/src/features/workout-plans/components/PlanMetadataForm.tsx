@@ -59,15 +59,22 @@ export function PlanMetadataForm({
           </span>
           <textarea
             {...register('description')}
+            aria-invalid={Boolean(errors.description)}
             rows={3}
             maxLength={2000}
             className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 p-3"
           />
+          {errors.description ? (
+            <span role="alert" className="mt-1 block text-sm text-red-300">
+              {errors.description.message}
+            </span>
+          ) : null}
         </label>
         <label className="text-sm font-medium">
           {t('workoutPlans:builder.difficulty')}
           <select
             {...register('difficultyLevel')}
+            aria-invalid={Boolean(errors.difficultyLevel)}
             className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#151719] px-3"
           >
             {difficulties.map((item) => (
@@ -76,6 +83,11 @@ export function PlanMetadataForm({
               </option>
             ))}
           </select>
+          {errors.difficultyLevel ? (
+            <span role="alert" className="mt-1 block text-sm text-red-300">
+              {errors.difficultyLevel.message}
+            </span>
+          ) : null}
         </label>
         <label className="flex items-center gap-3 self-end pb-3 text-sm">
           <input

@@ -15,7 +15,7 @@ The frontend shows ownership controls only for `ownershipType === USER`. The API
 
 ## Feature architecture
 
-`features/workout-plans` separates pages, presentation components, async hooks, the authenticated API service, draft types, translated Zod schemas, and pure query/payload/order utilities. Exercise selection reuses the Exercise Library's bounded `useExerciseOptions` hook and `/exercises/options`; plan code does not duplicate exercise search.
+`features/workout-plans` separates pages, presentation components, async hooks, the authenticated API service, draft types, translated Zod schemas, and pure query/payload/order/reconciliation utilities. Exercise selection reuses the Exercise Library's bounded `useExerciseOptions` hook and `/exercises/options`; plan code does not duplicate exercise search. Picker input is debounced and exposes localized loading, empty, safe error, and retry states.
 
 ## Discovery and ownership
 
@@ -36,7 +36,9 @@ flowchart LR
 
 ## Edit mutation flow
 
-Metadata, individual days, and individual prescriptions have separate save ownership. New children call create endpoints; existing children call patch endpoints. Remove actions call their matching delete endpoints. Returned detail replaces local state, keeping the server-confirmed aggregate authoritative.
+Metadata, individual days, and individual prescriptions have separate save ownership. New children call create endpoints; existing children call patch endpoints. Remove actions call their matching delete endpoints. Returned detail updates the confirmed aggregate and reconciles only the mutated draft target, preserving unrelated unsaved edits.
+
+New days and exercises are appended using the next free server order position and cannot be reordered until they have a server ID. This prevents create requests from colliding with occupied positions after a prior deletion. Focused update requests do not include `orderIndex`; ordering is owned exclusively by the complete reorder endpoints. An unsaved edit-mode day must be saved before exercises can be added, so returning aggregate data cannot discard local child drafts.
 
 ```mermaid
 flowchart TD
@@ -49,10 +51,12 @@ flowchart TD
   D --> G
   E --> G
   F --> G
-  G --> H[Replace local confirmed state]
+  G --> H[Reconcile confirmed target]
 ```
 
 Changing a populated training day to rest always opens an explicit confirmation. After confirmation, persisted prescriptions are removed through focused endpoints before the day is changed. Cancellation leaves the day and exercises intact.
+
+Because the backend exposes focused child mutations rather than one transactional rest-conversion endpoint, the frontend reloads the confirmed aggregate if any step fails. This makes a partial server mutation visible and retryable instead of leaving a stale local rest-day draft.
 
 ## Reordering
 
@@ -92,7 +96,7 @@ flowchart LR
   H --> I[Submit session with workoutPlanId]
 ```
 
-`planDayId` is used only to choose prefill content because sessions do not store that field. `workoutPlanId` is submitted. Planned set counts create editable empty actual sets; numeric planned reps may prefill reps, while ranges remain visible guidance. Editing session data never calls a plan mutation.
+`planDayId` is used only to choose prefill content because sessions do not store that field. `workoutPlanId` is submitted. Planned set counts create editable empty actual sets; numeric planned reps may prefill reps, while ranges remain visible guidance. Plan notes and prescription guidance remain UI-only and are not submitted as performed-session notes. Changing the entry source clears incompatible plan guidance while preserving set drafts. Editing session data never calls a plan mutation.
 
 ## Internationalization and RTL
 
@@ -100,7 +104,7 @@ The `workoutPlans` namespace exists in English and Arabic. It covers discovery, 
 
 ## Accessibility and responsive behavior
 
-- Native labeled inputs, selects, tabs, checkboxes, and dialogs are keyboard accessible.
+- Native labeled inputs, selects, tabs, checkboxes, and modal dialogs are keyboard accessible. Dialogs use `showModal`, support Escape, move initial focus inside, and make the background inert in supported browsers.
 - Reorder buttons have item-specific accessible names and disabled boundary states.
 - Loading uses status semantics; safe errors use alerts and focusable retry buttons.
 - Cards use responsive one-, two-, and three-column grids.

@@ -106,6 +106,10 @@ export const workoutPlans = {
     chooseExercise: 'Choose a published exercise',
     searchExercises: 'Search exercise library',
     noExerciseMatches: 'No published exercises match your search.',
+    exerciseOptionsLoading: 'Loading published exercises…',
+    exerciseOptionAlt: '{{name}} exercise thumbnail',
+    saveDayBeforeExercises: 'Save this day before adding exercises.',
+    exerciseLimit: 'A day can contain up to {{count}} exercises.',
     pendingChanges: 'Save this item before continuing.',
   },
   reorder: {
@@ -175,6 +179,7 @@ export const workoutPlans = {
   },
   validation: {
     nameRequired: 'Plan name is required',
+    nameMax: 'Plan name must be 120 characters or fewer',
     descriptionMax: 'Description must be 2,000 characters or fewer',
     difficultyRequired: 'Difficulty is required',
     exerciseRequired: 'Choose an exercise',
@@ -185,6 +190,8 @@ export const workoutPlans = {
     dayNameMax: 'Day name must be 120 characters or fewer',
     restDayExercises: 'Rest days cannot contain exercises',
     uniqueDays: 'Each weekday may appear only once',
+    dayLimit: 'A weekly plan can contain each weekday once',
+    exerciseLimit: 'A day can contain up to {{count}} exercises',
     review: 'Review this plan:',
   },
 } as const

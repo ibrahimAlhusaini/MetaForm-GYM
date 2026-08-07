@@ -1,5 +1,6 @@
 import type { WorkoutPlanSummary } from '@metaform/shared-types'
 import { useTranslation } from 'react-i18next'
+import { useModalDialog } from '../hooks/useModalDialog.js'
 
 export function DeletePlanDialog({
   plan,
@@ -13,11 +14,16 @@ export function DeletePlanDialog({
   onConfirm: () => void
 }) {
   const { t } = useTranslation(['workoutPlans', 'common'])
+  const dialogRef = useModalDialog(Boolean(plan))
   if (!plan) return null
   return (
     <dialog
-      open
+      ref={dialogRef}
       aria-labelledby="delete-plan-title"
+      onCancel={(event) => {
+        event.preventDefault()
+        if (!pending) onClose()
+      }}
       className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-white/10 bg-[#151719] p-0 text-zinc-100 backdrop:bg-black/75"
     >
       <div className="p-6">
@@ -30,6 +36,7 @@ export function DeletePlanDialog({
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
+            autoFocus
             onClick={onClose}
             disabled={pending}
             className="min-h-11 rounded-xl border border-white/10 px-4"

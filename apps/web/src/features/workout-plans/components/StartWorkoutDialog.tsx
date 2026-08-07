@@ -1,6 +1,7 @@
 import type { WorkoutPlanDayItem } from '@metaform/shared-types'
 import { useTranslation } from 'react-i18next'
 import { dayOfWeekLabel } from '../../../i18n/enum-labels.js'
+import { useModalDialog } from '../hooks/useModalDialog.js'
 
 export function StartWorkoutDialog({
   days,
@@ -12,10 +13,15 @@ export function StartWorkoutDialog({
   onSelect: (day: WorkoutPlanDayItem) => void
 }) {
   const { t } = useTranslation(['workoutPlans', 'common'])
+  const dialogRef = useModalDialog(true)
   return (
     <dialog
-      open
+      ref={dialogRef}
       aria-labelledby="start-workout-title"
+      onCancel={(event) => {
+        event.preventDefault()
+        onClose()
+      }}
       className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-2xl border border-white/10 bg-[#151719] p-0 text-zinc-100 backdrop:bg-black/75"
     >
       <div className="p-6">
@@ -26,10 +32,11 @@ export function StartWorkoutDialog({
           {t('workoutPlans:start.description')}
         </p>
         <div className="mt-5 space-y-3">
-          {days.map((day) => (
+          {days.map((day, index) => (
             <button
               key={day.id}
               type="button"
+              autoFocus={index === 0}
               onClick={() => {
                 onSelect(day)
               }}
