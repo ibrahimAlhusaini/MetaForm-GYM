@@ -1,5 +1,9 @@
 import { apiClient } from '../../../services/api-client.js'
 import type {
+  StrengthPredictionData,
+  StrengthPredictionResponse,
+} from '@metaform/shared-types'
+import type {
   ApiResponse,
   BulkSessionInput,
   ExerciseLog,
@@ -168,4 +172,14 @@ export const fetchSourceHistory = async (
     { params: { page } },
   )
   return response.data.data.history
+}
+
+export const fetchStrengthPrediction = async (
+  sourceType: SourceType,
+  sourceId: string,
+): Promise<StrengthPredictionData> => {
+  const response = await apiClient.get<StrengthPredictionResponse>(
+    `${root}/sources/${sourceType}/${sourceId}/strength-prediction`,
+  )
+  return response.data.data
 }

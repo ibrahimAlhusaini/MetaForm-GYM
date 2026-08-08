@@ -12,7 +12,10 @@ from metaform_ds.serving.schemas import (
     BodyWeightPredictionRequest,
     BodyWeightPredictionResponse,
     HealthResponse,
+    StrengthPredictionRequest,
+    StrengthPredictionResponse,
 )
+from metaform_ds.serving.strength_predictor import predict_strength
 
 MAX_REQUEST_BYTES = 32_768
 
@@ -53,3 +56,10 @@ def health() -> HealthResponse:
 )
 def predict(request: BodyWeightPredictionRequest) -> BodyWeightPredictionResponse:
     return predict_body_weight(request)
+
+
+@app.post("/v1/strength/predict", response_model=StrengthPredictionResponse)
+def predict_strength_route(
+    request: StrengthPredictionRequest,
+) -> StrengthPredictionResponse:
+    return predict_strength(request)

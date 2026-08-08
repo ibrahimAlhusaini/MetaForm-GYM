@@ -73,6 +73,7 @@ def test_notebooks_are_valid_and_have_no_absolute_windows_paths() -> None:
         "06_body_weight_robustness_calibration.ipynb",
         "07_real_data_evidence_protocol.ipynb",
         "08_strength_progression_model_v1.ipynb",
+        "09_real_strength_evidence_protocol.ipynb",
     }
     assert {path.name for path in notebook_dir.glob("*.ipynb")} == expected
     for path in notebook_dir.glob("*.ipynb"):

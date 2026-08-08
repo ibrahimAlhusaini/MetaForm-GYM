@@ -15,6 +15,13 @@ export type {
   CreateBodyMeasurementRequest,
 } from './body-weight.js'
 export type {
+  StrengthPredictionData,
+  StrengthPredictionReasonCode,
+  StrengthPredictionResponse,
+  StrengthPredictionSourceType,
+  StrengthPredictionStatus,
+} from './strength-prediction.js'
+export type {
   AiCoachCapabilitiesResponse,
   AiCoachCapabilityDefinition,
   AiCoachCapabilityType,

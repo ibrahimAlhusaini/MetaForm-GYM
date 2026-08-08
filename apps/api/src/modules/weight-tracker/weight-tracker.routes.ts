@@ -35,6 +35,7 @@ import {
   updateSetController,
 } from './set.controller.js'
 import { getSourceHistoryController } from './history.controller.js'
+import { getStrengthPredictionController } from '../strength-prediction/strength-prediction.controller.js'
 import {
   completeSessionSchema,
   createLogSchema,
@@ -62,6 +63,11 @@ weightTrackerRouter.post(
   '/machines',
   validateBody(createMachineSchema),
   asyncHandler(createMachineController),
+)
+weightTrackerRouter.get(
+  '/sources/:sourceType/:sourceId/strength-prediction',
+  validateParams(historyParamsSchema),
+  asyncHandler(getStrengthPredictionController),
 )
 weightTrackerRouter.get(
   '/machines',

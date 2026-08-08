@@ -222,3 +222,27 @@ Recent Trend baselines with pooled Linear and Ridge regression under expanding
 temporal origins. Synthetic runs validate mechanics only; no model is persisted
 or connected to the application. See
 [`docs/strength-progression-model-v1/README.md`](../docs/strength-progression-model-v1/README.md).
+
+## Real Strength Evidence Protocol
+
+Notebook 09 and `python -m metaform_ds.strength_evidence` freeze and fingerprint
+Strength V1 before real evaluation. The protocol verifies read-only PostgreSQL,
+reports aggregate quality, eligibility, source diversity, evidence scope,
+temporal stability, and an integration-review gate. Missing configuration never
+falls back silently to synthetic data; explicit synthetic validation is labeled
+as mechanics only. See
+[`docs/real-strength-evidence-protocol/README.md`](../docs/real-strength-evidence-protocol/README.md).
+
+## Strength Prediction Research Preview runtime
+
+The same FastAPI process also serves the conservative Strength V1 Last Session
+baseline at `POST /v1/strength/predict`. The authenticated Node API sends at
+most 30 chronological, source-specific completed-session timestamps and working
+maximums; Python receives no user, source, authentication, profile, or note
+fields. The route predicts only the next completed session and abstains when the
+frozen four-prior-session minimum or recency rules are not met. Linear and Ridge
+remain evaluation-only because available evidence did not justify promotion.
+
+Start it with the existing `npm run dev:prediction` command from the repository
+root. The existing `/health` route covers this shared prediction runtime. See
+[`docs/strength-prediction-integration/README.md`](../docs/strength-prediction-integration/README.md).

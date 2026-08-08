@@ -8,6 +8,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 MAX_PREDICTION_MEASUREMENTS = 120
+MAX_STRENGTH_SESSIONS = 30
 
 
 def _to_camel(value: str) -> str:
@@ -85,3 +86,54 @@ class HealthResponse(ServiceModel):
     status: Literal["ok"]
     service: Literal["body-weight-prediction"]
     preview_status: Literal["RESEARCH_PREVIEW"]
+
+
+class StrengthSessionInput(ServiceModel):
+    completed_at: datetime
+    max_weight_kg: Annotated[float, Field(gt=0, le=1_000)]
+
+    @field_validator("completed_at")
+    @classmethod
+    def require_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("completedAt must include a timezone offset")
+        return value
+
+
+class StrengthPredictionRequest(ServiceModel):
+    source_type: Literal["EXERCISE", "CUSTOM_MACHINE"]
+    sessions: Annotated[
+        list[StrengthSessionInput], Field(max_length=MAX_STRENGTH_SESSIONS)
+    ]
+
+
+StrengthReasonCode = Literal[
+    "INSUFFICIENT_SOURCE_HISTORY",
+    "NO_COMPLETED_SOURCE_HISTORY",
+    "EXCESSIVE_RECENT_GAP",
+    "INVALID_STRENGTH_HISTORY",
+    "INTERNAL_PREDICTION_UNAVAILABLE",
+]
+
+
+class StrengthHistorySummary(ServiceModel):
+    completed_source_sessions: int
+    recent_cadence_days: float | None
+
+
+class StrengthReliability(ServiceModel):
+    reason_codes: list[StrengthReasonCode]
+
+
+class StrengthPredictionResponse(ServiceModel):
+    status: Literal["AVAILABLE", "ABSTAINED"]
+    preview_status: Literal["RESEARCH_PREVIEW"]
+    method: Literal["LAST_SESSION"]
+    method_version: Literal["strength-next-session-v1"]
+    source_type: Literal["EXERCISE", "CUSTOM_MACHINE"]
+    estimated_next_max_weight_kg: float | None
+    current_max_weight_kg: float | None
+    expected_change_kg: float | None
+    history: StrengthHistorySummary
+    reliability: StrengthReliability
+    disclaimer_code: Literal["EXPERIMENTAL_STRENGTH_ESTIMATE"]

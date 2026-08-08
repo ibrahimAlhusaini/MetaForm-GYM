@@ -3,12 +3,15 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SourceHistoryPage } from '../src/features/weight-tracker/pages/SourceHistoryPage.js'
-import { fetchSourceHistory } from '../src/features/weight-tracker/services/weight-tracker.service.js'
+import {
+  fetchSourceHistory,
+  fetchStrengthPrediction,
+} from '../src/features/weight-tracker/services/weight-tracker.service.js'
 import { history, machine } from './fixtures/weight-tracker.fixture.js'
 
 vi.mock(
   '../src/features/weight-tracker/services/weight-tracker.service.js',
-  () => ({ fetchSourceHistory: vi.fn() }),
+  () => ({ fetchSourceHistory: vi.fn(), fetchStrengthPrediction: vi.fn() }),
 )
 const renderHistory = (sourceType = 'machine', sourceId = machine.id) =>
   render(
@@ -25,6 +28,19 @@ const renderHistory = (sourceType = 'machine', sourceId = machine.id) =>
   )
 beforeEach(() => {
   vi.mocked(fetchSourceHistory).mockResolvedValue(history)
+  vi.mocked(fetchStrengthPrediction).mockResolvedValue({
+    status: 'AVAILABLE',
+    previewStatus: 'RESEARCH_PREVIEW',
+    method: 'LAST_SESSION',
+    methodVersion: 'strength-next-session-v1',
+    sourceType: 'CUSTOM_MACHINE',
+    estimatedNextMaxWeightKg: 60,
+    currentMaxWeightKg: 60,
+    expectedChangeKg: 0,
+    history: { completedSourceSessions: 5, recentCadenceDays: 6 },
+    reliability: { reasonCodes: [] },
+    disclaimerCode: 'EXPERIMENTAL_STRENGTH_ESTIMATE',
+  })
 })
 
 describe('source history', () => {
@@ -34,6 +50,10 @@ describe('source history', () => {
     expect(screen.getByText('52.5 kg')).toBeVisible()
     expect(screen.getByTestId('responsive-chart')).toBeVisible()
     expect(screen.getByText(/has 1 strength point/)).toBeVisible()
+    expect(
+      screen.getByRole('heading', { name: 'Next Session Strength Estimate' }),
+    ).toBeVisible()
+    expect(screen.getByText('Research Preview')).toBeVisible()
   })
   it('renders an empty history state', async () => {
     vi.mocked(fetchSourceHistory).mockResolvedValue({

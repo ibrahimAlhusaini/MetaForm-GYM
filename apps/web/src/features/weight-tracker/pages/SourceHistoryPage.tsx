@@ -10,7 +10,9 @@ import {
 import { HistoryChart } from '../components/HistoryChart.js'
 import { MachineImage } from '../components/MachineImage.js'
 import { PaginationControls } from '../components/PaginationControls.js'
+import { StrengthPredictionCard } from '../components/StrengthPredictionCard.js'
 import { useSourceHistory } from '../hooks/useSourceHistory.js'
+import { useStrengthPrediction } from '../hooks/useStrengthPrediction.js'
 import type {
   SourceHistory,
   SourceType,
@@ -86,6 +88,7 @@ export function SourceHistoryPage() {
     : 'machine'
   const sourceId = params.sourceId ?? ''
   const { state, retry } = useSourceHistory(sourceType, sourceId, page)
+  const prediction = useStrengthPrediction(sourceType, sourceId)
   if (!isSourceType(params.sourceType) || !sourceId)
     return (
       <WeightTrackerErrorState
@@ -121,6 +124,12 @@ export function SourceHistoryPage() {
           </p>
         </div>
       </header>
+      <div className="mt-6">
+        <StrengthPredictionCard
+          state={prediction.state}
+          onRetry={prediction.retry}
+        />
+      </div>
       {history.totalSessions === 0 ? (
         <div className="mt-6">
           <EmptyState
