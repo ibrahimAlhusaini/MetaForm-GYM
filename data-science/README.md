@@ -210,5 +210,15 @@ The immediate action is to configure the read-only analytics role, accumulate
 genuine longitudinal history, and rerun the unchanged evidence protocol. A
 future promotion beyond Research Preview is justified only if the protocol returns
 `SUFFICIENT_FOR_INTEGRATION_REVIEW`; otherwise additional evidence collection is
-the next stage. Strength modeling, scheduled retraining, model registries, and
-broader prediction automation remain out of scope.
+the next stage. Scheduled retraining, model registries, and broader prediction
+automation remain out of scope.
+
+## Strength Progression Modeling V1
+
+Notebook 08 evaluates the next completed same-source session's representative
+maximum working weight. It preserves Exercise versus Custom Machine identity,
+constructs causal source-local history features, and compares Last Session and
+Recent Trend baselines with pooled Linear and Ridge regression under expanding
+temporal origins. Synthetic runs validate mechanics only; no model is persisted
+or connected to the application. See
+[`docs/strength-progression-model-v1/README.md`](../docs/strength-progression-model-v1/README.md).
