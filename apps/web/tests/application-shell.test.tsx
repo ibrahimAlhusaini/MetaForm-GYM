@@ -191,11 +191,11 @@ describe('authenticated application shell', () => {
     )
   })
 
-  it('renders the correct nested page', () => {
+  it('renders the correct nested page', async () => {
     renderAt('/app/exercises')
 
     expect(
-      screen.getByRole('heading', { name: 'Exercise Library' }),
+      await screen.findByRole('heading', { name: 'Exercise Library' }),
     ).toBeVisible()
     expect(
       screen.getByText(
@@ -298,7 +298,7 @@ describe('authenticated application shell', () => {
     expect(
       await screen.findByRole('heading', { name: 'Profile' }),
     ).toBeVisible()
-    expect(screen.getByLabelText('Full name')).toHaveValue('Meta Member')
+    expect(await screen.findByLabelText('Full name')).toHaveValue('Meta Member')
     expect(screen.queryByText('Coming in next stage')).not.toBeInTheDocument()
   })
 

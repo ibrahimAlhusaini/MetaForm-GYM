@@ -30,7 +30,7 @@ core application remains usable when this Research Preview is unavailable.
 
 ## Workspace commands
 
-- `npm run dev:prediction` — local Body Weight Research Preview service
+- `npm run dev:prediction` — local Body Weight and Strength Research Preview service
 - `npm run dev:all` — web, API, and prediction service together
 
 - `npm run dev:web` — frontend only

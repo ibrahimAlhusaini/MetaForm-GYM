@@ -3,12 +3,15 @@ import { env } from '../config/env.js'
 
 export const REFRESH_COOKIE_PATH = '/api/v1/auth'
 
-const getBaseCookieOptions = (): CookieOptions => ({
+export const buildBaseCookieOptions = (production: boolean): CookieOptions => ({
   httpOnly: true,
   path: REFRESH_COOKIE_PATH,
   sameSite: 'lax',
-  secure: env.NODE_ENV === 'production',
+  secure: production,
 })
+
+const getBaseCookieOptions = (): CookieOptions =>
+  buildBaseCookieOptions(env.NODE_ENV === 'production')
 
 export const setRefreshTokenCookie = (
   response: Response,

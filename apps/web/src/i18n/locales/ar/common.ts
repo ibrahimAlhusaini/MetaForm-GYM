@@ -2,6 +2,7 @@ export const common = {
   language: { label: 'اللغة', english: 'English', arabic: 'العربية' },
   actions: {
     retry: 'حاول مرة أخرى',
+    reload: 'إعادة تحميل التطبيق',
     cancel: 'إلغاء',
     close: 'إغلاق',
     save: 'حفظ',
@@ -16,7 +17,11 @@ export const common = {
   },
   states: {
     loading: 'جارٍ التحميل',
+    loadingRoute: 'جارٍ تحميل هذه الصفحة…',
     errorTitle: 'حدث خطأ ما',
+    applicationErrorTitle: 'تعذر على التطبيق المتابعة',
+    applicationErrorDescription:
+      'أعد تحميل التطبيق للمحاولة مرة أخرى. لم يتم عرض أي تفاصيل تقنية.',
     unavailable: 'غير متاح',
     notSpecified: 'غير محدد',
     notClassified: 'غير مصنف',

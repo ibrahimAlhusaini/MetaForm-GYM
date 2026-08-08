@@ -27,6 +27,31 @@ const optionalEnvironmentValue = z.preprocess(
   z.string().min(1).optional(),
 )
 
+const frontendOriginSchema = z
+  .url()
+  .superRefine((value, context) => {
+    const parsed = new URL(value)
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      context.addIssue({
+        code: 'custom',
+        message: 'FRONTEND_URL must use http or https',
+      })
+    }
+    if (
+      parsed.username ||
+      parsed.password ||
+      parsed.pathname !== '/' ||
+      parsed.search ||
+      parsed.hash
+    ) {
+      context.addIssue({
+        code: 'custom',
+        message: 'FRONTEND_URL must contain only an origin',
+      })
+    }
+  })
+  .transform((value) => new URL(value).origin)
+
 const environmentSchema = z
   .object({
     NODE_ENV: z
@@ -44,7 +69,7 @@ const environmentSchema = z
         'TEST_DATABASE_URL must be a PostgreSQL URL',
       )
       .optional(),
-    FRONTEND_URL: z.url(),
+    FRONTEND_URL: frontendOriginSchema,
     JWT_ACCESS_SECRET: z.string().min(32),
     JWT_REFRESH_SECRET: z.string().min(32),
     JWT_ACCESS_EXPIRES_IN: durationSchema.default(15 * 60),
@@ -74,6 +99,9 @@ const environmentSchema = z
       message: 'OPENAI_API_KEY and AI_COACH_MODEL must be configured together',
     },
   )
+
+export const parseEnvironment = (input: Record<string, string | undefined>) =>
+  environmentSchema.parse(input)
 
 const parsedEnvironment = environmentSchema.safeParse(process.env)
 

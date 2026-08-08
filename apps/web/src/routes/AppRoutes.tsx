@@ -1,24 +1,6 @@
+import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import { AppLayout } from '../layouts/AppLayout.js'
-import { DashboardPage } from '../features/dashboard/DashboardPage.js'
-import { AiCoachPage } from '../features/ai-coach/pages/AiCoachPage.js'
-import { AiCoachSessionPage } from '../features/ai-coach/pages/AiCoachSessionPage.js'
-import { ExerciseDetailPage } from '../features/exercise-library/pages/ExerciseDetailPage.js'
-import { ExerciseLibraryPage } from '../features/exercise-library/pages/ExerciseLibraryPage.js'
-import { CaloriesCalculatorPage } from '../features/nutrition/pages/CaloriesCalculatorPage.js'
-import { ProfilePage } from '../features/profile/pages/ProfilePage.js'
-import { WorkoutPlanCreatePage } from '../features/workout-plans/pages/WorkoutPlanCreatePage.js'
-import { WorkoutPlanDetailPage } from '../features/workout-plans/pages/WorkoutPlanDetailPage.js'
-import { WorkoutPlanEditPage } from '../features/workout-plans/pages/WorkoutPlanEditPage.js'
-import { WorkoutPlansPage } from '../features/workout-plans/pages/WorkoutPlansPage.js'
-import { MachineFormPage } from '../features/weight-tracker/pages/MachineFormPage.js'
-import { MachinesPage } from '../features/weight-tracker/pages/MachinesPage.js'
-import { SessionBuilderPage } from '../features/weight-tracker/pages/SessionBuilderPage.js'
-import { SessionDetailPage } from '../features/weight-tracker/pages/SessionDetailPage.js'
-import { SessionsPage } from '../features/weight-tracker/pages/SessionsPage.js'
-import { SourceHistoryPage } from '../features/weight-tracker/pages/SourceHistoryPage.js'
-import { WeightTrackerPage } from '../features/weight-tracker/pages/WeightTrackerPage.js'
-import { BodyWeightPage } from '../features/body-weight/pages/BodyWeightPage.js'
 import { appRouteSegments } from '../config/navigation.config.js'
 import { AppNotFoundPage } from '../pages/AppNotFoundPage.js'
 import { LoginPage } from '../pages/LoginPage.js'
@@ -27,6 +9,93 @@ import { RegisterPage } from '../pages/RegisterPage.js'
 import { useAuthStore } from '../store/auth.store.js'
 import { GuestRoute } from './GuestRoute.js'
 import { ProtectedRoute } from './ProtectedRoute.js'
+
+const DashboardPage = lazy(async () => ({
+  default: (await import('../features/dashboard/DashboardPage.js'))
+    .DashboardPage,
+}))
+const AiCoachPage = lazy(async () => ({
+  default: (await import('../features/ai-coach/pages/AiCoachPage.js'))
+    .AiCoachPage,
+}))
+const AiCoachSessionPage = lazy(async () => ({
+  default: (await import('../features/ai-coach/pages/AiCoachSessionPage.js'))
+    .AiCoachSessionPage,
+}))
+const ExerciseDetailPage = lazy(async () => ({
+  default: (
+    await import('../features/exercise-library/pages/ExerciseDetailPage.js')
+  ).ExerciseDetailPage,
+}))
+const ExerciseLibraryPage = lazy(async () => ({
+  default: (
+    await import('../features/exercise-library/pages/ExerciseLibraryPage.js')
+  ).ExerciseLibraryPage,
+}))
+const CaloriesCalculatorPage = lazy(async () => ({
+  default: (
+    await import('../features/nutrition/pages/CaloriesCalculatorPage.js')
+  ).CaloriesCalculatorPage,
+}))
+const ProfilePage = lazy(async () => ({
+  default: (await import('../features/profile/pages/ProfilePage.js'))
+    .ProfilePage,
+}))
+const WorkoutPlanCreatePage = lazy(async () => ({
+  default: (
+    await import('../features/workout-plans/pages/WorkoutPlanCreatePage.js')
+  ).WorkoutPlanCreatePage,
+}))
+const WorkoutPlanDetailPage = lazy(async () => ({
+  default: (
+    await import('../features/workout-plans/pages/WorkoutPlanDetailPage.js')
+  ).WorkoutPlanDetailPage,
+}))
+const WorkoutPlanEditPage = lazy(async () => ({
+  default: (
+    await import('../features/workout-plans/pages/WorkoutPlanEditPage.js')
+  ).WorkoutPlanEditPage,
+}))
+const WorkoutPlansPage = lazy(async () => ({
+  default: (await import('../features/workout-plans/pages/WorkoutPlansPage.js'))
+    .WorkoutPlansPage,
+}))
+const MachineFormPage = lazy(async () => ({
+  default: (await import('../features/weight-tracker/pages/MachineFormPage.js'))
+    .MachineFormPage,
+}))
+const MachinesPage = lazy(async () => ({
+  default: (await import('../features/weight-tracker/pages/MachinesPage.js'))
+    .MachinesPage,
+}))
+const SessionBuilderPage = lazy(async () => ({
+  default: (
+    await import('../features/weight-tracker/pages/SessionBuilderPage.js')
+  ).SessionBuilderPage,
+}))
+const SessionDetailPage = lazy(async () => ({
+  default: (
+    await import('../features/weight-tracker/pages/SessionDetailPage.js')
+  ).SessionDetailPage,
+}))
+const SessionsPage = lazy(async () => ({
+  default: (await import('../features/weight-tracker/pages/SessionsPage.js'))
+    .SessionsPage,
+}))
+const SourceHistoryPage = lazy(async () => ({
+  default: (
+    await import('../features/weight-tracker/pages/SourceHistoryPage.js')
+  ).SourceHistoryPage,
+}))
+const WeightTrackerPage = lazy(async () => ({
+  default: (
+    await import('../features/weight-tracker/pages/WeightTrackerPage.js')
+  ).WeightTrackerPage,
+}))
+const BodyWeightPage = lazy(async () => ({
+  default: (await import('../features/body-weight/pages/BodyWeightPage.js'))
+    .BodyWeightPage,
+}))
 
 function RootRedirect() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)

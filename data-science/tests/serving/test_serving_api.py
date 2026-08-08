@@ -67,3 +67,19 @@ def test_oversized_request_is_rejected() -> None:
         headers={"content-type": "application/json", "content-length": "40000"},
     )
     assert response.status_code == 413
+
+
+def test_invalid_length_and_streamed_oversized_request_are_rejected() -> None:
+    invalid_length = client.post(
+        "/v1/body-weight/predict",
+        content=b"{}",
+        headers={"content-type": "application/json", "content-length": "invalid"},
+    )
+    streamed = client.post(
+        "/v1/body-weight/predict",
+        content=(chunk for chunk in [b"{" + b"x" * 20_000, b"x" * 20_000 + b"}"]),
+        headers={"content-type": "application/json"},
+    )
+    assert invalid_length.status_code == 400
+    assert streamed.status_code == 413
+    assert "x" * 100 not in streamed.text

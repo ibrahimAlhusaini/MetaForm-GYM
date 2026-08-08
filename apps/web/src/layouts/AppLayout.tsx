@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import { Outlet } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { MobileNavigation } from '../components/shell/MobileNavigation.js'
 import { Sidebar } from '../components/shell/Sidebar.js'
 import { TopBar } from '../components/shell/TopBar.js'
 import { useMobileNavigation } from '../hooks/useMobileNavigation.js'
+import { RouteLoadingFallback } from '../components/RouteLoadingFallback.js'
 
 export function AppLayout() {
   const { t } = useTranslation('navigation')
@@ -32,7 +34,9 @@ export function AppLayout() {
           tabIndex={-1}
           className="mx-auto w-full max-w-[100rem] px-4 py-8 outline-none sm:px-6 sm:py-10 lg:px-8 lg:py-12"
         >
-          <Outlet />
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

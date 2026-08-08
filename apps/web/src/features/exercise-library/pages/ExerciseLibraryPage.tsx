@@ -40,9 +40,9 @@ export function ExerciseLibraryPage() {
   const [filters, setFilters] = useState<ExerciseFilterState>(initialFilters)
   const [page, setPage] = useState(1)
   const filterOptions = useExerciseFilterOptions()
-  const sort = parseExerciseSort(filters.sort)
-  const query = useMemo(
-    () => ({
+  const query = useMemo(() => {
+    const sort = parseExerciseSort(filters.sort)
+    return {
       page,
       limit: EXERCISE_PAGE_SIZE,
       ...sort,
@@ -60,9 +60,8 @@ export function ExerciseLibraryPage() {
         ? { difficultyLevel: filters.difficultyLevel }
         : {}),
       ...(filters.movementType ? { movementType: filters.movementType } : {}),
-    }),
-    [filters, page, search, sort.sortBy, sort.sortOrder],
-  )
+    }
+  }, [filters, page, search])
   const exercises = useExerciseList(query)
 
   const changeFilter = (field: keyof ExerciseFilterState, rawValue: string) => {

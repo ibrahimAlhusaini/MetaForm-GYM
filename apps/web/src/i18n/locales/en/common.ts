@@ -6,6 +6,7 @@ export const common = {
   },
   actions: {
     retry: 'Try again',
+    reload: 'Reload application',
     cancel: 'Cancel',
     close: 'Close',
     save: 'Save',
@@ -20,7 +21,11 @@ export const common = {
   },
   states: {
     loading: 'Loading',
+    loadingRoute: 'Loading this page…',
     errorTitle: 'Something went wrong',
+    applicationErrorTitle: 'The application could not continue',
+    applicationErrorDescription:
+      'Reload the application to try again. No technical details have been displayed.',
     unavailable: 'Not available',
     notSpecified: 'Not specified',
     notClassified: 'Not classified',
