@@ -140,6 +140,13 @@ empirical intervals, abstention metadata, error analysis, and fixed sensitivity
 comparisons. See
 [`docs/body-weight-model-robustness/README.md`](../docs/body-weight-model-robustness/README.md).
 
+Notebook 07 adds the frozen Real-data Evidence Accumulation and Evaluation
+Protocol. It fingerprints the unchanged model settings, verifies read-only
+PostgreSQL access, pre-registers evidence thresholds, distinguishes personal
+temporal validation from multi-user validation, and produces aggregate-only
+integration-review decisions. See
+[`docs/real-data-evidence-protocol/README.md`](../docs/real-data-evidence-protocol/README.md).
+
 ## Body Weight Prediction V1
 
 The evaluation-only V1 predicts an observed body-weight measurement near seven
@@ -164,10 +171,26 @@ The optional database extraction smoke check requires the read-only URL. Tests d
 not modify a database. Generated CSV, Parquet, notebook outputs, models, database
 dumps, and report output are ignored.
 
+## Real-data evidence command
+
+Confirm configuration without printing the credential, then run the frozen
+protocol:
+
+```powershell
+if (Test-Path Env:DATA_SCIENCE_DATABASE_URL) { "Analytics URL is configured" }
+python -m metaform_ds.real_evidence
+```
+
+The command never falls back to `DATABASE_URL` or silently replaces a failed
+REAL connection with synthetic data. Use `--synthetic-validation` only for a
+separately labeled pipeline-mechanics check. Generated aggregate reports remain
+ignored in `artifacts/`.
+
 ## Future model stage
 
-The next recommended stage is Real-data Evidence Accumulation and Evaluation
-Protocol: configure the read-only analytics role, collect adequate longitudinal
-history, pre-register evidence thresholds, and rerun the frozen robustness suite.
-Production serving, strength modeling, scheduled retraining, model registries,
-and application changes remain later concerns.
+The immediate action is to configure the read-only analytics role, accumulate
+genuine longitudinal history, and rerun the unchanged evidence protocol. A
+future prediction-integration design is justified only if the protocol returns
+`SUFFICIENT_FOR_INTEGRATION_REVIEW`; otherwise additional evidence collection is
+the next stage. Strength modeling, serving, scheduled retraining, model
+registries, and application changes remain out of scope.
