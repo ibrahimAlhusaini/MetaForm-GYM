@@ -3,3 +3,9 @@ dist/
 coverage/
 apps/api/src/generated/
 package-lock.json
+data-science/.venv/
+data-science/.pytest_cache/
+data-science/.mypy_cache/
+data-science/.ruff_cache/
+data-science/artifacts/
+data-science/reports/

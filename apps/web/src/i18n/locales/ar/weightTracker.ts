@@ -47,6 +47,10 @@ export const weightTracker = {
     browseMachines: 'تصفح الأجهزة',
     viewAll: 'عرض الكل',
     loadingPanel: 'جارٍ تحميل {{title}}',
+    bodyWeight: 'وزن الجسم وتوقع الاتجاه',
+    bodyWeightDescription:
+      'سجّل وزن جسمك بصورة منفصلة عن أوزان مقاومة التمارين وراجع توقع الاتجاه التجريبي خلال 7 أيام.',
+    openBodyWeight: 'فتح سجل وزن الجسم',
   },
   machines: {
     title: 'الأجهزة المخصصة',

@@ -18,6 +18,7 @@ import { SessionDetailPage } from '../features/weight-tracker/pages/SessionDetai
 import { SessionsPage } from '../features/weight-tracker/pages/SessionsPage.js'
 import { SourceHistoryPage } from '../features/weight-tracker/pages/SourceHistoryPage.js'
 import { WeightTrackerPage } from '../features/weight-tracker/pages/WeightTrackerPage.js'
+import { BodyWeightPage } from '../features/body-weight/pages/BodyWeightPage.js'
 import { appRouteSegments } from '../config/navigation.config.js'
 import { AppNotFoundPage } from '../pages/AppNotFoundPage.js'
 import { LoginPage } from '../pages/LoginPage.js'
@@ -45,6 +46,7 @@ export function AppRoutes() {
           <Route index element={<DashboardPage />} />
           <Route path={appRouteSegments.weights}>
             <Route index element={<WeightTrackerPage />} />
+            <Route path="body-weight" element={<BodyWeightPage />} />
             <Route path="machines" element={<MachinesPage />} />
             <Route path="machines/new" element={<MachineFormPage />} />
             <Route path="machines/:machineId" element={<MachineFormPage />} />

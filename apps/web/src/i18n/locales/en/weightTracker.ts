@@ -52,6 +52,10 @@ export const weightTracker = {
     browseMachines: 'Browse machines',
     viewAll: 'View all',
     loadingPanel: 'Loading {{title}}',
+    bodyWeight: 'Body weight and trend forecast',
+    bodyWeightDescription:
+      'Record your body weight separately from exercise resistance and view the experimental 7-day trend preview.',
+    openBodyWeight: 'Open body-weight history',
   },
   machines: {
     title: 'Custom machines',

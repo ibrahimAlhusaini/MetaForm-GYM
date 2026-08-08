@@ -3,6 +3,18 @@ export interface HealthResponse {
   message: string
 }
 export type {
+  BodyMeasurementHistoryResponse,
+  BodyMeasurementItem,
+  BodyMeasurementMutationResponse,
+  BodyWeightPredictionData,
+  BodyWeightPredictionMethod,
+  BodyWeightPredictionReasonCode,
+  BodyWeightPredictionResponse,
+  BodyWeightPredictionStatus,
+  BodyWeightPreviewStatus,
+  CreateBodyMeasurementRequest,
+} from './body-weight.js'
+export type {
   AiCoachCapabilitiesResponse,
   AiCoachCapabilityDefinition,
   AiCoachCapabilityType,

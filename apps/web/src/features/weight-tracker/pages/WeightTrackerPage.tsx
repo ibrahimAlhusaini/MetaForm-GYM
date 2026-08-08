@@ -1,4 +1,4 @@
-import { ArrowRight, Dumbbell, Plus, TrendingUp } from 'lucide-react'
+import { ArrowRight, Dumbbell, Plus, Scale, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -77,6 +77,22 @@ export function WeightTrackerPage() {
           emptyDescription={t('overview.noMachinesDescription')}
         />
       </div>
+      <section className="mt-6 rounded-2xl border border-violet-300/15 bg-gradient-to-r from-violet-300/8 to-transparent p-6">
+        <Scale className="size-6 text-violet-300" aria-hidden="true" />
+        <h2 className="mt-4 text-xl font-semibold">
+          {t('overview.bodyWeight')}
+        </h2>
+        <p className="mt-2 max-w-2xl text-zinc-400">
+          {t('overview.bodyWeightDescription')}
+        </p>
+        <Link
+          to="body-weight"
+          className="mt-5 inline-flex items-center gap-2 font-semibold text-violet-300"
+        >
+          {t('overview.openBodyWeight')}
+          <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+        </Link>
+      </section>
       <section className="mt-6 rounded-2xl border border-lime-300/15 bg-gradient-to-r from-lime-300/8 to-transparent p-6">
         <TrendingUp className="size-6 text-lime-300" />
         <h2 className="mt-4 text-xl font-semibold">{t('overview.progress')}</h2>

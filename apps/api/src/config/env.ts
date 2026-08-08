@@ -58,6 +58,15 @@ const environmentSchema = z
       .default('metaform_refresh_token'),
     OPENAI_API_KEY: optionalEnvironmentValue,
     AI_COACH_MODEL: optionalEnvironmentValue,
+    BODY_WEIGHT_PREDICTION_SERVICE_URL: z
+      .url()
+      .default('http://127.0.0.1:8001'),
+    BODY_WEIGHT_PREDICTION_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .min(100)
+      .max(10_000)
+      .default(2_000),
   })
   .refine(
     (value) => Boolean(value.OPENAI_API_KEY) === Boolean(value.AI_COACH_MODEL),

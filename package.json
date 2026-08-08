@@ -11,6 +11,8 @@
     "dev": "concurrently -n web,api -c cyan,green \"npm run dev:web\" \"npm run dev:api\"",
     "dev:web": "npm run dev --workspace @metaform/web",
     "dev:api": "npm run dev --workspace @metaform/api",
+    "dev:prediction": "data-science/.venv/Scripts/python.exe -m uvicorn metaform_ds.serving.app:app --app-dir data-science/src --host 127.0.0.1 --port 8001",
+    "dev:all": "concurrently -n web,api,prediction -c cyan,green,magenta \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:prediction\"",
     "build": "npm run build --workspace @metaform/shared-types && npm run build --workspace @metaform/api && npm run build --workspace @metaform/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",

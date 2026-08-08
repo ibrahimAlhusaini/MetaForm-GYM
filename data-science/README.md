@@ -74,13 +74,13 @@ flowchart LR
   Drop --> Safe
 ```
 
-| Dataset | Grain | Key semantics |
-|---|---|---|
-| Body weight | measurement event | All measurements retained and UTC ordered; same timestamps are reported, not collapsed |
-| Strength progression | source per completed session | Non-warmup weighted sets; maximum load represents a session; volume uses stored weight and reps |
-| Workout activity | workout session | Completed only by default; incomplete rows optional and duration null; negative malformed durations reported |
-| Nutrition | stored calculation event | Legacy nullable context is retained; formulas are never rerun |
-| User fitness context | profile snapshot | Minimal non-identifying values; age follows UTC calendar semantics |
+| Dataset              | Grain                        | Key semantics                                                                                                |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Body weight          | measurement event            | All measurements retained and UTC ordered; same timestamps are reported, not collapsed                       |
+| Strength progression | source per completed session | Non-warmup weighted sets; maximum load represents a session; volume uses stored weight and reps              |
+| Workout activity     | workout session              | Completed only by default; incomplete rows optional and duration null; negative malformed durations reported |
+| Nutrition            | stored calculation event     | Legacy nullable context is retained; formulas are never rerun                                                |
+| User fitness context | profile snapshot             | Minimal non-identifying values; age follows UTC calendar semantics                                           |
 
 Ordered columns and nullable pandas dtypes live in `metaform_ds.contracts`. Empty
 queries return those exact schemas. Quality checks report nulls, duplicates,
@@ -186,11 +186,29 @@ REAL connection with synthetic data. Use `--synthetic-validation` only for a
 separately labeled pipeline-mechanics check. Generated aggregate reports remain
 ignored in `artifacts/`.
 
+## Body Weight Research Preview runtime
+
+The focused FastAPI runtime reuses the authoritative Recent Trend baseline; it
+does not execute notebooks, train a model, or promote Ridge Regression. It
+accepts only a bounded list of timestamps and body weights from the authenticated
+Node API and returns an `AVAILABLE` or `ABSTAINED` research-preview contract.
+Empirical intervals remain unavailable rather than being fabricated.
+
+```powershell
+cd "C:\MetaForm GYM\data-science"
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn metaform_ds.serving.app:app --host 127.0.0.1 --port 8001
+```
+
+Health: `GET http://127.0.0.1:8001/health`. Prediction:
+`POST http://127.0.0.1:8001/v1/body-weight/predict`. See
+[`docs/body-weight-prediction-integration/README.md`](../docs/body-weight-prediction-integration/README.md).
+
 ## Future model stage
 
 The immediate action is to configure the read-only analytics role, accumulate
 genuine longitudinal history, and rerun the unchanged evidence protocol. A
-future prediction-integration design is justified only if the protocol returns
+future promotion beyond Research Preview is justified only if the protocol returns
 `SUFFICIENT_FOR_INTEGRATION_REVIEW`; otherwise additional evidence collection is
-the next stage. Strength modeling, serving, scheduled retraining, model
-registries, and application changes remain out of scope.
+the next stage. Strength modeling, scheduled retraining, model registries, and
+broader prediction automation remain out of scope.

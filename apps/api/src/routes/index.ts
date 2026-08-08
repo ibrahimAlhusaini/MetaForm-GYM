@@ -10,10 +10,14 @@ import { adminWorkoutPlanRouter } from '../modules/workout-plans/admin-workout-p
 import { profileRouter } from '../modules/profile/profile.routes.js'
 import { aiCoachRouter } from '../modules/ai-coach/ai-coach.routes.js'
 import { healthRouter } from './health.routes.js'
+import { bodyMeasurementRouter } from '../modules/body-measurements/body-measurement.routes.js'
+import { bodyWeightPredictionRouter } from '../modules/body-weight-prediction/body-weight-prediction.routes.js'
 
 export const apiRouter = Router()
 
 apiRouter.use('/health', healthRouter)
+apiRouter.use('/body-measurements', bodyMeasurementRouter)
+apiRouter.use('/body-weight/prediction', bodyWeightPredictionRouter)
 apiRouter.use('/auth', authRouter)
 apiRouter.use('/dashboard', dashboardRouter)
 apiRouter.use('/weight-tracker', weightTrackerRouter)
