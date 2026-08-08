@@ -8,5 +8,9 @@
     "target": "ES2023",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["./**/*.ts", "../vitest.config.ts"]
+  "include": [
+    "./**/*.ts",
+    "../vitest.config.ts",
+    "../vitest.test-database.config.ts"
+  ]
 }

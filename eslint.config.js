@@ -41,6 +41,7 @@ export default tseslint.config(
     files: [
       'apps/api/prisma.config.ts',
       'apps/api/vitest.config.ts',
+      'apps/api/vitest.test-database.config.ts',
       'apps/web/vitest.config.ts',
     ],
     extends: [tseslint.configs.disableTypeChecked],

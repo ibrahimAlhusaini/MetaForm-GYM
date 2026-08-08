@@ -1,18 +1,7 @@
 import 'dotenv/config'
+import { configureTestDatabaseEnvironment } from '../scripts/test-db/safety.js'
 
-const testDatabaseUrl = process.env.TEST_DATABASE_URL
-
-if (!testDatabaseUrl) {
-  throw new Error('TEST_DATABASE_URL is required for integration tests')
-}
-
-const databaseName = new URL(testDatabaseUrl).pathname.replace(/^\//, '')
-
-if (!databaseName.endsWith('_test')) {
-  throw new Error('Integration tests require a database name ending in _test')
-}
-
-process.env.DATABASE_URL = testDatabaseUrl
+configureTestDatabaseEnvironment(process.env)
 process.env.NODE_ENV = 'test'
 process.env.FRONTEND_URL = 'http://localhost:5173'
 process.env.JWT_ACCESS_SECRET =
