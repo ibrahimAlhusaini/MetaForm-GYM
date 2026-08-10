@@ -27,6 +27,29 @@ const optionalEnvironmentValue = z.preprocess(
   z.string().min(1).optional(),
 )
 
+const postgresUrlSchema = z
+  .string()
+  .min(1, 'DATABASE_URL is required')
+  .regex(/^postgres(?:ql)?:\/\//, 'DATABASE_URL must be a PostgreSQL URL')
+
+const buildDatabaseUrl = (
+  host: string,
+  port: number,
+  database: string,
+  username: string,
+  password: string,
+): string => {
+  const url = new URL('postgresql://localhost')
+  url.hostname = host
+  url.port = String(port)
+  url.pathname = database
+  url.username = username
+  url.password = password
+  url.searchParams.set('schema', 'public')
+  url.searchParams.set('sslmode', 'require')
+  return url.toString()
+}
+
 const frontendOriginSchema = z
   .url()
   .superRefine((value, context) => {
@@ -58,10 +81,12 @@ const environmentSchema = z
       .enum(['development', 'test', 'production'])
       .default('development'),
     PORT: z.coerce.number().int().positive().max(65_535).default(3000),
-    DATABASE_URL: z
-      .string()
-      .min(1, 'DATABASE_URL is required')
-      .regex(/^postgres(?:ql)?:\/\//, 'DATABASE_URL must be a PostgreSQL URL'),
+    DATABASE_URL: postgresUrlSchema.optional(),
+    DATABASE_HOST: optionalEnvironmentValue,
+    DATABASE_PORT: z.coerce.number().int().positive().max(65_535).optional(),
+    DATABASE_NAME: optionalEnvironmentValue,
+    DATABASE_USER: optionalEnvironmentValue,
+    DATABASE_PASSWORD: optionalEnvironmentValue,
     TEST_DATABASE_URL: z
       .string()
       .regex(
@@ -93,6 +118,58 @@ const environmentSchema = z
       .max(10_000)
       .default(2_000),
   })
+  .superRefine((value, context) => {
+    if (value.DATABASE_URL) return
+
+    for (const field of [
+      'DATABASE_HOST',
+      'DATABASE_PORT',
+      'DATABASE_NAME',
+      'DATABASE_USER',
+      'DATABASE_PASSWORD',
+    ] as const) {
+      if (value[field] === undefined) {
+        context.addIssue({
+          code: 'custom',
+          path: [field],
+          message: `${field} is required when DATABASE_URL is not set`,
+        })
+      }
+    }
+  })
+  .transform(
+    ({
+      DATABASE_HOST,
+      DATABASE_PORT,
+      DATABASE_NAME,
+      DATABASE_USER,
+      DATABASE_PASSWORD,
+      ...value
+    }) => {
+      if (value.DATABASE_URL)
+        return { ...value, DATABASE_URL: value.DATABASE_URL }
+      if (
+        !DATABASE_HOST ||
+        DATABASE_PORT === undefined ||
+        !DATABASE_NAME ||
+        !DATABASE_USER ||
+        !DATABASE_PASSWORD
+      ) {
+        throw new Error('Validated split database configuration is incomplete')
+      }
+
+      return {
+        ...value,
+        DATABASE_URL: buildDatabaseUrl(
+          DATABASE_HOST,
+          DATABASE_PORT,
+          DATABASE_NAME,
+          DATABASE_USER,
+          DATABASE_PASSWORD,
+        ),
+      }
+    },
+  )
   .refine(
     (value) => Boolean(value.OPENAI_API_KEY) === Boolean(value.AI_COACH_MODEL),
     {

@@ -90,6 +90,26 @@ describe('production environment and cookie policy', () => {
     }
   })
 
+  it('constructs an encoded TLS database URL from split secret fields', () => {
+    const withoutDatabaseUrl = {
+      ...productionEnvironment,
+      DATABASE_URL: undefined,
+    }
+    const parsed = parseEnvironment({
+      ...withoutDatabaseUrl,
+      DATABASE_HOST: 'staging.cluster.internal',
+      DATABASE_PORT: '5432',
+      DATABASE_NAME: 'metaform_gym',
+      DATABASE_USER: 'metaform user',
+      DATABASE_PASSWORD: 'p@ss:/word',
+    })
+
+    expect(parsed.DATABASE_URL).toBe(
+      'postgresql://metaform%20user:p%40ss%3A%2Fword@staging.cluster.internal:5432/metaform_gym?schema=public&sslmode=require',
+    )
+    expect(parsed).not.toHaveProperty('DATABASE_PASSWORD')
+  })
+
   it('uses a scoped HttpOnly Secure refresh cookie in production', () => {
     expect(buildBaseCookieOptions(true)).toMatchObject({
       httpOnly: true,

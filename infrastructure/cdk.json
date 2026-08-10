@@ -1,0 +1,9 @@
+{
+  "app": "npx tsx bin/metaform-gym.ts",
+  "context": {
+    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/aws-rds:lowercaseDbIdentifier": true,
+    "metaform:region": "eu-central-1",
+    "metaform:enableOpenAi": false
+  }
+}

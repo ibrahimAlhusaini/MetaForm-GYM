@@ -10,6 +10,7 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/node_modules/**',
+      '**/cdk.out/**',
       'apps/api/src/generated/**',
       'data-science/**',
     ],
@@ -47,7 +48,12 @@ export default tseslint.config(
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
-    files: ['apps/api/**/*.ts', 'packages/**/*.ts', '*.ts'],
+    files: [
+      'apps/api/**/*.ts',
+      'packages/**/*.ts',
+      'infrastructure/**/*.ts',
+      '*.ts',
+    ],
     languageOptions: { globals: globals.node },
   },
   {

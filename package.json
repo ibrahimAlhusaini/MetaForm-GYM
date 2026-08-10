@@ -23,7 +23,14 @@
     "format:check": "prettier --check .",
     "prisma:generate": "npm run prisma:generate --workspace @metaform/api",
     "prisma:migrate": "npm run prisma:migrate --workspace @metaform/api",
-    "prisma:studio": "npm run prisma:studio --workspace @metaform/api"
+    "prisma:studio": "npm run prisma:studio --workspace @metaform/api",
+    "docker:build:api": "docker build --file apps/api/Dockerfile --tag metaform-gym-api:staging .",
+    "docker:build:migration": "docker build --file apps/api/Dockerfile --target migration --tag metaform-gym-migration:staging .",
+    "docker:build:prediction": "docker build --file data-science/Dockerfile --tag metaform-gym-prediction:staging data-science",
+    "docker:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/docker-smoke.ps1",
+    "infra:typecheck": "npm run typecheck --prefix infrastructure",
+    "infra:test": "npm test --prefix infrastructure",
+    "infra:synth": "npm run synth --prefix infrastructure"
   },
   "devDependencies": {
     "@eslint/js": "latest",

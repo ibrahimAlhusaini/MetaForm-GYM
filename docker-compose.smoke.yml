@@ -1,0 +1,53 @@
+services:
+  prediction:
+    build:
+      context: ./data-science
+      dockerfile: Dockerfile
+    image: metaform-gym-prediction:staging
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=2)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    ports:
+      - '127.0.0.1:8001:8001'
+    restart: 'no'
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: metaform-gym-api:staging
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      DATABASE_URL: postgresql://smoke:smoke@host.docker.internal:5432/metaform_gym?schema=public
+      FRONTEND_URL: http://localhost:5173
+      JWT_ACCESS_SECRET: local-container-smoke-access-secret-000000000
+      JWT_REFRESH_SECRET: local-container-smoke-refresh-secret-00000000
+      BODY_WEIGHT_PREDICTION_SERVICE_URL: http://prediction:8001
+    depends_on:
+      prediction:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    ports:
+      - '127.0.0.1:3000:3000'
+    restart: 'no'

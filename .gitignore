@@ -5,6 +5,9 @@ dist/
 !.env.example
 *.log
 coverage/
+cdk.out/
+.cdk.staging/
+.notebook-runtime/
 .vite/
 *.tsbuildinfo
 apps/api/src/generated/
