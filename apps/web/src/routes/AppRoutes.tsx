@@ -113,6 +113,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="dashboard" element={<Navigate to="/app" replace />} />
           <Route path={appRouteSegments.weights}>
             <Route index element={<WeightTrackerPage />} />
             <Route path="body-weight" element={<BodyWeightPage />} />

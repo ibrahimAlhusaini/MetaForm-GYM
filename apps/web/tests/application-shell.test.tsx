@@ -153,6 +153,14 @@ beforeEach(() => {
 })
 
 describe('authenticated application shell', () => {
+  it('supports the dashboard deep-link alias', async () => {
+    renderAt('/app/dashboard')
+
+    await waitFor(() => {
+      expect(fetchDashboardSummary).toHaveBeenCalledOnce()
+    })
+  })
+
   it('renders the shared authenticated layout', () => {
     renderAt('/app')
 

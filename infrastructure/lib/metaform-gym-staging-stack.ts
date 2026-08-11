@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url'
 import {
   CfnOutput,
   CfnParameter,
+  CfnRule,
   Duration,
+  Fn,
   RemovalPolicy,
   Stack,
   type StackProps,
@@ -32,12 +34,35 @@ export class MetaFormGymStagingStack extends Stack {
   ) {
     super(scope, id, props)
 
+    const inactiveFrontendUrl = 'https://staging.example.invalid'
     const frontendUrl = new CfnParameter(this, 'StagingFrontendUrl', {
       type: 'String',
-      default: 'https://staging.example.invalid',
+      default: inactiveFrontendUrl,
       description:
-        'Exact staging frontend origin. Replace before deployment; HTTPS is mandatory for acceptance.',
-      allowedPattern: '^https?://[^/]+$',
+        'Exact HTTPS staging frontend origin. The non-routable default is allowed only while desired count is 0.',
+      allowedPattern: '^https://[^/]+$',
+    })
+    const desiredCount = new CfnParameter(this, 'StagingDesiredCount', {
+      type: 'Number',
+      default: 0,
+      allowedValues: ['0', '1'],
+      description:
+        'Keep at 0 until the one-off staging migration task succeeds; set to 1 in a subsequent deployment.',
+    })
+    new CfnRule(this, 'RequireFrontendUrlWhenServiceEnabled', {
+      ruleCondition: Fn.conditionEquals(desiredCount.valueAsString, '1'),
+      assertions: [
+        {
+          assert: Fn.conditionNot(
+            Fn.conditionEquals(
+              frontendUrl.valueAsString,
+              inactiveFrontendUrl,
+            ),
+          ),
+          assertDescription:
+            'StagingFrontendUrl must be a real HTTPS origin before StagingDesiredCount can be 1.',
+        },
+      ],
     })
 
     const vpc = new ec2.Vpc(this, 'StagingVpc', {
@@ -203,6 +228,19 @@ export class MetaFormGymStagingStack extends Stack {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       description: 'No application AWS permissions are granted by default',
     })
+    const migrationExecutionRole = new iam.Role(
+      this,
+      'StagingMigrationExecutionRole',
+      {
+        roleName: 'metaform-gym-staging-migration-execution',
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName(
+            'service-role/AmazonECSTaskExecutionRolePolicy',
+          ),
+        ],
+      },
+    )
     const taskDefinition = new ecs.FargateTaskDefinition(
       this,
       'StagingTaskDefinition',
@@ -268,7 +306,7 @@ export class MetaFormGymStagingStack extends Stack {
     if (!databaseSecret) {
       throw new Error('RDS generated secret was not created')
     }
-    const apiSecrets: Record<string, ecs.Secret> = {
+    const databaseSecrets: Record<string, ecs.Secret> = {
       DATABASE_HOST: ecs.Secret.fromSecretsManager(databaseSecret, 'host'),
       DATABASE_PORT: ecs.Secret.fromSecretsManager(databaseSecret, 'port'),
       DATABASE_NAME: ecs.Secret.fromSecretsManager(databaseSecret, 'dbname'),
@@ -277,6 +315,9 @@ export class MetaFormGymStagingStack extends Stack {
         databaseSecret,
         'password',
       ),
+    }
+    const apiSecrets: Record<string, ecs.Secret> = {
+      ...databaseSecrets,
       JWT_ACCESS_SECRET: ecs.Secret.fromSecretsManager(jwtAccessSecret),
       JWT_REFRESH_SECRET: ecs.Secret.fromSecretsManager(jwtRefreshSecret),
     }
@@ -330,11 +371,38 @@ export class MetaFormGymStagingStack extends Stack {
       condition: ecs.ContainerDependencyCondition.START,
     })
 
+    const migrationTaskDefinition = new ecs.FargateTaskDefinition(
+      this,
+      'StagingMigrationTaskDefinition',
+      {
+        family: 'metaform-gym-staging-migration',
+        cpu: 256,
+        memoryLimitMiB: 512,
+        executionRole: migrationExecutionRole,
+        taskRole,
+      },
+    )
+    migrationTaskDefinition.addContainer('migration', {
+      containerName: 'migration',
+      image: ecs.ContainerImage.fromAsset(repositoryRoot, {
+        file: 'apps/api/Dockerfile',
+        target: 'migration',
+      }),
+      essential: true,
+      cpu: 256,
+      memoryReservationMiB: 384,
+      secrets: databaseSecrets,
+      logging: ecs.LogDrivers.awsLogs({
+        logGroup: apiLogGroup,
+        streamPrefix: 'migration',
+      }),
+    })
+
     const service = new ecs.FargateService(this, 'StagingService', {
       serviceName: 'metaform-gym-staging',
       cluster,
       taskDefinition,
-      desiredCount: STAGING_CONFIG.desiredCount,
+      desiredCount: desiredCount.valueAsNumber,
       assignPublicIp: true,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       securityGroups: [ecsSecurityGroup],
@@ -382,6 +450,27 @@ export class MetaFormGymStagingStack extends Stack {
       value: loadBalancer.loadBalancerDnsName,
       description:
         'HTTP-only preparation endpoint; do not accept staging publicly before ACM HTTPS.',
+    })
+    new CfnOutput(this, 'StagingClusterName', {
+      value: cluster.clusterName,
+      description: 'Cluster used by the service and one-off migration task.',
+    })
+    new CfnOutput(this, 'StagingMigrationTaskDefinitionArn', {
+      value: migrationTaskDefinition.taskDefinitionArn,
+      description:
+        'Task definition to run exactly once before enabling the staging service.',
+    })
+    new CfnOutput(this, 'StagingEcsSecurityGroupId', {
+      value: ecsSecurityGroup.securityGroupId,
+      description: 'Security group required by the one-off migration task.',
+    })
+    new CfnOutput(this, 'StagingPublicSubnetIds', {
+      value: Fn.join(
+        ',',
+        vpc.publicSubnets.map((subnet) => subnet.subnetId),
+      ),
+      description:
+        'Public subnets for the migration task; assign a public IP for AWS API and ECR access.',
     })
   }
 }

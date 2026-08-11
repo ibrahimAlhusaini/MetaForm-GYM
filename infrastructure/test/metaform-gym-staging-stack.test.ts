@@ -39,12 +39,12 @@ describe('MetaForm GYM staging infrastructure intent', () => {
       StorageEncrypted: true,
       MultiAZ: false,
       PubliclyAccessible: false,
-      BackupRetentionPeriod: 7,
+      BackupRetentionPeriod: 1,
     })
   })
 
-  it('defines one Fargate task with essential Express and non-essential FastAPI', () => {
-    template.resourceCountIs('AWS::ECS::TaskDefinition', 1)
+  it('defines an application task with essential Express and non-essential FastAPI', () => {
+    template.resourceCountIs('AWS::ECS::TaskDefinition', 2)
     template.hasResourceProperties('AWS::ECS::TaskDefinition', {
       Cpu: '512',
       Memory: '1024',
@@ -75,9 +75,97 @@ describe('MetaForm GYM staging infrastructure intent', () => {
     })
   })
 
+  it('defines a one-off migration task and keeps the service stopped by default', () => {
+    template.hasParameter('StagingDesiredCount', {
+      Type: 'Number',
+      Default: 0,
+      AllowedValues: ['0', '1'],
+    })
+    template.hasResourceProperties('AWS::ECS::TaskDefinition', {
+      Family: 'metaform-gym-staging-migration',
+      Cpu: '256',
+      Memory: '512',
+      ContainerDefinitions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'migration',
+          Essential: true,
+          Secrets: Match.arrayWith([
+            Match.objectLike({ Name: 'DATABASE_HOST' }),
+            Match.objectLike({ Name: 'DATABASE_PORT' }),
+            Match.objectLike({ Name: 'DATABASE_NAME' }),
+            Match.objectLike({ Name: 'DATABASE_USER' }),
+            Match.objectLike({ Name: 'DATABASE_PASSWORD' }),
+          ]),
+        }),
+      ]),
+    })
+    template.hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: { Ref: 'StagingDesiredCount' },
+    })
+    template.hasResourceProperties('AWS::IAM::Role', {
+      RoleName: 'metaform-gym-staging-migration-execution',
+    })
+  })
+
+  it('allows the inactive frontend sentinel only while the service is stopped', () => {
+    template.hasParameter('StagingFrontendUrl', {
+      Type: 'String',
+      Default: 'https://staging.example.invalid',
+      AllowedPattern: '^https://[^/]+$',
+    })
+
+    const rules = template.toJSON().Rules as Record<string, unknown>
+    expect(rules.RequireFrontendUrlWhenServiceEnabled).toEqual({
+      RuleCondition: {
+        'Fn::Equals': [{ Ref: 'StagingDesiredCount' }, '1'],
+      },
+      Assertions: [
+        {
+          Assert: {
+            'Fn::Not': [
+              {
+                'Fn::Equals': [
+                  { Ref: 'StagingFrontendUrl' },
+                  'https://staging.example.invalid',
+                ],
+              },
+            ],
+          },
+          AssertDescription:
+            'StagingFrontendUrl must be a real HTTPS origin before StagingDesiredCount can be 1.',
+        },
+      ],
+    })
+
+    const equalsOperands: unknown[][] = []
+    const collectEqualsOperands = (value: unknown): void => {
+      if (Array.isArray(value)) {
+        value.forEach(collectEqualsOperands)
+        return
+      }
+      if (typeof value !== 'object' || value === null) return
+
+      for (const [key, child] of Object.entries(value)) {
+        if (key === 'Fn::Equals') {
+          expect(Array.isArray(child)).toBe(true)
+          equalsOperands.push(child as unknown[])
+        }
+        collectEqualsOperands(child)
+      }
+    }
+
+    collectEqualsOperands(rules.RequireFrontendUrlWhenServiceEnabled)
+    expect(equalsOperands).toHaveLength(2)
+    for (const operands of equalsOperands) {
+      expect(operands).toHaveLength(2)
+      expect(operands.some((operand) => typeof operand === 'number')).toBe(
+        false,
+      )
+    }
+  })
+
   it('assigns a public IP without granting direct task ingress', () => {
     template.hasResourceProperties('AWS::ECS::Service', {
-      DesiredCount: 1,
       NetworkConfiguration: {
         AwsvpcConfiguration: Match.objectLike({ AssignPublicIp: 'ENABLED' }),
       },

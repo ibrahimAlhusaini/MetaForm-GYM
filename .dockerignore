@@ -24,7 +24,8 @@
 data-science
 apps/web
 apps/api/tests
-apps/api/scripts
+apps/api/scripts/*
+!apps/api/scripts/run-migrations.mjs
 docs
 infrastructure
 .notebook-runtime

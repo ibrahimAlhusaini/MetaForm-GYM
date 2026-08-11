@@ -291,8 +291,10 @@ Staging is a full but smaller isolated stack:
 - one Fargate task; start at 0.5 vCPU/1 GB **only after** a container memory
   smoke proves sufficient, otherwise use 1 vCPU/2 GB;
 - RDS PostgreSQL `db.t4g.micro`, Single-AZ, 20 GB gp3, encrypted, non-public;
-- seven-day automated backup retention, deletion protection on after initial
-  provisioning validation, and a final snapshot on deletion;
+- one-day automated backup retention for compatibility with the current staging
+  account's Free Plan, deletion protection on after initial provisioning
+  validation, and a final snapshot on deletion. The one-day limit is not a
+  production recommendation;
 - optional schedule to run the ECS task approximately 12 hours/day. The ALB and
   RDS remain billable and available; schedule changes must never run during an
   acceptance test or migration.
@@ -442,7 +444,9 @@ local container tests belong to the next stage and are not created here.
 
 ### Backups and lifecycle
 
-- Staging automated retention: 7 days; production: 14 days initially.
+- Staging automated retention: 1 day while constrained by the current Free
+  Plan; production: 14 days initially, reviewed up to 35 days against RPO and
+  compliance needs.
 - Create a manual snapshot before risky migrations and record its identifier.
 - Perform a staging restore drill before production: restore to a new isolated
   instance, run migration/health/data checks, then remove it after evidence is
@@ -712,7 +716,7 @@ Logs Insights scans and avoid high-cardinality custom metrics.
 
 | Control                     | Staging                                           | Production                                 |
 | --------------------------- | ------------------------------------------------- | ------------------------------------------ |
-| Automated RDS retention     | 7 days                                            | 14 days initially                          |
+| Automated RDS retention     | 1 day (current Free Plan constraint)               | 14 days initially; review up to 35 days    |
 | Point-in-time recovery      | Enabled                                           | Enabled                                    |
 | Pre-risk migration snapshot | Required                                          | Required                                   |
 | Deletion protection         | On after provisioning validation                  | On                                         |

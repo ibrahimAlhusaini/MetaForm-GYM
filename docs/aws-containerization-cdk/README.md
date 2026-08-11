@@ -112,8 +112,9 @@ The synthesized `MetaFormGymStagingStack` models:
 - an internet-facing ALB with a temporary HTTP-only listener, one Express target
   group, and `/api/v1/health` checks;
 - RDS PostgreSQL 18.2 on `db.t4g.micro`, Single-AZ, 20-GiB gp3, encrypted,
-  private, seven-day backups, retained automated backups, and final-snapshot
-  removal policy;
+  private, one-day automated backups for current Free Plan compatibility,
+  retained automated backups, and final-snapshot removal policy. This reduced
+  retention is staging-only; production requires a stronger reviewed policy;
 - separate Express/FastAPI log groups with 14-day retention;
 - deploy-time-generated RDS, JWT access, and JWT refresh secrets;
 - separate ECS execution and application task roles. The execution role has
