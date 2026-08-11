@@ -1,0 +1,22 @@
+version: 1
+applications:
+  - appRoot: apps/web
+    frontend:
+      buildPath: /
+      phases:
+        preBuild:
+          commands:
+            - nvm use 22
+            - npm ci
+            - node -e "const value = process.env.VITE_API_URL; const url = new URL(value); if (url.protocol !== 'https:' || url.pathname.replace(/\/$/, '') !== '/api/v1' || url.username || url.password || url.search || url.hash) throw new Error('VITE_API_URL must be a public HTTPS URL ending in /api/v1, without credentials, query, or fragment')"
+        build:
+          commands:
+            - npm run build --workspace @metaform/shared-types
+            - npm run build --workspace @metaform/web
+      artifacts:
+        baseDirectory: apps/web/dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - '~/.npm/**/*'
